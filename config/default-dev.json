@@ -1,0 +1,63 @@
+{
+  "server": {
+    "mongo": {
+      "connectionString": "mongodb://localhost/projet1labo",
+      "options": {
+        "server": {
+          "poolSize": 10
+        }
+      }
+    },
+    "swagger": {
+      "specFilePath": "./api/swagger.json",
+      "ui": true,
+      "apiDoc": true
+    },
+    "auth": {
+      "tokenDuration": {
+        "unit": "hours",
+        "value": 5
+      }
+    },
+    "instance": {
+      "name": "mobile-server-instance1",
+      "host": "195.154.7.74",
+      "port": 3100,
+      "log4js": {
+        "appenders": [
+          {
+            "type": "dateFile",
+            "filename": "./logs/server.log",
+            "pattern": "-yyyy-MM-dd"
+          },
+          {
+            "type": "console"
+          }
+        ],
+        "replaceConsole": true,
+        "levels": {
+          "[all]": "DEBUG",
+          "server.logger": "DEBUG",
+          "server.core": "DEBUG"
+        }
+      }
+    },
+    "http": {
+      "compression": true,
+      "cors": true,
+      "responseTime": true
+    },
+    "features": {
+      "email": {
+        "smtp":{
+          "sender":"labodevtest@gmail.com",
+          "mailgun":{
+            "apiKey": "key-7d3e1a0c62fc2084098e00ff32f0c06d",
+            "domain": "sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org"
+          }
+        },
+        "sendOnUserAdd": true
+      }
+    }
+  }
+}

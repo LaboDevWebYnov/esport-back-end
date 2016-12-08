@@ -1,0 +1,1570 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Project 1 API",
+    "description": "Send forward your gaming community using Project 1 API",
+    "version": "1.0.0"
+  },
+  "produces": [
+    "application/json"
+  ],
+  "tags": [
+    {
+      "name": "Security",
+      "description": "login and permissions"
+    },
+    {
+      "name": "User",
+      "description": "account, friends, interests"
+    },
+    {
+      "name": "Game",
+      "description": "games"
+    },
+    {
+      "name": "PlayerAccount",
+      "description": "player account, game properties"
+    },
+    {
+      "name": "Address",
+      "description": "addresses, user addresses"
+    },
+    {
+      "name": "Team",
+      "description": "team, captain, manage team"
+    }
+  ],
+  "basePath": "/api",
+  "paths": {
+    "/auth": {
+      "post": {
+        "x-swagger-router-controller": "AuthController",
+        "operationId": "authenticate",
+        "tags": [
+          "Security"
+        ],
+        "summary": "Authenticates a user",
+        "description": "Authenticates the user against the DB.",
+        "parameters": [
+          {
+            "name": "authRequest",
+            "in": "body",
+            "description": "Credentials object to authenticate",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AuthRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been successfully logged in"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "getUsers",
+        "tags": [
+          "User"
+        ],
+        "summary": "Get all users",
+        "description": "Gets `User` objects.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Users",
+            "schema": {
+              "title": "ArrayOfUsers",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/addUser": {
+      "post": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "addUser",
+        "tags": [
+          "User"
+        ],
+        "summary": "Adds a new user",
+        "description": "Adds new `User` object to the DB.",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "User object to insert",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been successfully added to the DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/getUserById": {
+      "get": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "getUserById",
+        "tags": [
+          "User"
+        ],
+        "summary": "Gets the specified user",
+        "description": "Gets `User` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 'User' object.",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{username}/getUserByUsername": {
+      "get": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "getUserByUsername",
+        "tags": [
+          "User"
+        ],
+        "summary": "Gets the corresponding matching user",
+        "description": "Gets `User` object specified by its username.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "Username of User to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 'User' object.",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/updateUser": {
+      "put": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "updateUser",
+        "tags": [
+          "User"
+        ],
+        "summary": "Updates the corresponding user basic properties",
+        "description": "Update `User` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userObject",
+            "in": "body",
+            "description": "User object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 'User' object.",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/updatePassword": {
+      "put": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "updatePassword",
+        "tags": [
+          "User"
+        ],
+        "summary": "Updates the corresponding user password",
+        "description": "Update password attr of `User` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "description": "Object containing old password (to verify before updating) and new one to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangePassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 'User' object.",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/updateEmail": {
+      "put": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "updateEmail",
+        "tags": [
+          "User"
+        ],
+        "summary": "Updates the corresponding user email",
+        "description": "Update email attr of `User` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "body",
+            "description": "New email to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated User object.",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/deleteUser": {
+      "put": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "deleteUser",
+        "tags": [
+          "User"
+        ],
+        "summary": "Deactivates the corresponding user account",
+        "description": "Deactivate `User` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to deactivate.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deactivated User object",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/user/verify/{email}": {
+      "get": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "verifyUserEmail",
+        "tags": [
+          "Security"
+        ],
+        "summary": "Verify user email",
+        "description": "Verify user email",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "Email to verify",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User email successfully verified"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/addresses/getAddresses": {
+      "get": {
+        "x-swagger-router-controller": "AddressController",
+        "operationId": "getAddresses",
+        "tags": [
+          "Address"
+        ],
+        "summary": "Get all addresses from DB",
+        "description": "Gets all `Address` objects from DB.",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of 'Address' objects.",
+            "schema": {
+              "title": "ArrayOfAddresses",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Address"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/addresses/{userId}/getUserAddresses": {
+      "get": {
+        "x-swagger-router-controller": "UserAddressController",
+        "operationId": "getUserAddresses",
+        "tags": [
+          "Address"
+        ],
+        "summary": "Get all addresses of the specified user from DB",
+        "description": "Gets all `Address` objects of the specified User from DB.",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to search addresses for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of 'Address' objects.",
+            "schema": {
+              "title": "ArrayOfAddresses",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Address"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/addresses/{addressId}/getAddressById": {
+      "get": {
+        "x-swagger-router-controller": "UserAddressController",
+        "operationId": "getAddressById",
+        "tags": [
+          "Address"
+        ],
+        "summary": "Get the corresponding `Address` object from DB",
+        "description": "Gets the `Address` object specified byt its ID.",
+        "parameters": [
+          {
+            "name": "addressId",
+            "in": "path",
+            "description": "addressId of Address object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved Address object",
+            "schema": {
+              "$ref": "#/definitions/Address"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/addresses/{userId}/addAddress": {
+      "post": {
+        "x-swagger-router-controller": "UserAddressController",
+        "operationId": "addAddress",
+        "tags": [
+          "Address"
+        ],
+        "summary": "Adds a new Address to the User",
+        "description": "Adds new `Address` object to the `User` object to the DB.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "body",
+            "description": "Address object to add to the User object",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been successfully added to the DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/addresses/{userId}/updateAddress/{addressId}": {
+      "put": {
+        "x-swagger-router-controller": "UserAddressController",
+        "operationId": "updateAddress",
+        "tags": [
+          "Address"
+        ],
+        "summary": "Updates the corresponding user address",
+        "description": "Update `User` object address specified by its ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "addressId",
+            "in": "path",
+            "description": "addressId of Address to add in User object addressList.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "body",
+            "description": "Address object of User object to update.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated User object",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/addresses/{addressId}/deactivateAddress": {
+      "put": {
+        "x-swagger-router-controller": "UserAddressController",
+        "operationId": "deactivateAddress",
+        "tags": [
+          "Address"
+        ],
+        "summary": "Deactivates the corresponding address",
+        "description": "Deactivates `Address` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "addressId",
+            "in": "path",
+            "description": "addressId of `Address` object to update.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deactivated `Address` object.",
+            "schema": {
+              "$ref": "#/definitions/Address"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/games": {
+      "get": {
+        "x-swagger-router-controller": "GameController",
+        "operationId": "getGames",
+        "tags": [
+          "Game"
+        ],
+        "summary": "Gets all games",
+        "description": "Gets `Game` objects.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Games",
+            "schema": {
+              "title": "ArrayOfGames",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/games/addGame": {
+      "post": {
+        "x-swagger-router-controller": "GameController",
+        "operationId": "addGame",
+        "tags": [
+          "Game"
+        ],
+        "summary": "Adds a game",
+        "description": "Adds new `Game` object to the DB.",
+        "parameters": [
+          {
+            "name": "game",
+            "in": "body",
+            "description": "Game object to insert",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game has been successfully added to the DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/games/{gameId}/getGameById": {
+      "get": {
+        "x-swagger-router-controller": "GameController",
+        "operationId": "getGameById",
+        "tags": [
+          "Game"
+        ],
+        "summary": "Get the specified game",
+        "description": "Gets `Game` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of Game object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved Game object",
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/games/{gameName}/getGameByName": {
+      "get": {
+        "x-swagger-router-controller": "GameController",
+        "operationId": "getGameByName",
+        "tags": [
+          "Game"
+        ],
+        "summary": "Get the corresponding game based on the game name",
+        "description": "Gets `Game` object specified by its name.",
+        "parameters": [
+          {
+            "name": "gameName",
+            "in": "path",
+            "description": "Game's name to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved Game object",
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/games/{gameId}/updateGame": {
+      "put": {
+        "x-swagger-router-controller": "GameController",
+        "operationId": "updateGame",
+        "tags": [
+          "Game"
+        ],
+        "summary": "Update the corresponding game",
+        "description": "Update `Game` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of Game object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "gameObject",
+            "in": "body",
+            "description": "Game object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated Game object",
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/games/{gameId}/deleteGame": {
+      "put": {
+        "x-swagger-router-controller": "GameController",
+        "operationId": "deleteGame",
+        "tags": [
+          "Game"
+        ],
+        "summary": "Deactivate the corresponding game",
+        "description": "Deactivates the 'Game' object specified by its ID.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of Game object to deactivate.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deactivated Game object",
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccount": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "getPlayerAccountList",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "summary": "Get all playerAccount",
+        "description": "Gets `playerAccount` objects.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of PlayerAccount",
+            "schema": {
+              "title": "ArrayOfPlayerAccount",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccount"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccount/{userId}/addPlayerAccount/{gameId}": {
+      "post": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "addPlayerAccount",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "summary": "Adds a new PlayerAccount",
+        "description": "Adds new `PlayerAccount` object to the DB.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of player object to add.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of player object to add.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "PlayerAccount",
+            "in": "body",
+            "description": "PlayerAccount object to insert",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/CreatePlayedAccountObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PlayerAccount has been successfully added to the DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccount/{playerAccountId}/getPlayerAccountById": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "getPlayerAccountById",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "summary": "Get the specified playerAccount",
+        "description": "Gets `playerAcount` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAcountId of player object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved playerAcount object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccount"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccount/{userId}/getPlayerAccountByUserId": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "getPlayerAccountByUserId",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "summary": "Get the corresponding playerAccount based on the PlayerAccount UserId",
+        "description": "Gets `player` object specified by its UserId.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of Player object to find.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Players",
+            "schema": {
+              "title": "ArrayOfPlayers",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccount"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccount/{login}/getPlayerAccountByLogin": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "getPlayerAccountByLogin",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "description": "Gets `player` object specified by its login.",
+        "summary": "Get the corresponding playerAccount based on the PlayerAccount login",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "path",
+            "description": "login of Player object to find.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved PlayerAccount object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccount"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccount/{playerAccountId}/deletePlayerAccount": {
+      "put": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "deletePlayerAccount",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "description": "Deactivates the 'playerAccount' object specified by its ID.",
+        "summary": "Deactivate the corresponding playerAccount",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of Game object to deactivate.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated playerAccount object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccount"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teams": {
+      "get": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "getTeams",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Gets all teams",
+        "description": "Gets `Team` objects.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Teams",
+            "schema": {
+              "title": "ArrayOfTeams",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Team"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/team/{playerAccountId}/addTeam/{gameId}": {
+      "post": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "addTeam",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Adds a team",
+        "description": "Adds new `Team` object to the DB.",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of player object to add.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of game object to add.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "team",
+            "in": "body",
+            "description": "Team object to insert",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateTeamObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Team has been successfully added to the DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/team/{teamId}/getTeamById": {
+      "get": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "getTeamById",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Get the specified team",
+        "description": "Gets `Team` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved Team object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/team/{teamName}/getTeamByName": {
+      "get": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "getTeamByName",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Get the corresponding game based on the team name",
+        "description": "Gets `Team` object specified by its name.",
+        "parameters": [
+          {
+            "name": "teamName",
+            "in": "path",
+            "description": "Team's name to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved Team object",
+            "schema": {
+              "$ref": "#/definitions/Game"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/team/{teamId}/updateTeam": {
+      "put": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "updateTeam",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Update the corresponding team",
+        "description": "Update `Team` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "teamObject",
+            "in": "body",
+            "description": "Team object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateTeamObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated Game object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/team/{teamId}/deleteTeam": {
+      "put": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "deleteTeam",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Deactivate the corresponding team",
+        "description": "Deactivates the 'Team' object specified by its ID.",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Game object to deactivate.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deactivated Team object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "address": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Address"
+          }
+        },
+        "phoneNumber": {
+          "type": "string"
+        },
+        "admin": {
+          "type": "boolean"
+        },
+        "friends": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "AuthRequest": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        }
+      }
+    },
+    "PlayerAccount": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "login": {
+          "type": "string"
+        },
+        "game": {
+          "$ref": "#/definitions/Game"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "postCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "city": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "line": {
+          "type": "string"
+        }
+      }
+    },
+    "Game": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "releaseDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "multiPlayer": {
+          "type": "boolean"
+        },
+        "editor": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "Team": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "captain": {
+          "$ref": "#/definitions/PlayerAccount"
+        },
+        "players": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlayerAccount"
+          }
+        },
+        "invitedPlayers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlayerAccount"
+          }
+        },
+        "postulatedPlayers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PlayerAccount"
+          }
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "game": {
+          "$ref": "#/definitions/Game"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "ChangePassword": {
+      "type": "object",
+      "properties": {
+        "oldPassword": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        },
+        "newPasswordConfirmation": {
+          "type": "string"
+        }
+      }
+    },
+    "CreatePlayedAccountObject": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        }
+      }
+    },
+    "CreateTeamObject": {
+      "type": "object",
+      "properties": {
+        "teamName": {
+          "type": "string"
+        },
+        "teamTag": {
+          "type": "string"
+        }
+      }
+    },
+    "Email": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
