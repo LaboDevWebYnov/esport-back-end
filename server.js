@@ -2,7 +2,7 @@
  * Created by Antoine on 17/12/2015.
  */
 
-    // Set the DEBUG environment variable to enable debug output of Swagger Middleware AND Swagger Parser
+// Set the DEBUG environment variable to enable debug output of Swagger Middleware AND Swagger Parser
 process.env.DEBUG = 'swagger:*';
 
 // export NODE_APP_INSTANCE=def

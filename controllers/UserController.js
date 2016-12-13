@@ -10,6 +10,7 @@ var config = require('config'),
     _ = require('lodash'),
     Util = require('./utils/util.js'),
     emailUtils = require('./utils/emailUtils.js'),
+		Mailgun = require('mailgun-js'),
     UserDB = require('../models/UserDB'),
     User = mongoose.model('User'),
     AddressDB = require('../models/AddressDB'),
@@ -275,12 +276,11 @@ module.exports.deleteUser = function deleteUser(req, res, next) {
 // Path : GET api/user/verify/{email}
 module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
     logger.debug('Original url: ' + req.originalUrl);
-    logger.info('Verifying email '+req.params.email);
-    // logger.debug('email:' + req.params.mail);
-    var registerErr = null;
-    //logger.debug('token:'+securityUtils.getPathParams(req)[3]);
+    logger.info('Verifying email '+ decodeURIComponent(req.params.email));
+    logger.debug('email:' + decodeURIComponent(Util.getPathParams(req)[3]));
+    var email = decodeURIComponent(Util.getPathParams(req)[3]);
 
-    User.findOne({email: Util.getPathParams(req)[4]}, function (err, user) {
+    User.findOne({email: email}, function (err, user) {
         if (err) throw err;
         else {
             //check if a user with the provided email is in DB
