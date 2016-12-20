@@ -338,3 +338,56 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
 				}
 		});
 };
+
+//Path: POST api/users/signUp
+module.exports.signUp = function signUp(req, res, next) {
+		logger.info('Adding new user...');
+		//check if email isn't already taken
+		UserDaoUtil.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
+				if (!isAlreadyTakenEmail) {
+						var user = new User({
+								email: sanitizer.escape(req.body.email),
+								address: [],
+								friends: []
+						});
+
+						user.save(function (err, user) {
+								if (err) {
+										logger.error("got an error while creating user: ", err);
+										return next(err.message);
+								}
+
+								if (_.isNull(user) || _.isEmpty(user)) {
+										res.set('Content-Type', 'application/json');
+										res.status(404).json(JSON.stringify('Error while creating user' || {}, null, 2));
+								}
+								//user saved, now sending email
+								else {
+										//if email sendOnUserAdd activated in config, sending account validation email
+										if (config.server.features.email.sendOnUserAdd) {
+												logger.debug("sendOnUserAdd config: " + config.server.features.email.sendOnUserAdd);
+												logger.debug("sending email....");
+												//send email
+												emailUtils.dispatchAccountValidationLink(user, function (err, user) {
+														if (err) {
+																return next(err.message);
+														}
+														else {
+																res.set('Content-Type', 'application/json');
+																res.status(200).end(JSON.stringify(user || {}, null, 2));
+														}
+												});
+										}
+										else {//else returning user directly
+												res.set('Content-Type', 'application/json');
+												res.status(200).end(JSON.stringify(user || {}, null, 2));
+										}
+								}
+						});
+				}
+				else {
+						res.set('Content-Type', 'application/json');
+						res.status(401).end(JSON.stringify({error: 'Email already used'} || {}, null, 2));
+				}
+		});
+};

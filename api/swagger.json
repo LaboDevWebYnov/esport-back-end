@@ -108,6 +108,39 @@
         }
       }
     },
+    "/users/signUp": {
+      "post": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "signUp",
+        "tags": [
+          "User"
+        ],
+        "summary": "Creates a new user based on his email address",
+        "description": "Adds new `User` object to the DB based on its email",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "User's email to base user's creation on",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been successfully added to the DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/users/addUser": {
       "post": {
         "x-swagger-router-controller": "UserController",

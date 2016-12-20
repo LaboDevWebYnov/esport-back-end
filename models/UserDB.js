@@ -8,14 +8,14 @@ var logger = require('log4js').getLogger('Users');
 var _ = require('lodash');
 
 var User = new Schema({
-    firstname: {type: String, required: true},
-    lastname: {type: String, required: true},
-    username: {type: String, required: true},
-    birthDate: {type: Date, required: true},
+    firstname: {type: String, required: false},
+    lastname: {type: String, required: false},
+    username: {type: String, required: false},
+    birthDate: {type: Date, required: false},
     email: {type: String, required: true},
-    password: {type: String, required: true},
+    password: {type: String, required: false},
     address: {type:[{ type: Schema.ObjectId, ref: 'Address'}], required: false},
-    phoneNumber: {type: String, required: true},
+    phoneNumber: {type: String, required: false},
     admin: {type: Boolean, required: true, default: false},
     active: {type: Boolean, required: true, default: true},
     friends: {type: [{type: Schema.ObjectId, ref: 'User'}], required: false},
@@ -36,7 +36,7 @@ User.pre('save', function (next) {
     var user = this;
 
     // only hash the password if it has been modified (or is new)
-    if (user.isModified('password') || user.isNew()) {
+    if (user.isModified('password')) {
         user.saltPassword(user.password, function (err, saltedPw) {
             if (err) return next(err);
             logger.debug('Salting password: '+user.password+' => salted: '+saltedPw);
@@ -64,6 +64,8 @@ User.pre('save', function (next) {
         if (!user.created_at) {
             user.created_at = Date.now;
         }
+
+		    // logger.debug('user:'+ user);
 
         //extract ObjectIds from array of ObjectId
         if(!_.isNull(user.address)&& !_.isEmpty(user.address))
