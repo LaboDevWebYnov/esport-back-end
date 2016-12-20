@@ -107,7 +107,7 @@ EM.dispatchResetPasswordConfirmation = function (user, callback) {
 
 EM.composeEmailAccountValidation = function (o) {
     //todo make a generic link with req.headers.host
-    var link = 'http://localhost:3000/api/validate/' + o.email;
+    var link = 'http://localhost:4200/signup/step1/' + o.email;
     logger.debug('Link created:' + link);
     var html = "<html><body>";
     html += "Hi " + o.firstname + ",<br><br>";

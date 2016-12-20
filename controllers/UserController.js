@@ -157,10 +157,11 @@ module.exports.updateUser = function updateUser(req, res, next) {
 				{
 						$set: {
 								//TODO add phone number check
-								firstname: req.body.firstname,
-								lastname: req.body.lastname,
-								birthDate: req.body.birthDate,
-								phoneNumber: req.body.phoneNumber,
+								firstname: req.body.firstname || null,
+								lastname: req.body.lastname || null,
+								username: req.body.username || null,
+								birthDate: req.body.birthDate || null,
+								phoneNumber: req.body.phoneNumber || null,
 								updated_at: Date.now()
 						}
 				},
@@ -226,7 +227,6 @@ module.exports.updatePassword = function updatePassword(req, res, next) {
 
 // Path: PUT api/users/{userId}/updateEmail
 module.exports.updateEmail = function updateEmail(req, res, next) {
-
 		User.findOneAndUpdate(
 				{_id: Util.getPathParams(req)[2]},
 				{
