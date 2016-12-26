@@ -76,15 +76,26 @@ module.exports.addUser = function addUser(req, res, next) {
 										if (config.server.features.email.sendOnUserAdd) {
 												logger.debug("sendOnUserAdd config: " + config.server.features.email.sendOnUserAdd);
 												logger.debug("sending email....");
-												//send email
-												emailUtils.dispatchAccountValidationLink(user, function (err, user) {
-														if (err) {
-																return next(err.message);
-														}
-														else {
-																res.set('Content-Type', 'application/json');
-																res.status(200).end(JSON.stringify(user || {}, null, 2));
-														}
+
+												var mailOpts = {
+														protocol: req.protocol,
+														host: req.hostname,
+														port: config.server.instance.port
+												};
+
+												require('crypto').randomBytes(48, function(err, buffer) {
+														var token = buffer.toString('hex');
+
+														//send email
+														emailUtils.dispatchAccountValidationLink(mailOpts, user, token, function (err, user) {
+																if (err) {
+																		return next(err.message);
+																}
+																else {
+																		res.set('Content-Type', 'application/json');
+																		res.status(200).end(JSON.stringify(user || {}, null, 2));
+																}
+														});
 												});
 										}
 										else {//else returning user directly
@@ -367,15 +378,25 @@ module.exports.signUp = function signUp(req, res, next) {
 										if (config.server.features.email.sendOnUserAdd) {
 												logger.debug("sendOnUserAdd config: " + config.server.features.email.sendOnUserAdd);
 												logger.debug("sending email....");
-												//send email
-												emailUtils.dispatchAccountValidationLink(user, function (err, user) {
-														if (err) {
-																return next(err.message);
-														}
-														else {
-																res.set('Content-Type', 'application/json');
-																res.status(200).end(JSON.stringify(user || {}, null, 2));
-														}
+
+												var mailOpts = {
+														protocol: req.protocol,
+														host: req.hostname,
+														port: config.server.instance.port
+												};
+
+												require('crypto').randomBytes(48, function(err, buffer) {
+														var token = buffer.toString('hex');
+														//send email
+														emailUtils.dispatchAccountValidationLink(mailOpts, user, token, function (err, user) {
+																if (err) {
+																		return next(err.message);
+																}
+																else {
+																		res.set('Content-Type', 'application/json');
+																		res.status(200).end(JSON.stringify(user || {}, null, 2));
+																}
+														});
 												});
 										}
 										else {//else returning user directly

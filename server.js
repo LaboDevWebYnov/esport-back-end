@@ -168,7 +168,6 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
         if (err) logger.error(err.message);
         console.log('The API sample is now running at http://'+host+':' + port);
     });
-
 });
 
 //******************************************************************************//
