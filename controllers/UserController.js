@@ -349,20 +349,21 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
 		});
 };
 
-//todo à tester
-//todo add regexp for email
 //Path: POST api/users/signUp
 module.exports.signUp = function signUp(req, res, next) {
 		logger.info('Adding new user...');
 		//check if email isn't already taken
 		UserDaoUtil.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
 						if (!isAlreadyTakenEmail) {
+								//todo add regexp for email
+								//if regexp ok, let go to next
+								//otherwise send error msg
 								require('crypto').randomBytes(48, function (err, buffer) {
 										var token = buffer.toString('hex');
 										var user = new User({
 												email: sanitizer.escape(req.body.email),
 												accValidationToken: token,
-												accValidationTokenExpires: moment()
+												accValidationTokenExpires: moment().add(2, 'h')
 										});
 
 										user.save(function (err, user) {
