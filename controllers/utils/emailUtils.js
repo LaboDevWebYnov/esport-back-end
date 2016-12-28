@@ -125,7 +125,7 @@ EM.dispatchResetPasswordConfirmation = function (user, callback) {
  * @returns {string} - HTML generated
  */
 EM.composeEmailAccountValidation = function (mailOpts, user, token) {
-		var link = mailOpts.protocol + '://' + mailOpts.host + ':' + mailOpts.port + '/verifyUserEmail/' + user.email + '?t=' + token;
+		var link = mailOpts.protocol + '://' + mailOpts.host + ':' + mailOpts.port + '/api/user/verify/' + user.email + '?t=' + token;
 		logger.debug('Link created:' + link);
 		var html = "<html><body>";
 		html += "Welcome to No Name Gaming !<br><br>";

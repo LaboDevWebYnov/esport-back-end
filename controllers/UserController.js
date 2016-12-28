@@ -11,6 +11,10 @@ var config = require('config'),
 		_ = require('lodash'),
 		Util = require('./utils/util.js'),
 		emailUtils = require('./utils/emailUtils.js'),
+		mailgun = require('mailgun-js')({
+				apiKey: config.server.features.email.smtp.mailgun.apiKey,
+				domain: config.server.features.email.smtp.mailgun.domain
+		}),
 		UserDB = require('../models/UserDB'),
 		User = mongoose.model('User'),
 		AddressDB = require('../models/AddressDB'),
@@ -21,7 +25,7 @@ var config = require('config'),
 module.exports.getUsers = function getUsers(req, res, next) {
 		logger.info('Getting all users from db...');
 
-		//TODO add size param handling => see how to get the query params (using url package ?)
+		//TODO add size param handling => see how to get the query params (using url package)
 		// Code necessary to consume the User API and respond
 		User.find({})
 		.populate('address')
@@ -286,20 +290,20 @@ module.exports.deleteUser = function deleteUser(req, res, next) {
 
 // Path : GET api/user/verify/{email}
 module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
-		mailgun = require('mailgun-js')({
-				apiKey: config.server.features.email.smtp.mailgun.apiKey,
-				domain: config.server.features.email.smtp.mailgun.domain
-		});
 		logger.debug('Original url: ' + req.originalUrl);
 		// logger.info('Verifying email '+ decodeURIComponent(req.params.email));
-		logger.debug('email:' + decodeURIComponent(Util.getPathParams(req)[3]));
+		logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[3]));
+		logger.debug('token: ' + req.query.t);
 		var email = decodeURIComponent(Util.getPathParams(req)[3]);
+		var token = req.query.t;
 
-		User.findOne({email: email}, function (err, user) {
-				if (err) throw err;
+		//recherche d'un user avec: cet email, le token correspondant et un token ayant une date de fin de validité > now
+		User.find({email: email, accValidationToken: token, accValidationTokenExpires: { $gt: moment() }}, function (err, user) {
+				if (err) return next(err);
 				else {
+						//todo handle redirecting
 						//check if a user with the provided email is in DB
-						if (user) {
+						if (user.length) {
 								var members = [
 										{
 												address: email
@@ -307,7 +311,7 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
 								];
 								//create a mailing list on mailgun.com/cp/lists and put its address below
 								//add email to validated emails list
-								mailgun.lists('accountvalidation@sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org').members().add({
+								mailgun.lists('accountvalidation@sandboxac05877c9fb5494eabcee21e7eaafd61.mailgun.org').members().add({
 										members: members,
 										subscribed: true
 								}, function (err, body) {
@@ -323,7 +327,9 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
 														},
 														{
 																$set: {
-																		verified: true
+																		verified: true,
+																		accValidationToken: undefined,
+																		accValidationTokenExpires: undefined
 																}
 														},
 														{new: true}, //means we want the DB to return the updated document instead of the old one
@@ -343,7 +349,7 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
 						//no user found in the DB with this email, aborting
 						else {
 								res.set('Content-Type', 'application/json');
-								res.status(401).end(JSON.stringify({error: 'Il n\'y a pas d\'utilisateur avec cet email !'}, null, 2));
+								res.status(401).end(JSON.stringify({error: 'Demande de création de compte invalide ou expirée ! Merci de bien vouloir vour réinscrire ici. (lien à mettre)'}, null, 2));
 						}
 				}
 		});
@@ -395,12 +401,14 @@ module.exports.signUp = function signUp(req, res, next) {
 																				return next(err.message);
 																		}
 																		else {
+																				//todo omit token related infos in returned objects
 																				res.set('Content-Type', 'application/json');
 																				res.status(200).end(JSON.stringify(user || {}, null, 2));
 																		}
 																});
 														}
 														else {//else returning user directly
+																//todo omit token related infos in returned objects
 																res.set('Content-Type', 'application/json');
 																res.status(200).end(JSON.stringify(user || {}, null, 2));
 														}

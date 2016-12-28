@@ -421,6 +421,13 @@
             "description": "Email to verify",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "t",
+            "in": "query",
+            "description": "token to verify for this email",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
