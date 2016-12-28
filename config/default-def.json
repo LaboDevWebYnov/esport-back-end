@@ -52,11 +52,11 @@
         "smtp":{
           "sender":"labodevtest@gmail.com",
           "mailgun":{
-            "apiKey": "key-7d3e1a0c62fc2084098e00ff32f0c06d",
-            "domain": "sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org"
+            "apiKey": "key-ecfb943b9b9d9233cc67d73ba22c7498",
+            "domain": "sandboxac05877c9fb5494eabcee21e7eaafd61.mailgun.org"
           }
         },
-        "sendOnUserAdd": false
+        "sendOnUserAdd": true
       }
     }
   }

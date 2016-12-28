@@ -5,24 +5,19 @@ var config = require('config'),
 		mongoose = require("mongoose"),
 		logger = require('log4js').getLogger('controller.utils.sendEmail'),
 		ES = config.server.features.email.smtp,
-		Mailgun = require('mailgun-js'),
+		mailgun = require('mailgun-js')({apiKey: ES.mailgun.apiKey, domain: ES.mailgun.domain}),
 		EM = {};
 module.exports = EM;
 
-//TODO refactor code in such a way that we declare mailgun instance and send message only once
 /**
  *
- * @param mailOpts - object containing protocol, hostname and port for composing the email
+ * @param mailOpts - object containing protocol, host and port for composing the email
  * @param user - the user object containing the user information to compose the email
  * @param token - the token to pass and verify when getting on the first step of the registration
  * @param callback - callback with null if everything went good, with error otherwise
  */
 EM.dispatchAccountValidationLink = function (mailOpts, user, token, callback) {
-		logger.debug('using config ' + JSON.stringify(ES.mailgun));
-		//We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
-		var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
-		logger.debug('creating email for user ' + user);
-
+		logger.debug('creating AccountValidationLink email for user ' + user);
 		// send mail
 		var data = {
 				//Specify email data
@@ -52,15 +47,12 @@ EM.dispatchAccountValidationLink = function (mailOpts, user, token, callback) {
 
 /**
  *
- * @param mailOpts - object containing protocol, hostname and port for composing the email
+ * @param mailOpts - object containing protocol, host and port for composing the email
  * @param user - the user object containing the user information to compose the email
  * @param token - the token to pass and verify when getting on the first step of the registration
  * @param callback - callback with null if everything went good, with error otherwise
  */
 EM.dispatchResetPasswordLink = function (mailOpts, user, token, callback) {
-		//We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
-		var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
-
 		// send mail
 		var data = {
 				//Specify email data
@@ -94,9 +86,6 @@ EM.dispatchResetPasswordLink = function (mailOpts, user, token, callback) {
  * @param callback - callback with null if everything went good, with error otherwise
  */
 EM.dispatchResetPasswordConfirmation = function (user, callback) {
-		//We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
-		var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
-
 		// send mail
 		var data = {
 				//Specify email data
@@ -130,20 +119,20 @@ EM.dispatchResetPasswordConfirmation = function (user, callback) {
 
 /**
  * @description account validation email composition
- * @param mailOpts - object containing protocol, hostname and port for composing the email
+ * @param mailOpts - object containing protocol, host and port for composing the email
  * @param user - the user object containing the user information to compose the email
  * @param token - the token to pass and verify when getting on the first step of the registration
  * @returns {string} - HTML generated
  */
 EM.composeEmailAccountValidation = function (mailOpts, user, token) {
-		var link = mailOpts.protocol + '://' + mailOpts.hostname + ':' + mailOpts.port + '/signup/step1/' + user.email + '?t=' + token;
+		var link = mailOpts.protocol + '://' + mailOpts.host + ':' + mailOpts.port + '/verifyUserEmail/' + user.email + '?t=' + token;
 		logger.debug('Link created:' + link);
 		var html = "<html><body>";
-		html += "Hi " + user.firstname + ",<br><br>";
-		html += "Your username is : <b>" + user.username + "</b><br><br>";
-		html += "<a href='" + link + "'>Please click here to validate your account</a><br><br>";
+		html += "Welcome to No Name Gaming !<br><br>";
+		html += "Please click on following link to activate your account.<br>";
+		html += "<a href='" + link + "'>" + link + "</a><br><br>";
 		html += "If you can't click the link, copy/pasterino this in your browser : <b>" + link + "</b><br><br>";
-		html += "Cheers,<br>";
+		html += "Have fun on No Name Gaming.<br>";
 		html += "</body></html>";
 		logger.debug('html created:' + html);
 		return html;
@@ -151,13 +140,13 @@ EM.composeEmailAccountValidation = function (mailOpts, user, token) {
 
 /**
  * @description recovery password email composition
- * @param mailOpts - object containing protocol, hostname and port for composing the email
+ * @param mailOpts - object containing protocol, host and port for composing the email
  * @param user - the user object containing the user informations to compose the email
  * @param token - the token to pass and verify when getting on the first step of the registration
  * @returns {string} - HTML generated
  */
 EM.composeEmailResetPassword = function (mailOpts, user, token) {
-		var link = mailOpts.protocol + '://' + mailOpts.hostname + ':' + mailOpts.port + '/api/reset/' + token;
+		var link = mailOpts.protocol + '://' + mailOpts.host + ':' + mailOpts.port + '/api/reset/' + token;
 		logger.debug('Link created:' + link);
 		var html = "<html><body>";
 		html += "Hi " + user.firstname + ",<br><br>";

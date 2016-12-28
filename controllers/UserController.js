@@ -7,10 +7,10 @@ var config = require('config'),
 		logger = require('log4js').getLogger('controller.user'),
 		mongoose = require('mongoose'),
 		sanitizer = require('sanitizer'),
+		moment = require('moment'),
 		_ = require('lodash'),
 		Util = require('./utils/util.js'),
 		emailUtils = require('./utils/emailUtils.js'),
-		Mailgun = require('mailgun-js'),
 		UserDB = require('../models/UserDB'),
 		User = mongoose.model('User'),
 		AddressDB = require('../models/AddressDB'),
@@ -83,7 +83,7 @@ module.exports.addUser = function addUser(req, res, next) {
 														port: config.server.instance.port
 												};
 
-												require('crypto').randomBytes(48, function(err, buffer) {
+												require('crypto').randomBytes(48, function (err, buffer) {
 														var token = buffer.toString('hex');
 
 														//send email
@@ -286,6 +286,10 @@ module.exports.deleteUser = function deleteUser(req, res, next) {
 
 // Path : GET api/user/verify/{email}
 module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
+		mailgun = require('mailgun-js')({
+				apiKey: config.server.features.email.smtp.mailgun.apiKey,
+				domain: config.server.features.email.smtp.mailgun.domain
+		});
 		logger.debug('Original url: ' + req.originalUrl);
 		// logger.info('Verifying email '+ decodeURIComponent(req.params.email));
 		logger.debug('email:' + decodeURIComponent(Util.getPathParams(req)[3]));
@@ -296,23 +300,18 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
 				else {
 						//check if a user with the provided email is in DB
 						if (user) {
-								var mailgun = new Mailgun({
-										apiKey: 'key-7d3e1a0c62fc2084098e00ff32f0c06d',
-										domain: 'sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org'
-								});
-
 								var members = [
 										{
 												address: email
 										}
 								];
-								//create a mailing list on Mailgun.com/cp/lists and put its address below
+								//create a mailing list on mailgun.com/cp/lists and put its address below
 								//add email to validated emails list
 								mailgun.lists('accountvalidation@sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org').members().add({
 										members: members,
 										subscribed: true
 								}, function (err, body) {
-										logger.debug('Response from Mailgun:' + JSON.stringify(body));
+										logger.debug('Response from mailgun:' + JSON.stringify(body));
 										if (err) {
 												logger.error('Error while sending confirmation email : ' + err);
 												return next(err);
@@ -350,65 +349,68 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
 		});
 };
 
+//todo à tester
+//todo add regexp for email
 //Path: POST api/users/signUp
 module.exports.signUp = function signUp(req, res, next) {
 		logger.info('Adding new user...');
 		//check if email isn't already taken
 		UserDaoUtil.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
-				if (!isAlreadyTakenEmail) {
-						var user = new User({
-								email: sanitizer.escape(req.body.email),
-								address: [],
-								friends: []
-						});
+						if (!isAlreadyTakenEmail) {
+								require('crypto').randomBytes(48, function (err, buffer) {
+										var token = buffer.toString('hex');
+										var user = new User({
+												email: sanitizer.escape(req.body.email),
+												accValidationToken: token,
+												accValidationTokenExpires: moment()
+										});
 
-						user.save(function (err, user) {
-								if (err) {
-										logger.error("got an error while creating user: ", err);
-										return next(err.message);
-								}
+										user.save(function (err, user) {
+												if (err) {
+														logger.error("got an error while creating user: ", err);
+														return next(err.message);
+												}
 
-								if (_.isNull(user) || _.isEmpty(user)) {
-										res.set('Content-Type', 'application/json');
-										res.status(404).json(JSON.stringify('Error while creating user' || {}, null, 2));
-								}
-								//user saved, now sending email
-								else {
-										//if email sendOnUserAdd activated in config, sending account validation email
-										if (config.server.features.email.sendOnUserAdd) {
-												logger.debug("sendOnUserAdd config: " + config.server.features.email.sendOnUserAdd);
-												logger.debug("sending email....");
+												if (_.isNull(user) || _.isEmpty(user)) {
+														res.set('Content-Type', 'application/json');
+														res.status(404).json(JSON.stringify('Error while creating user' || {}, null, 2));
+												}
+												//user saved, now sending email
+												else {
+														//if email sendOnUserAdd activated in config, sending account validation email
+														if (config.server.features.email.sendOnUserAdd) {
+																logger.debug("sendOnUserAdd config: " + config.server.features.email.sendOnUserAdd);
+																logger.debug("sending email....");
 
-												var mailOpts = {
-														protocol: req.protocol,
-														host: req.hostname,
-														port: config.server.instance.port
-												};
+																var mailOpts = {
+																		protocol: req.protocol,
+																		host: req.hostname,
+																		port: config.server.instance.port
+																};
 
-												require('crypto').randomBytes(48, function(err, buffer) {
-														var token = buffer.toString('hex');
-														//send email
-														emailUtils.dispatchAccountValidationLink(mailOpts, user, token, function (err, user) {
-																if (err) {
-																		return next(err.message);
-																}
-																else {
-																		res.set('Content-Type', 'application/json');
-																		res.status(200).end(JSON.stringify(user || {}, null, 2));
-																}
-														});
-												});
-										}
-										else {//else returning user directly
-												res.set('Content-Type', 'application/json');
-												res.status(200).end(JSON.stringify(user || {}, null, 2));
-										}
-								}
-						});
+																//send email
+																emailUtils.dispatchAccountValidationLink(mailOpts, user, token, function (err, user) {
+																		if (err) {
+																				return next(err.message);
+																		}
+																		else {
+																				res.set('Content-Type', 'application/json');
+																				res.status(200).end(JSON.stringify(user || {}, null, 2));
+																		}
+																});
+														}
+														else {//else returning user directly
+																res.set('Content-Type', 'application/json');
+																res.status(200).end(JSON.stringify(user || {}, null, 2));
+														}
+												}
+										});
+								});
+						}
+						else {
+								res.set('Content-Type', 'application/json');
+								res.status(401).end(JSON.stringify({error: 'Email already used'} || {}, null, 2));
+						}
 				}
-				else {
-						res.set('Content-Type', 'application/json');
-						res.status(401).end(JSON.stringify({error: 'Email already used'} || {}, null, 2));
-				}
-		});
+		);
 };
