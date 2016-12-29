@@ -32,6 +32,10 @@
     {
       "name": "Team",
       "description": "team, captain, manage team"
+    },
+    {
+      "name": "Registration",
+      "description": "user registration steps management"
     }
   ],
   "basePath": "/api",
@@ -426,6 +430,44 @@
             "name": "t",
             "in": "query",
             "description": "token to verify for this email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User email successfully verified"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/register/step0/{email}": {
+      "get": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "registerUserEmail",
+        "tags": [
+          "Registration"
+        ],
+        "summary": "Register user based on his email (step 0)",
+        "description": "Register an user based on his email and token and redirect to corresponding registration step",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "Email to verify and register",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "t",
+            "in": "query",
+            "description": "Token to verify this email",
             "required": true,
             "type": "string"
           }
