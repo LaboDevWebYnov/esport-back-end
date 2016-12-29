@@ -21,6 +21,6 @@ module.exports.decrypt = function decrypt(text) {
     var decipher = crypto.createDecipher(algorithm, password);
     var dec = decipher.update(text, hex, format);
     dec += decipher.final(format);
-    logger.debug('Deciphered: '+dec);
+    logger.debug('Deciphered: ' + dec);
     return dec;
 };

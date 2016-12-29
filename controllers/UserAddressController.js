@@ -34,29 +34,29 @@ module.exports.addAddress = function addAddress(req, res, next) {
                 else {
                     logger.debug('User addressList:' + userAddress);
                     //insert new address _id in ObjectId list
-                    if(_.isNull(userAddress)){
+                    if (_.isNull(userAddress)) {
                         User.findOne({_id: Util.getPathParams(req)[2]},
-                        function (err, user) {
-                            user.address = [];
-                            user.address.push(createdAddress);
-                            //logger.debug('New User finalAddressList:' + userAddress);
-                            // and update its addressList attribute with new data
-                            UserAddressDAO.updateUserAddressList(req, user.address, function (err, updatedUser) {
-                                if (err)
-                                    throw (err.message);
-                                if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
-                                    res.set('Content-Type', 'application/json');
-                                    res.status(404).json(JSON.stringify({error: "Couldn't update address"}, null, 2));
-                                }
-                                else {
-                                    logger.debug('Updated user', updatedUser);
-                                    res.set('Content-Type', 'application/json');
-                                    res.status(200).end(JSON.stringify(updatedUser || {}, null, 2));
-                                }
+                            function (err, user) {
+                                user.address = [];
+                                user.address.push(createdAddress);
+                                //logger.debug('New User finalAddressList:' + userAddress);
+                                // and update its addressList attribute with new data
+                                UserAddressDAO.updateUserAddressList(req, user.address, function (err, updatedUser) {
+                                    if (err)
+                                        throw (err.message);
+                                    if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
+                                        res.set('Content-Type', 'application/json');
+                                        res.status(404).json(JSON.stringify({error: "Couldn't update address"}, null, 2));
+                                    }
+                                    else {
+                                        logger.debug('Updated user', updatedUser);
+                                        res.set('Content-Type', 'application/json');
+                                        res.status(200).end(JSON.stringify(updatedUser || {}, null, 2));
+                                    }
+                                });
                             });
-                        });
                     }
-                    else{
+                    else {
                         userAddress.push(createdAddress);
                         //logger.debug('New User finalAddressList:' + userAddress);
                         // and update its addressList attribute with new data

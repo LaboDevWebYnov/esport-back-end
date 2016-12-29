@@ -87,7 +87,7 @@ function shutdownServer() {
 var swaggerSpecFilePath = path.resolve(config.server.swagger.specFilePath);
 var swaggerDoc = require(swaggerSpecFilePath);
 logger.info('Using spec file: ' + swaggerSpecFilePath);
-swaggerDoc.host = config.server.instance.host+':'+config.server.instance.port;
+swaggerDoc.host = config.server.instance.host + ':' + config.server.instance.port;
 logger.info('Server will run at: ' + JSON.stringify(swaggerDoc.host));
 
 var app = express();
@@ -166,7 +166,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
     http.createServer(app).listen(port, function (err) {
         if (err) logger.error(err.message);
-        console.log('The API sample is now running at http://'+host+':' + port);
+        console.log('The API sample is now running at http://' + host + ':' + port);
     });
 });
 
