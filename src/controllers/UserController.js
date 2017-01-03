@@ -15,11 +15,11 @@ var config = require('config'),
         apiKey: config.server.features.email.smtp.mailgun.apiKey,
         domain: config.server.features.email.smtp.mailgun.domain
     }),
-    UserDB = require('../models/UserDB'),
+    UserDB = require('./UserDB'),
     User = mongoose.model('User'),
-    AddressDB = require('../models/AddressDB'),
+    AddressDB = require('./AddressDB'),
     Address = mongoose.model('Address'),
-    UserDaoUtil = require('../DAO/UserDAO');
+    UserDaoUtil = require('./UserDAO');
 
 //Path: GET api/users
 module.exports.getUsers = function getUsers(req, res, next) {

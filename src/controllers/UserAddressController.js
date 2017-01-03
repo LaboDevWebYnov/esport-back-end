@@ -6,11 +6,11 @@ var logger = require('log4js').getLogger('controller.userAddress'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
     Util = require('./utils/util.js'),
-    UserDB = require('../models/UserDB'),
+    UserDB = require('./UserDB'),
     User = mongoose.model('User'),
-    AddressDB = require('../models/AddressDB'),
+    AddressDB = require('./AddressDB'),
     Address = mongoose.model('Address'),
-    UserAddressDAO = require('../DAO/UserAddressDAO');
+    UserAddressDAO = require('./UserAddressDAO');
 
 //Path : POST /user/{userId}/addresses/addAddress
 module.exports.addAddress = function addAddress(req, res, next) {

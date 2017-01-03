@@ -5,7 +5,7 @@
 
 var logger = require('log4js').getLogger('controller.Games'),
     mongoose = require('mongoose'),
-    gameDB = require('../models/GameDB'),
+    gameDB = require('./GameDB'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
     Util = require('./utils/util.js'),

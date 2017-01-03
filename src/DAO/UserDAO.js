@@ -6,7 +6,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
-    UserDB = require('../models/UserDB'),
+    UserDB = require('./UserDB'),
     User = mongoose.model('User');
 
 module.exports.alreadyTakenUsername = function alreadyTakenUsername(req, next) {

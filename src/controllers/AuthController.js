@@ -7,10 +7,10 @@ var logger = require('log4js').getLogger('controller.auth'),
     mongoose = require('mongoose'),
     _ = require('lodash'),
     Util = require('./utils/util.js'),
-    token = require('../security/token'),
-    UserDB = require('../models/UserDB'),
+    token = require('./token'),
+    UserDB = require('./UserDB'),
     User = mongoose.model('User'),
-    AddressDB = require('../models/AddressDB'),
+    AddressDB = require('./AddressDB'),
     Address = mongoose.model('Address');
 
 // Path : POST /users/auth

@@ -5,10 +5,10 @@ var logger = require('log4js').getLogger('controller.userAddress'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
-    Util = require('../controllers/utils/util.js'),
-    UserDB = require('../models/UserDB'),
+    Util = require('./utils/util.js'),
+    UserDB = require('./UserDB'),
     User = mongoose.model('User'),
-    AddressDB = require('../models/AddressDB'),
+    AddressDB = require('./AddressDB'),
     Address = mongoose.model('Address');
 
 module.exports.createAddress = function createAddress(req, next) {

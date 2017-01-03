@@ -1,10 +1,6 @@
-#WebStorm related files
-.idea
-
 #node modules related files
 node_modules
 
 #logs related files & folders
 *.log
 logs
-

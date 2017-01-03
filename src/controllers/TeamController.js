@@ -9,9 +9,9 @@ var logger = require('log4js').getLogger('controller.Games'),
     _ = require('lodash'),
     Util = require('./utils/util.js');
 
-var PlayerAccountBD = require('../models/PlayerAccountDB'),
-    gameDB = require('../models/GameDB'),
-    teamDB = require('../models/TeamDB'),
+var PlayerAccountBD = require('./PlayerAccountDB'),
+    gameDB = require('./GameDB'),
+    teamDB = require('./TeamDB'),
 
     PlayerAccount = mongoose.model('PlayerAccount'),
     Game = mongoose.model('Game'),

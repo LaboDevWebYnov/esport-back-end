@@ -6,9 +6,9 @@ var logger = require('log4js').getLogger('controller.userAddress'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
     Util = require('./utils/util.js'),
-    UserDB = require('../models/UserDB'),
+    UserDB = require('./UserDB'),
     User = mongoose.model('User'),
-    AddressDB = require('../models/AddressDB'),
+    AddressDB = require('./AddressDB'),
     Address = mongoose.model('Address');
 
 
