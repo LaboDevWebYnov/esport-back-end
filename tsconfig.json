@@ -3,8 +3,24 @@
     "outDir": "./built",
     "allowJs": true,
     "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true
+    "target": "es6",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "types": [
+      "node",
+      "body-parser",
+      "compression",
+      "config",
+      "express",
+      "express-serve-static-core",
+      "log4js",
+      "mime",
+      "mkdirp",
+      "mongodb",
+      "mongoose",
+      "response-time",
+      "serve-static"
+    ]
   },
   "include": [
     "./src/**/*"
