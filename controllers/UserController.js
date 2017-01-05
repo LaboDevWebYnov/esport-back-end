@@ -78,14 +78,15 @@ module.exports.addUser = function addUser(req, res, next) {
                 else {
                     //if email sendOnUserAdd activated in config, sending account validation email
                     if (config.server.features.email.sendOnUserAdd) {
-                        logger.debug("sendOnUserAdd config: " + config.server.features.email.sendOnUserAdd);
-                        logger.debug("sending email....");
+                        var mailOpts = config.server.features.email.smtp.mailOpts;
+                        // var mailOpts = {
+                        //     protocol: emailConfig.protocol,
+                        //     host: emailConfig.hostname,
+                        //     port: emailConfig.port
+                        // };
 
-                        var mailOpts = {
-                            protocol: req.protocol,
-                            host: req.hostname,
-                            port: config.server.instance.port
-                        };
+                        logger.debug("sendOnUserAdd config: " + JSON.stringify(mailOpts));
+                        logger.debug("sending email....");
 
                         require('crypto').randomBytes(48, function (err, buffer) {
                             var token = buffer.toString('hex');
@@ -468,14 +469,15 @@ module.exports.signUp = function signUp(req, res, next) {
                             else {
                                 //if email sendOnUserAdd activated in config, sending account validation email
                                 if (config.server.features.email.sendOnUserAdd) {
-                                    logger.debug("sendOnUserAdd config: " + config.server.features.email.sendOnUserAdd);
-                                    logger.debug("sending email....");
+                                    var mailOpts = config.server.features.email.smtp.mailOpts;
+                                    // var mailOpts = {
+                                    //     protocol: emailConfig.protocol,
+                                    //     host: emailConfig.hostname,
+                                    //     port: emailConfig.port
+                                    // };
 
-                                    var mailOpts = {
-                                        protocol: req.protocol,
-                                        host: req.hostname,
-                                        port: config.server.instance.port
-                                    };
+                                    logger.debug("sendOnUserAdd config: " + JSON.stringify(mailOpts));
+                                    logger.debug("sending email....");
 
                                     //send email
                                     emailUtils.dispatchAccountValidationLink(mailOpts, user, token, function (err, user) {

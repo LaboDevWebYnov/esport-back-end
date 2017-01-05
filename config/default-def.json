@@ -50,6 +50,11 @@
     "features": {
       "email": {
         "smtp":{
+          "mailOpts": {
+            "protocol": "http",
+            "host": "localhost",
+            "port": "4200"
+          },
           "sender":"labodevtest@gmail.com",
           "mailgun":{
             "apiKey": "key-ecfb943b9b9d9233cc67d73ba22c7498",
