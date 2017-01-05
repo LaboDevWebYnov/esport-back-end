@@ -356,6 +356,48 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
     });
 };
 
+// Path : GET api/user/isVerified/{email}
+module.exports.isUserVerified = function isUserVerified(req, res, next) {
+    logger.debug('Original url: ' + req.originalUrl);
+    logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[3]));
+    var email = decodeURIComponent(Util.getPathParams(req)[3]);
+
+    //regexp to verify email validity
+    var emailPattern = new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/ig);
+    //todo for tests purposes, add smthg in the config to enable email regexp or not
+    if (emailPattern.test(email)) {
+        //recherche d'un user avec: cet email
+        User.findOne({
+            email: email
+        }, function (err, user) {
+            if (err) return next(err);
+            else {
+                //check if a user with the provided email is in DB
+                if (user) {
+                    //check if user is verified
+                    if (user.verified) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(200).end(JSON.stringify({isVerified: true} || {}, null, 2));
+                    }
+                    else {
+                        res.set('Content-Type', 'application/json');
+                        res.status(418).end(JSON.stringify({isVerified: false}, null, 2));
+                    }
+                }
+                //no user found in the DB with this email, aborting
+                else {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).end(JSON.stringify({error: 'User with this email does not exist'}, null, 2));
+                }
+            }
+        });
+    }
+    else {
+        res.set('Content-Type', 'application/json');
+        res.status(400).end(JSON.stringify({error: 'Email is not valid'} || {}, null, 2));
+    }
+};
+
 //Path: POST api/users/signUp
 module.exports.signUp = function signUp(req, res, next) {
     logger.info('Adding new user...');
