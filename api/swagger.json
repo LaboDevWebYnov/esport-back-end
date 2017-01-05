@@ -559,7 +559,7 @@
         }
       }
     },
-    "/addresses/getAddresses": {
+    "/addresses": {
       "get": {
         "x-swagger-router-controller": "AddressController",
         "operationId": "getAddresses",
@@ -588,6 +588,46 @@
                 "$ref": "#/definitions/Address"
               }
             }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/addresses/{userId}/addAddress": {
+      "post": {
+        "x-swagger-router-controller": "UserAddressController",
+        "operationId": "addAddress",
+        "tags": [
+          "Address"
+        ],
+        "summary": "Adds a new Address to the User",
+        "description": "Adds new `Address` object to the `User` object to the DB.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "body",
+            "description": "Address object to add to the User object",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been successfully added to the DB"
           },
           "default": {
             "description": "Unexpected error",
@@ -668,46 +708,6 @@
             "schema": {
               "$ref": "#/definitions/Address"
             }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/addresses/{userId}/addAddress": {
-      "post": {
-        "x-swagger-router-controller": "UserAddressController",
-        "operationId": "addAddress",
-        "tags": [
-          "Address"
-        ],
-        "summary": "Adds a new Address to the User",
-        "description": "Adds new `Address` object to the `User` object to the DB.",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "userId of User object to update.",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "address",
-            "in": "body",
-            "description": "Address object to add to the User object",
-            "required": false,
-            "schema": {
-              "$ref": "#/definitions/Address"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User has been successfully added to the DB"
           },
           "default": {
             "description": "Unexpected error",
