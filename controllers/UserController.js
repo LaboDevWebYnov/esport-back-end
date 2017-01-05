@@ -350,7 +350,7 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
             //no user found in the DB with this email, aborting
             else {
                 res.set('Content-Type', 'application/json');
-                res.status(401).end(JSON.stringify({error: 'Demande de création de compte invalide ou expirée ! Merci de bien vouloir vour réinscrire ici. (lien à mettre)'}, null, 2));
+                res.status(401).end(JSON.stringify({error: 'Demande de création de compte invalide ou expirée ! Merci de bien vouloir vour réinscrire.'}, null, 2));
             }
         }
     });
