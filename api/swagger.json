@@ -480,7 +480,7 @@
     },
     "/register/step0/{email}": {
       "get": {
-        "x-swagger-router-controller": "UserController",
+        "x-swagger-router-controller": "RegistrationController",
         "operationId": "registerUserEmail",
         "tags": [
           "Registration"

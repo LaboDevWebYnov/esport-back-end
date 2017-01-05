@@ -287,7 +287,6 @@ module.exports.deleteUser = function deleteUser(req, res, next) {
 // Path : GET api/user/verify/{email}?t=:incomingToken
 module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
     logger.debug('Original url: ' + req.originalUrl);
-    // logger.info('Verifying email '+ decodeURIComponent(req.params.email));
     logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[3]));
     logger.debug('token: ' + req.query.t);
     var email = decodeURIComponent(Util.getPathParams(req)[3]);
@@ -327,11 +326,12 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
                             {
                                 $set: {
                                     verified: true
-                                },
-                                $unset: {
-                                    accVerifyToken: '',
-                                    accVerifyTokenExpires: ''
                                 }
+                                // ,
+                                // $unset: {
+                                //     accVerifyToken: '',
+                                //     accVerifyTokenExpires: ''
+                                // }
                             },
                             {new: true}, //means we want the DB to return the updated document instead of the old one
                             function (err, updatedUser) {
@@ -356,10 +356,12 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
     });
 };
 
-// Path : GET api/user/isVerified/{email}
+// Path : GET api/user/isVerified/{email}?t=:incomingToken
 module.exports.isUserVerified = function isUserVerified(req, res, next) {
     logger.debug('Original url: ' + req.originalUrl);
     logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[3]));
+    logger.debug('token: ' + req.query.t);
+    var token = req.query.t;
     var email = decodeURIComponent(Util.getPathParams(req)[3]);
 
     //regexp to verify email validity
@@ -374,14 +376,28 @@ module.exports.isUserVerified = function isUserVerified(req, res, next) {
             else {
                 //check if a user with the provided email is in DB
                 if (user) {
-                    //check if user is verified
-                    if (user.verified) {
+                    //check if user is not verified
+                    if (!user.verified) {
                         res.set('Content-Type', 'application/json');
-                        res.status(200).end(JSON.stringify({isVerified: true} || {}, null, 2));
+                        res.status(200).end(JSON.stringify({verifiedCode: 'E_NOT_VERIFIED'}, null, 2));
                     }
+                    //user verified
                     else {
-                        res.set('Content-Type', 'application/json');
-                        res.status(418).end(JSON.stringify({isVerified: false}, null, 2));
+                        //token ne correspond pas à celui passé en param
+                        if (user.accVerifyToken !== token) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify({verifiedCode: 'E_BAD_TOKEN'}, null, 2));
+                        }
+                        //si date d'expiration dépassée
+                        else if (user.accVerifyTokenExpires < moment()) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify({verifiedCode: 'E_EXPIRED_TOKEN'}, null, 2));
+                        }
+                        //sinon c'est bon
+                        else {
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify({verifiedCode: 'VERIFIED'} || {}, null, 2));
+                        }
                     }
                 }
                 //no user found in the DB with this email, aborting
