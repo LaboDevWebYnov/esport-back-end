@@ -379,24 +379,24 @@ module.exports.isUserVerified = function isUserVerified(req, res, next) {
                     //check if user is not verified
                     if (!user.verified) {
                         res.set('Content-Type', 'application/json');
-                        res.status(200).end(JSON.stringify({verifiedCode: 'E_NOT_VERIFIED'}, null, 2));
+                        res.status(200).end(JSON.stringify({verifiedCode: 'E_NOT_VERIFIED', userId: user._id}, null, 2));
                     }
                     //user verified
                     else {
                         //token ne correspond pas à celui passé en param
                         if (user.accVerifyToken !== token) {
                             res.set('Content-Type', 'application/json');
-                            res.status(200).end(JSON.stringify({verifiedCode: 'E_BAD_TOKEN'}, null, 2));
+                            res.status(200).end(JSON.stringify({verifiedCode: 'E_BAD_TOKEN', userId: user._id}, null, 2));
                         }
                         //si date d'expiration dépassée
                         else if (user.accVerifyTokenExpires < moment()) {
                             res.set('Content-Type', 'application/json');
-                            res.status(200).end(JSON.stringify({verifiedCode: 'E_EXPIRED_TOKEN'}, null, 2));
+                            res.status(200).end(JSON.stringify({verifiedCode: 'E_EXPIRED_TOKEN', userId: user._id}, null, 2));
                         }
                         //sinon c'est bon
                         else {
                             res.set('Content-Type', 'application/json');
-                            res.status(200).end(JSON.stringify({verifiedCode: 'VERIFIED'} || {}, null, 2));
+                            res.status(200).end(JSON.stringify({verifiedCode: 'VERIFIED', userId: user._id} || {}, null, 2));
                         }
                     }
                 }
