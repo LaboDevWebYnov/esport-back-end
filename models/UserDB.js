@@ -25,8 +25,8 @@ var User = new Schema({
     verified: {type: Boolean, required: true, default: false},
     loginAttempts: {type: Number, required: true, default: 0},
     lockUntil: {type: Number},
-    accValidationToken: {type: String, required: false},
-    accValidationTokenExpires: {type: Date, required: false}
+    accVerifyToken: {type: String, required: false},
+    accVerifyTokenExpires: {type: Date, required: false}
 });
 
 User.virtual('isLocked').get(function () {

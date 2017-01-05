@@ -79,11 +79,6 @@ module.exports.addUser = function addUser(req, res, next) {
                     //if email sendOnUserAdd activated in config, sending account validation email
                     if (config.server.features.email.sendOnUserAdd) {
                         var mailOpts = config.server.features.email.smtp.mailOpts;
-                        // var mailOpts = {
-                        //     protocol: emailConfig.protocol,
-                        //     host: emailConfig.hostname,
-                        //     port: emailConfig.port
-                        // };
 
                         logger.debug("sendOnUserAdd config: " + JSON.stringify(mailOpts));
                         logger.debug("sending email....");
@@ -289,7 +284,7 @@ module.exports.deleteUser = function deleteUser(req, res, next) {
         });
 };
 
-// Path : GET api/user/verify/{email}
+// Path : GET api/user/verify/{email}?t=:incomingToken
 module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
     logger.debug('Original url: ' + req.originalUrl);
     // logger.info('Verifying email '+ decodeURIComponent(req.params.email));
@@ -301,8 +296,8 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
     //recherche d'un user avec: cet email, le token correspondant et un token ayant une date de fin de validité > now
     User.find({
         email: email,
-        accValidationToken: token,
-        accValidationTokenExpires: {$gt: moment()}
+        accVerifyToken: token,
+        accVerifyTokenExpires: {$gt: moment()}
     }, function (err, user) {
         if (err) return next(err);
         else {
@@ -361,82 +356,6 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
     });
 };
 
-//todo see w/ @TDoret si on fait ça coté front ou back ? ==> front à mon avis + spécifier dans le mail de signup l'adresse du client et non celle du serveur
-//todo le client fera le call à l'api et gère le retour du serveur de la step 0
-// Path : GET api/register/step0/{email}
-module.exports.registerUserEmail = function registerUserEmail(req, res, next) {
-    logger.debug('Original url: ' + req.originalUrl);
-    // logger.info('Verifying email '+ decodeURIComponent(req.params.email));
-    logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[3]));
-    logger.debug('token: ' + req.query.t);
-    var email = decodeURIComponent(Util.getPathParams(req)[3]);
-    var token = req.query.t;
-
-    //recherche d'un user avec: cet email, le token correspondant et un token ayant une date de fin de validité > now
-    User.find({
-        email: email,
-        accValidationToken: token,
-        accValidationTokenExpires: {$gt: moment()}
-    }, function (err, user) {
-        if (err) return next(err);
-        else {
-            //todo handle redirecting
-            //check if a user with the provided email is in DB
-            if (user.length) {
-                var members = [
-                    {
-                        address: email
-                    }
-                ];
-                //create a mailing list on mailgun.com/cp/lists and put its address below
-                //add email to validated emails list
-                mailgun.lists('accountregistration@sandboxac05877c9fb5494eabcee21e7eaafd61.mailgun.org').members().add({
-                    members: members,
-                    subscribed: true
-                }, function (err, body) {
-                    logger.debug('Response from mailgun:' + JSON.stringify(body));
-                    if (err) {
-                        logger.error('Error while registering user to email list: ' + err);
-                        return next(err);
-                    }
-                    else {
-                        User.findOneAndUpdate(
-                            {
-                                email: email
-                            },
-                            {
-                                $set: {
-                                    verified: true
-                                },
-                                $unset: {
-                                    accValidationToken: '',
-                                    accValidationTokenExpires: ''
-                                }
-                            },
-                            {new: true}, //means we want the DB to return the updated document instead of the old one
-                            function (err, updatedUser) {
-                                if (err) {
-                                    logger.error('Error while updating user verified attr: ' + err);
-                                    return next(err);
-                                }
-                                else {
-                                    res.set('Content-Type', 'application/json');
-                                    res.status(200).end(JSON.stringify(updatedUser._doc || {}, null, 2));
-                                    // res.redirect('/register/step1');
-                                }
-                            });
-                    }
-                });
-            }
-            //no user found in the DB with this email, aborting
-            else {
-                res.set('Content-Type', 'application/json');
-                res.status(401).end(JSON.stringify({error: 'Demande de création de compte invalide ou expirée ! Merci de bien vouloir vour réinscrire ici. (lien à mettre)'}, null, 2));
-            }
-        }
-    });
-};
-
 //Path: POST api/users/signUp
 module.exports.signUp = function signUp(req, res, next) {
     logger.info('Adding new user...');
@@ -451,8 +370,8 @@ module.exports.signUp = function signUp(req, res, next) {
                         var token = buffer.toString('hex');
                         var user = new User({
                             email: sanitizer.escape(req.body.email),
-                            accValidationToken: token,
-                            accValidationTokenExpires: moment().add(2, 'h')
+                            accVerifyToken: token,
+                            accVerifyTokenExpires: moment().add(2, 'h')
                         });
 
                         user.save(function (err, user) {
@@ -470,11 +389,6 @@ module.exports.signUp = function signUp(req, res, next) {
                                 //if email sendOnUserAdd activated in config, sending account validation email
                                 if (config.server.features.email.sendOnUserAdd) {
                                     var mailOpts = config.server.features.email.smtp.mailOpts;
-                                    // var mailOpts = {
-                                    //     protocol: emailConfig.protocol,
-                                    //     host: emailConfig.hostname,
-                                    //     port: emailConfig.port
-                                    // };
 
                                     logger.debug("sendOnUserAdd config: " + JSON.stringify(mailOpts));
                                     logger.debug("sending email....");
@@ -485,16 +399,16 @@ module.exports.signUp = function signUp(req, res, next) {
                                             return next(err.message);
                                         }
                                         else {
-                                            delete user._doc.accValidationTokenExpires;
-                                            delete user._doc.accValidationToken;
+                                            delete user._doc.accVerifyTokenExpires;
+                                            delete user._doc.accVerifyToken;
                                             res.set('Content-Type', 'application/json');
                                             res.status(200).end(JSON.stringify(user._doc || {}, null, 2));
                                         }
                                     });
                                 }
                                 else {//else returning user directly
-                                    delete user._doc.accValidationTokenExpires;
-                                    delete user._doc.accValidationToken;
+                                    delete user._doc.accVerifyTokenExpires;
+                                    delete user._doc.accVerifyToken;
                                     res.set('Content-Type', 'application/json');
                                     res.status(200).end(JSON.stringify(user._doc || {}, null, 2));
                                 }
