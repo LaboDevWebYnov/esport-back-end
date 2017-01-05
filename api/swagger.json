@@ -447,6 +447,37 @@
         }
       }
     },
+    "/user/isVerified/{email}": {
+      "get": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "isUserVerified",
+        "tags": [
+          "Security"
+        ],
+        "summary": "Check if user email is verified",
+        "description": "Check if user email is verified",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "User email to verify",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User email is verified"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/register/step0/{email}": {
       "get": {
         "x-swagger-router-controller": "UserController",
