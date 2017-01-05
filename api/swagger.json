@@ -478,7 +478,7 @@
         }
       }
     },
-    "/register/step0/{email}": {
+    "/register/{email}/step0": {
       "get": {
         "x-swagger-router-controller": "RegistrationController",
         "operationId": "registerUserEmail",
@@ -516,7 +516,7 @@
         }
       }
     },
-    "/register/step1/{userId}": {
+    "/register/{userId}/step1": {
       "put": {
         "x-swagger-router-controller": "RegistrationController",
         "operationId": "registerUpdateUser",

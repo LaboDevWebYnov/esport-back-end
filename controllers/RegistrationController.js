@@ -4,7 +4,7 @@
 'use strict';
 
 var config = require('config'),
-    logger = require('log4js').getLogger('controller.user'),
+    logger = require('log4js').getLogger('controller.Registration'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     moment = require('moment'),
@@ -21,16 +21,17 @@ var config = require('config'),
     Address = mongoose.model('Address'),
     UserDaoUtil = require('../DAO/UserDAO');
 
-// Path : GET api/register/step0/{email}
+// Path : GET api/register/{email}/step0
 //todo need to refactor front-end and registration logic
 module.exports.registerUserEmail = function registerUserEmail(req, res, next) {
+    logger.debug('Not implemented yet');
     return res.status(501).end(JSON.stringify('Not implemented yet' || {}, null, 2));
 
     logger.debug('Original url: ' + req.originalUrl);
     // logger.info('Verifying email '+ decodeURIComponent(req.params.email));
-    logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[3]));
+    logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[2]));
     logger.debug('token: ' + req.query.t);
-    var email = decodeURIComponent(Util.getPathParams(req)[3]);
+    var email = decodeURIComponent(Util.getPathParams(req)[2]);
     var token = req.query.t;
 
     //recherche d'un user avec: cet email, le token correspondant et un token ayant une date de fin de validité > now
@@ -98,16 +99,17 @@ module.exports.registerUserEmail = function registerUserEmail(req, res, next) {
     });
 };
 
-// Path: PUT api/register/step1/{userId}
 /**
  * @description Used to update user first infos
  * @param req
  * @param res
  * @param next
  */
+// Path: PUT api/register/{userId}/step1
 module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) {
+    logger.debug('Going to update registration infos for user '+Util.getPathParams(req)[2]);
     User.findOneAndUpdate(
-        {_id: Util.getPathParams(req)[3]},
+        {_id: Util.getPathParams(req)[2]},
         {
             $set: {
                 //TODO add phone number check
