@@ -516,6 +516,49 @@
         }
       }
     },
+    "/register/step1/{userId}": {
+      "put": {
+        "x-swagger-router-controller": "RegistrationController",
+        "operationId": "registerUpdateUser",
+        "tags": [
+          "Registration"
+        ],
+        "summary": "Updates the corresponding registering user basic properties (step 1)",
+        "description": "Update registering `User` object specified by its userId.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "registerUserObject",
+            "in": "body",
+            "description": "User object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 'User' object.",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/addresses/getAddresses": {
       "get": {
         "x-swagger-router-controller": "AddressController",
@@ -1485,6 +1528,35 @@
         "created_at": {
           "type": "string",
           "format": "date"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "RegisterUser": {
+      "type": "object",
+      "properties": {
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        },
+        "phoneNumber": {
+          "type": "string"
         },
         "updated_at": {
           "type": "string",
