@@ -82,6 +82,9 @@ function shutdownServer() {
 //******************************************************************************//
 //********************** STARTING SERVER ***************************************//
 //******************************************************************************//
+logger.info('/*************** *************** ***************/');
+logger.info('/*************** STARTING SERVER ***************/');
+logger.info('/*************** *************** ***************/');
 
 var swaggerSpecFilePath = path.resolve(config.server.swagger.specFilePath);
 var swaggerDoc = require(swaggerSpecFilePath);
@@ -127,6 +130,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     mongoose.connection.on('connected', function () {
         isConnectedBefore = true;
         logger.info('Connection established to MongoDB');
+        logger.info('/*************** SERVER STARTED ***************/');
     });
 
     mongoose.connection.on('reconnected', function () {
@@ -207,5 +211,4 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
         logger.info('The API sample is now running at http://' + host + ':' + port);
     });
 });
-
 //******************************************************************************//
