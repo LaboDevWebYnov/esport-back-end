@@ -3,7 +3,8 @@
  */
 'use strict';
 
-var config = require('config'),
+var Promise = require("bluebird"),
+    config = require('config'),
     logger = require('log4js').getLogger('controller.user'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
@@ -20,6 +21,8 @@ var config = require('config'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
     UserDaoUtil = require('../DAO/UserDAO');
+
+mongoose.Promise = Promise;
 
 //Path: GET api/users
 module.exports.getUsers = function getUsers(req, res, next) {

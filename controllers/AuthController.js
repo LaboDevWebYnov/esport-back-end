@@ -3,7 +3,8 @@
  */
 'use strict';
 
-var logger = require('log4js').getLogger('controller.auth'),
+var Promise = require("bluebird"),
+    logger = require('log4js').getLogger('controller.auth'),
     mongoose = require('mongoose'),
     _ = require('lodash'),
     Util = require('./utils/util.js'),
@@ -12,6 +13,8 @@ var logger = require('log4js').getLogger('controller.auth'),
     User = mongoose.model('User'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address');
+
+mongoose.Promise = Promise;
 
 // Path : POST /users/auth
 module.exports.authenticate = function authenticate(req, res, next) {

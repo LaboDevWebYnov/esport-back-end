@@ -1,7 +1,8 @@
 /**
  * Created by Antoine on 24/01/2016.
  */
-var logger = require('log4js').getLogger('controller.userAddress'),
+var Promise = require("bluebird"),
+    logger = require('log4js').getLogger('controller.userAddress'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
@@ -11,6 +12,8 @@ var logger = require('log4js').getLogger('controller.userAddress'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
     UserAddressDAO = require('../DAO/UserAddressDAO');
+
+mongoose.Promise = Promise;
 
 //Path : POST /user/{userId}/addresses/addAddress
 module.exports.addAddress = function addAddress(req, res, next) {

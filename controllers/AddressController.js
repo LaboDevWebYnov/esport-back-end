@@ -1,7 +1,8 @@
 /**
  * Created by Antoine on 25/01/2016.
  */
-var logger = require('log4js').getLogger('controller.userAddress'),
+var Promise = require("bluebird"),
+    logger = require('log4js').getLogger('controller.userAddress'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
@@ -11,6 +12,7 @@ var logger = require('log4js').getLogger('controller.userAddress'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address');
 
+mongoose.Promise = Promise;
 
 //Path : GET /addresses/getAddresses
 module.exports.getAddresses = function getAddresses(req, res, next) {

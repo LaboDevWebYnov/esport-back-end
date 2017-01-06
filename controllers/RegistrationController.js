@@ -3,7 +3,8 @@
  */
 'use strict';
 
-var config = require('config'),
+var Promise = require("bluebird"),
+    config = require('config'),
     logger = require('log4js').getLogger('controller.Registration'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
@@ -21,6 +22,7 @@ var config = require('config'),
     Address = mongoose.model('Address'),
     UserDaoUtil = require('../DAO/UserDAO');
 
+mongoose.Promise = Promise;
 
 /**
  * @description Route utilisée lors de l'inscription du user: Le user entre son adresse email et clique sur s'inscrire => appel de cette route
@@ -110,7 +112,7 @@ module.exports.registerUser = function registerUser(req, res, next) {
  * @param req
  * @param res - on success:
  *                  send http code 200 and updated user
-*               on error:
+ *               on error:
  *                  send the error
  * @param next - error if it's the case
  */
@@ -189,20 +191,20 @@ module.exports.registerUserVerifyEmail = function registerUserVerifyEmail(req, r
  * @description Route utilisée lors de la step 1 du processus d'inscription d'un user.
  * Elle permet de prendre en compte les informations de base d'un user après que son email ai été vérifié lors de la step 0
  * @param req - body comprenant les infos du user:
-*                 - firstname: prénom du user
-*                 - lastname: nom du user
-*                 - username: pseudo du user
-*                 - birthDate: date de naissance du user
-*                 - password: mot de passe du user
-*                 - passwordConfirmation: confirmation mot de passe du user
-*                 - phoneNumber: n° de tel mobile du user
-*                 - updated_at: timestamp de màj du user - set to now
+ *                 - firstname: prénom du user
+ *                 - lastname: nom du user
+ *                 - username: pseudo du user
+ *                 - birthDate: date de naissance du user
+ *                 - password: mot de passe du user
+ *                 - passwordConfirmation: confirmation mot de passe du user
+ *                 - phoneNumber: n° de tel mobile du user
+ *                 - updated_at: timestamp de màj du user - set to now
  * @param res
  * @param next
  */
 // Path: PUT api/register/{userId}/step1
 module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) {
-    logger.debug('Going to update registration infos for user '+Util.getPathParams(req)[2]);
+    logger.debug('Going to update registration infos for user ' + Util.getPathParams(req)[2]);
 
     //todo add handle password comparision before update
     User.findOneAndUpdate(

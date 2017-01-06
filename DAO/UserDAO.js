@@ -1,13 +1,16 @@
 /**
  * Created by Antoine on 27/01/2016.
  */
-var express = require('express'),
+var Promise = require("bluebird"),
+    express = require('express'),
     logger = require('log4js').getLogger('dao.user'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
     UserDB = require('../models/UserDB'),
     User = mongoose.model('User');
+
+mongoose.Promise = Promise;
 
 module.exports.alreadyTakenUsername = function alreadyTakenUsername(req, next) {
     User.findOne({username: sanitizer.escape(req.body.username)},

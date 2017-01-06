@@ -3,7 +3,8 @@
  */
 'use strict';
 
-var logger = require('log4js').getLogger('controller.Games'),
+var Promise = require("bluebird"),
+    logger = require('log4js').getLogger('controller.Games'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
@@ -16,6 +17,8 @@ var PlayerAccountBD = require('../models/PlayerAccountDB'),
     PlayerAccount = mongoose.model('PlayerAccount'),
     Game = mongoose.model('Game'),
     Team = mongoose.model('Team');
+
+mongoose.Promise = Promise;
 
 //Path: GET api/teams
 module.exports.getTeams = function getTeams(req, res, next) {

@@ -2,7 +2,8 @@
  * Created by Ezehollar on 14/01/2016.
  */
 
-var logger = require('log4js').getLogger('controller.playerAccount'),
+var Promise = require("bluebird"),
+    logger = require('log4js').getLogger('controller.playerAccount'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
@@ -17,6 +18,8 @@ var logger = require('log4js').getLogger('controller.playerAccount'),
     User = mongoose.model('User'),
     GameDB = require('../models/GameDB'),
     Game = mongoose.model('Game');
+
+mongoose.Promise = Promise;
 
 //Path: GET api/players
 module.exports.getPlayerAccountList = function getPlayerAccountList(req, res, next) {

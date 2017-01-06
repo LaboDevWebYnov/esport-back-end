@@ -1,7 +1,8 @@
 /**
  * Created by Antoine on 26/01/2016.
  */
-var logger = require('log4js').getLogger('controller.userAddress'),
+var Promise = require("bluebird"),
+    logger = require('log4js').getLogger('controller.userAddress'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
@@ -10,6 +11,8 @@ var logger = require('log4js').getLogger('controller.userAddress'),
     User = mongoose.model('User'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address');
+
+mongoose.Promise = Promise;
 
 module.exports.createAddress = function createAddress(req, next) {
     //create address
