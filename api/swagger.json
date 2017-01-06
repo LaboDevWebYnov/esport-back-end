@@ -26,6 +26,10 @@
       "description": "player account, game properties"
     },
     {
+      "name": "PlayerAccountProperty",
+      "description": "player account properties"
+    },
+    {
       "name": "Address",
       "description": "addresses, user addresses"
     },
