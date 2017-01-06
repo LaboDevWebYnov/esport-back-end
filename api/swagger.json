@@ -1278,6 +1278,45 @@
         }
       }
     },
+    "/playerAccountProperties/properties": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "getPlayerAccountProperties",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "summary": "Get all PlayerAccountProperty of all PlayerAccounts",
+        "description": "Gets all `PlayerAccountProperty` objects of all PlayerAccounts.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all PlayerAccountProperty of all PlayerAccounts",
+            "schema": {
+              "title": "ArrayOfPlayerAccount",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccountProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/teams": {
       "get": {
         "x-swagger-router-controller": "TeamController",
