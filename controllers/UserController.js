@@ -453,8 +453,8 @@ module.exports.signUp = function signUp(req, res, next) {
                         var token = buffer.toString('hex');
                         var user = new User({
                             email: sanitizer.escape(req.body.email),
-                            accRegisterToken: token,
-                            accRegisterTokenExpires: moment().add(2, 'h')
+                            accVerifyToken: token,
+                            accVerifyTokenExpires: moment().add(2, 'h')
                         });
 
                         user.save(function (err, user) {
