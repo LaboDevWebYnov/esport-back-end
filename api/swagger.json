@@ -518,8 +518,8 @@
         "tags": [
           "Registration"
         ],
-        "summary": "Register user based on his email (step 0)",
-        "description": "Register an user based on his email and token and redirect to corresponding registration step",
+        "summary": "Verify user's email before starting registration process (step 0)",
+        "description": "Verify an user based on his email and token",
         "parameters": [
           {
             "name": "email",
@@ -1283,7 +1283,7 @@
         "x-swagger-router-controller": "PlayerAccountPropertyController",
         "operationId": "getPlayerAccountProperties",
         "tags": [
-          "PlayerAccount"
+          "PlayerAccountProperty"
         ],
         "summary": "Get all PlayerAccountProperty of all PlayerAccounts",
         "description": "Gets all `PlayerAccountProperty` objects of all PlayerAccounts.\nOptional query param of **size** determines\nsize of returned array\n",
@@ -1307,6 +1307,46 @@
                 "$ref": "#/definitions/PlayerAccountProperty"
               }
             }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccountProperties/{playerAccountId}/addProperty": {
+      "post": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "addPlayerAccountProperty",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Adds a PlayerAccountProperty",
+        "description": "Adds new `PlayerAccountProperty` object to the DB.",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount linked to the PlayerAccountProperty object to add.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "playerAccountProperty",
+            "in": "body",
+            "description": "PlayerAccountProperty object to insert",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreatePlayedAccountPropertyObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PlayerAccountProperty has been successfully added to the DB"
           },
           "default": {
             "description": "Unexpected error",
@@ -1627,6 +1667,10 @@
           "type": "string",
           "format": "password"
         },
+        "passwordConfirmation": {
+          "type": "string",
+          "format": "password"
+        },
         "phoneNumber": {
           "type": "string"
         },
@@ -1809,6 +1853,20 @@
       "type": "object",
       "properties": {
         "login": {
+          "type": "string"
+        }
+      }
+    },
+    "CreatePlayedAccountPropertyObject": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "active": {
           "type": "string"
         }
       }

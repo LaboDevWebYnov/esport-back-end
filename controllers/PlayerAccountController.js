@@ -42,7 +42,7 @@ module.exports.getPlayerAccountList = function getPlayerAccountList(req, res, ne
         });
 };
 
-//Path: GET api/playerAccount/{userId}/addPlayerAccount/{gameId}
+//Path: POST api/playerAccount/{userId}/addPlayerAccount/{gameId}
 module.exports.addPlayerAccount = function addPlayerAccount(req, res, next) {
     logger.info('Adding new playerAccount...');
 
