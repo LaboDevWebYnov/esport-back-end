@@ -44,20 +44,19 @@ configureLogging();
 //module.exports.getServerInformation = function () {
 //    return serverName + ' - v' + serverVersion;
 //}
-
 function configureLogging() {
     mkdirp('./logs');
     log4js.configure(config.server.instance.log4js);
     logger = log4js.getLogger('server.core');
 }
 
-function noCache(req, res, next) {
+function noCache(res, next) {
     res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.set('Expires', '-1');
     next();
 }
 
-function allowCORS(req, res, next) {
+function allowCORS(res, next) {
     res.set("Access-Control-Allow-Origin", "*");
     res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
     res.set("Access-Control-Expose-Headers", "Content-Type, token");
@@ -65,7 +64,7 @@ function allowCORS(req, res, next) {
     next();
 }
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, res) {
     logger.error(err.message, err);
     res.status(err.status || 500).send({
         message: err.message,
@@ -98,10 +97,49 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     // connect logger
     app.use(log4js.connectLogger(log4js.getLogger('server.http'), {level: log4js.levels.INFO}));
 
-    logger.info('Connecting to mongo: ', config.server.mongo.connectionString, ', options: ', config.server.mongo.options)
-    mongoose.connect(config.server.mongo.connectionString, config.server.mongo.options, function (err) {
-        if (err) console.log(err);
-        logger.info("Connected to the database");
+    //connect to the mongo DB
+    var mongoUrl = config.server.mongo.connectionString;
+    var mongoOpts = config.server.mongo.options;
+    logger.info('Attempt to connect to mongo: ', mongoUrl, ', with options: ', mongoOpts);
+
+    var isConnectedBefore = false;
+    var connectWithRetry = function () {
+        return mongoose.connect(mongoUrl, mongoOpts, function (err) {
+            if (err) {
+                logger.error('Failed to connect to mongo on startup - retrying in 5 sec', err);
+                setTimeout(connectWithRetry, 5000);
+            }
+        });
+    };
+
+    connectWithRetry();
+
+    mongoose.connection.on('error', function () {
+        logger.error('Could not connect to MongoDB');
+    });
+
+    mongoose.connection.on('disconnected', function () {
+        logger.warn('Lost MongoDB connection...');
+        if (!isConnectedBefore)
+            connectWithRetry();
+    });
+
+    mongoose.connection.on('connected', function () {
+        isConnectedBefore = true;
+        logger.info('Connection established to MongoDB');
+    });
+
+    mongoose.connection.on('reconnected', function () {
+        logger.info('Reconnected to MongoDB');
+    });
+
+    // Close the Mongoose connection, when receiving SIGINT
+    process.on('SIGINT', function () {
+        logger.warn('Process received SIGINT signal - going to exit ...');
+        mongoose.connection.close(function () {
+            logger.warn('Force to close the MongoDB connection');
+            process.exit(0);
+        });
     });
 
     logger.info('Using no-cache middleware');
@@ -166,7 +204,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
     http.createServer(app).listen(port, function (err) {
         if (err) logger.error(err.message);
-        console.log('The API sample is now running at http://' + host + ':' + port);
+        logger.info('The API sample is now running at http://' + host + ':' + port);
     });
 });
 
