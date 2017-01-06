@@ -1052,15 +1052,15 @@
         }
       }
     },
-    "/playerAccount": {
+    "/playerAccounts": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountController",
         "operationId": "getPlayerAccountList",
         "tags": [
           "PlayerAccount"
         ],
-        "summary": "Get all playerAccount",
-        "description": "Gets `playerAccount` objects.\nOptional query param of **size** determines\nsize of returned array\n",
+        "summary": "Get all PlayerAccounts",
+        "description": "Gets `PlayerAccount` objects.\nOptional query param of **size** determines\nsize of returned array\n",
         "parameters": [
           {
             "name": "size",
@@ -1091,7 +1091,7 @@
         }
       }
     },
-    "/playerAccount/{userId}/addPlayerAccount/{gameId}": {
+    "/playerAccounts/{userId}/addPlayerAccount/{gameId}": {
       "post": {
         "x-swagger-router-controller": "PlayerAccountController",
         "operationId": "addPlayerAccount",
@@ -1138,27 +1138,27 @@
         }
       }
     },
-    "/playerAccount/{playerAccountId}/getPlayerAccountById": {
+    "/playerAccounts/{playerAccountId}/getPlayerAccountById": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountController",
         "operationId": "getPlayerAccountById",
         "tags": [
           "PlayerAccount"
         ],
-        "summary": "Get the specified playerAccount",
-        "description": "Gets `playerAcount` object specified by its ID.",
+        "summary": "Get the specified PlayerAccount",
+        "description": "Gets `PlayerAccount` object specified by its ID.",
         "parameters": [
           {
             "name": "playerAccountId",
             "in": "path",
-            "description": "playerAcountId of player object to search for.",
+            "description": "playerAcountId of PlayerAccount object to search for.",
             "required": true,
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "Retrieved playerAcount object",
+            "description": "Retrieved PlayerAccount object",
             "schema": {
               "$ref": "#/definitions/PlayerAccount"
             }
@@ -1172,20 +1172,20 @@
         }
       }
     },
-    "/playerAccount/{userId}/getPlayerAccountByUserId": {
+    "/playerAccounts/{userId}/getPlayerAccountByUserId": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountController",
         "operationId": "getPlayerAccountByUserId",
         "tags": [
           "PlayerAccount"
         ],
-        "summary": "Get the corresponding playerAccount based on the PlayerAccount UserId",
+        "summary": "Get the corresponding PlayerAccount based on the PlayerAccount UserId",
         "description": "Gets `player` object specified by its UserId.",
         "parameters": [
           {
             "name": "userId",
             "in": "path",
-            "description": "userId of Player object to find.",
+            "description": "userId of PlayerAccount object to find.",
             "required": true,
             "type": "string"
           }
@@ -1210,7 +1210,7 @@
         }
       }
     },
-    "/playerAccount/{login}/getPlayerAccountByLogin": {
+    "/playerAccounts/{login}/getPlayerAccountByLogin": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountController",
         "operationId": "getPlayerAccountByLogin",
@@ -1218,12 +1218,12 @@
           "PlayerAccount"
         ],
         "description": "Gets `player` object specified by its login.",
-        "summary": "Get the corresponding playerAccount based on the PlayerAccount login",
+        "summary": "Get the corresponding PlayerAccount based on the PlayerAccount login",
         "parameters": [
           {
             "name": "login",
             "in": "path",
-            "description": "login of Player object to find.",
+            "description": "login of PlayerAccount object to find.",
             "required": true,
             "type": "string"
           }
@@ -1244,27 +1244,27 @@
         }
       }
     },
-    "/playerAccount/{playerAccountId}/deletePlayerAccount": {
+    "/playerAccounts/{playerAccountId}/deletePlayerAccount": {
       "put": {
         "x-swagger-router-controller": "PlayerAccountController",
         "operationId": "deletePlayerAccount",
         "tags": [
           "PlayerAccount"
         ],
-        "description": "Deactivates the 'playerAccount' object specified by its ID.",
-        "summary": "Deactivate the corresponding playerAccount",
+        "description": "Deactivates the 'PlayerAccount' object specified by its ID.",
+        "summary": "Deactivate the corresponding PlayerAccount",
         "parameters": [
           {
             "name": "playerAccountId",
             "in": "path",
-            "description": "playerAccountId of Game object to deactivate.",
+            "description": "playerAccountId of PlayerAccount object to deactivate.",
             "required": true,
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "Updated playerAccount object",
+            "description": "Updated PlayerAccount object",
             "schema": {
               "$ref": "#/definitions/PlayerAccount"
             }
@@ -1330,7 +1330,7 @@
           {
             "name": "playerAccountId",
             "in": "path",
-            "description": "playerAccountId of player object to add.",
+            "description": "playerAccountId of PlayerAccount object to add.",
             "required": true,
             "type": "string"
           },
@@ -1620,6 +1620,31 @@
         },
         "game": {
           "$ref": "#/definitions/Game"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "PlayerAccountProperty": {
+      "type": "object",
+      "properties": {
+        "playerAccount": {
+          "$ref": "#/definitions/PlayerAccount"
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
         },
         "active": {
           "type": "boolean"
