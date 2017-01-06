@@ -50,13 +50,13 @@ function configureLogging() {
     logger = log4js.getLogger('server.core');
 }
 
-function noCache(res, next) {
+function noCache(req, res, next) {
     res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.set('Expires', '-1');
     next();
 }
 
-function allowCORS(res, next) {
+function allowCORS(req, res, next) {
     res.set("Access-Control-Allow-Origin", "*");
     res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
     res.set("Access-Control-Expose-Headers", "Content-Type, token");
@@ -64,7 +64,7 @@ function allowCORS(res, next) {
     next();
 }
 
-function errorHandler(err, res) {
+function errorHandler(err, req, res, next) {
     logger.error(err.message, err);
     res.status(err.status || 500).send({
         message: err.message,
