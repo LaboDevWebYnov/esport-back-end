@@ -478,10 +478,43 @@
         }
       }
     },
+    "/register": {
+      "post": {
+        "x-swagger-router-controller": "RegistrationController",
+        "operationId": "registerUser",
+        "tags": [
+          "Registration"
+        ],
+        "summary": "Creates a new user based on his email address",
+        "description": "Adds new `User` object to the DB based on its email",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "User's email to base user's creation on",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been successfully added to the DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/register/{email}/step0": {
       "get": {
         "x-swagger-router-controller": "RegistrationController",
-        "operationId": "registerUserEmail",
+        "operationId": "registerUserVerifyEmail",
         "tags": [
           "Registration"
         ],

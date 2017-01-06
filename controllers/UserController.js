@@ -238,12 +238,15 @@ module.exports.updatePassword = function updatePassword(req, res, next) {
 
 // Path: PUT api/users/{userId}/updateEmail
 module.exports.updateEmail = function updateEmail(req, res, next) {
+    //TODO 1) check email regex
+    //todo 2) check email is free
+    //todo 3) create a token and send an email just like in registration,
+    //todo 4) attributes set and sent in email should be accVerifyToken (token) and accVerifyTokenExpires (timestamp)
+
     User.findOneAndUpdate(
         {_id: Util.getPathParams(req)[2]},
         {
             $set: {
-                //TODO Check that it won't set not updated attributes to 'null'
-                //TODO check email regex ?
                 email: req.body.email,
                 updated_at: Date.now()
             }
@@ -326,12 +329,11 @@ module.exports.verifyUserEmail = function verifyUserEmail(req, res, next) {
                             {
                                 $set: {
                                     verified: true
+                                },
+                                $unset: {
+                                    accVerifyToken: '',
+                                    accVerifyTokenExpires: ''
                                 }
-                                // ,
-                                // $unset: {
-                                //     accVerifyToken: '',
-                                //     accVerifyTokenExpires: ''
-                                // }
                             },
                             {new: true}, //means we want the DB to return the updated document instead of the old one
                             function (err, updatedUser) {
@@ -426,9 +428,20 @@ module.exports.isUserVerified = function isUserVerified(req, res, next) {
     }
 };
 
+
+/**
+ * @deprecated Moved to RegistrationController @/api/register
+ *              Kept for retrocompatibility - please use the route new one instead
+ * @description Route utilisée lors de l'inscription du user: Le user entre son adresse email et clique sur s'inscrire => appel de cette route
+ *      Un email contenant un token lui sera envoyé afin que le user puisse vérifier son email et ainsi continuer son inscription
+ * @param req
+ * @param res - on status 200:
+ *                  createdUser object - without
+ * @param next - error
+ */
 //Path: POST api/users/signUp
 module.exports.signUp = function signUp(req, res, next) {
-    logger.info('Adding new user...');
+    logger.info('Signing up new user...');
     //check if email isn't already taken
     UserDaoUtil.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
             if (!isAlreadyTakenEmail) {
@@ -440,8 +453,8 @@ module.exports.signUp = function signUp(req, res, next) {
                         var token = buffer.toString('hex');
                         var user = new User({
                             email: sanitizer.escape(req.body.email),
-                            accVerifyToken: token,
-                            accVerifyTokenExpires: moment().add(2, 'h')
+                            accRegisterToken: token,
+                            accRegisterTokenExpires: moment().add(2, 'h')
                         });
 
                         user.save(function (err, user) {

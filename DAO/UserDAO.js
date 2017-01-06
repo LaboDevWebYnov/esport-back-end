@@ -2,7 +2,7 @@
  * Created by Antoine on 27/01/2016.
  */
 var express = require('express'),
-    logger = require('log4js').getLogger('dao.util'),
+    logger = require('log4js').getLogger('dao.user'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
