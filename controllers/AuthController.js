@@ -31,7 +31,7 @@ module.exports.authenticate = function authenticate(req, res, next) {
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');
                 //Todo separate to be able to determine wether it's 404 because no user was corresponding or 401 cos bad credentials
-                res.status(401).json({error: {errorCode:'E_INVALID_CREDENTIALS', errorMessage:'Invalid username or password.'}}|| {}, null, 2));
+                res.status(401).json({error: {errorCode:'E_INVALID_CREDENTIALS', errorMessage:'Invalid username or password.'}}|| {}, null, 2);
             }
             else {
                 //TODO create token and insert it in req header ?
