@@ -119,8 +119,8 @@ module.exports.registerUser = function registerUser(req, res, next) {
 // Path : GET api/register/{email}/step0
 //todo need to refactor front-end and registration logic
 module.exports.registerUserVerifyEmail = function registerUserVerifyEmail(req, res, next) {
-    logger.debug('Not implemented yet');
-    return res.status(501).end(JSON.stringify('Not implemented yet' || {}, null, 2));
+    //logger.debug('Not implemented yet');
+    //return res.status(501).end(JSON.stringify('Not implemented yet' || {}, null, 2));
 
     logger.debug('Original url: ' + req.originalUrl);
     logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[2]));
@@ -232,6 +232,76 @@ module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) 
                 res.status(200).end(JSON.stringify(updatedUser || {}, null, 2));
             }
         });
+};
+
+//ET api/user/{email}/isVerified?t=:incomingToken
+module.exports.isUserVerified = function isUserVerified(req, res, next) {
+    logger.debug('Original url: ' + req.originalUrl);
+    logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[2]));
+    logger.debug('token: ' + req.query.t);
+    var token = req.query.t;
+    var email = decodeURIComponent(Util.getPathParams(req)[2]);
+
+    //regexp to verify email validity
+    var emailPattern = new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/ig);
+    //todo for tests purposes, add smthg in the config to enable email regexp or not
+    if (emailPattern.test(email)) {
+        //recherche d'un user avec: cet email
+        User.findOne({
+            email: email
+        }, function (err, user) {
+            if (err) return next(err);
+            else {
+                //check if a user with the provided email is in DB
+                if (user) {
+                    //check if user is not verified
+                    if (!user.verified) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(200).end(JSON.stringify({
+                            verifiedCode: 'E_NOT_VERIFIED',
+                            userId: user._id
+                        }, null, 2));
+                    }
+                    //user verified
+                    else {
+                        //token ne correspond pas à celui passé en param
+                        if (user.accRegisterToken != token) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify({
+                                verifiedCode: 'E_BAD_TOKEN',
+                                userId: user._id
+                            }, null, 2));
+                        }
+                        //si date d'expiration dépassée
+                        else if (user.accRegisterTokenExpires < moment()) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify({
+                                verifiedCode: 'E_EXPIRED_TOKEN',
+                                userId: user._id
+                            }, null, 2));
+                        }
+                        //sinon c'est bon
+                        else {
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify({
+                                    verifiedCode: 'VERIFIED',
+                                    userId: user._id
+                                } || {}, null, 2));
+                        }
+                    }
+                }
+                //no user found in the DB with this email, aborting
+                else {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).end(JSON.stringify({error: 'User with this email does not exist'}, null, 2));
+                }
+            }
+        });
+    }
+    else {
+        res.set('Content-Type', 'application/json');
+        res.status(400).end(JSON.stringify({error: 'Email is not valid'} || {}, null, 2));
+    }
 };
 
 //todo add route POST api/register/{userId}/completeRegistration

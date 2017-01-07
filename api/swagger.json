@@ -596,6 +596,44 @@
         }
       }
     },
+    "/register/{email}/isVerified": {
+      "get": {
+        "x-swagger-router-controller": "RegistrationController",
+        "operationId": "isUserVerified",
+        "tags": [
+          "Registration"
+        ],
+        "summary": "Check if user email is verified",
+        "description": "Check if user email is verified",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "User email to verify",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "t",
+            "in": "query",
+            "description": "Token to verify this email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User email is verified"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/addresses": {
       "get": {
         "x-swagger-router-controller": "AddressController",
