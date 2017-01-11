@@ -117,11 +117,7 @@ module.exports.registerUser = function registerUser(req, res, next) {
  * @param next - error if it's the case
  */
 // Path : GET api/register/{email}/step0
-//todo need to refactor front-end and registration logic
 module.exports.registerUserVerifyEmail = function registerUserVerifyEmail(req, res, next) {
-    //logger.debug('Not implemented yet');
-    //return res.status(501).end(JSON.stringify('Not implemented yet' || {}, null, 2));
-
     logger.debug('Original url: ' + req.originalUrl);
     logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[2]));
     logger.debug('token: ' + req.query.t);
@@ -305,4 +301,5 @@ module.exports.isUserVerified = function isUserVerified(req, res, next) {
 };
 
 //todo add route POST api/register/{userId}/completeRegistration
+
 // => it should delete fields accRegisterToken and accRegisterTokenExpires from the given user

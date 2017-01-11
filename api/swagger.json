@@ -1253,6 +1253,49 @@
         }
       }
     },
+    "/playerAccounts/{playerAccountId}/updatePlayerAccount": {
+      "put": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "updatePlayerAccount",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "description": "Updates the 'PlayerAccount' object specified by its ID.",
+        "summary": "Update the corresponding PlayerAccount",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "login",
+            "in": "body",
+            "description": "new login of PlayerAccount object to update.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdatePlayerAccountObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated PlayerAccount object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccount"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/playerAccounts/{playerAccountId}/deletePlayerAccount": {
       "put": {
         "x-swagger-router-controller": "PlayerAccountController",
@@ -1349,7 +1392,7 @@
             "description": "PlayerAccountProperty object to insert",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CreatePlayedAccountPropertyObject"
+              "$ref": "#/definitions/CreatePlayerAccountPropertyObject"
             }
           }
         ],
@@ -1866,7 +1909,15 @@
         }
       }
     },
-    "CreatePlayedAccountPropertyObject": {
+    "UpdatePlayerAccountObject": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        }
+      }
+    },
+    "CreatePlayerAccountPropertyObject": {
       "type": "object",
       "properties": {
         "key": {

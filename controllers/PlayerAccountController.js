@@ -98,7 +98,7 @@ module.exports.getPlayerAccountById = function getPlayerAccountById(req, res, ne
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the player with id:' + Util.getPathParams(req)[1]);
+    logger.info('Getting the playerAccount with id:' + Util.getPathParams(req)[1]);
     // Code necessary to consume the User API and respond
 
     PlayerAccount.findById(
@@ -126,7 +126,7 @@ module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req,
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the player with id:' + Util.getPathParams(req)[1]);
+    logger.info('Getting the playerAccount with id:' + Util.getPathParams(req)[1]);
     // Code necessary to consume the User API and respond
 
     PlayerAccount.find(
@@ -153,7 +153,7 @@ module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req,
 module.exports.getPlayerAccountByLogin = function getPlayerAccountByLogin(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
-    logger.info('Getting the player with id:' + Util.getPathParams(req)[1]);
+    logger.info('Getting the playerAccount with id:' + Util.getPathParams(req)[1]);
     // Code necessary to consume the User API and respond
 
     PlayerAccount.find(
@@ -176,9 +176,45 @@ module.exports.getPlayerAccountByLogin = function getPlayerAccountByLogin(req, r
         );
 };
 
-// Path : PUT /playerAccounts/{playerId}/deletePlayer
+// Path : PUT api/playerAccounts/{playerAccountId}/updatePlayerAccount
+module.exports.updatePlayerAccount = function updatePlayerAccount(req, res, next) {
+    logger.info('updating playerAccount with id:\n ' + Util.getPathParams(req)[2]);
+    if (!_.isUndefined(sanitizer.escape(req.body.login)) && !_.isEmpty(sanitizer.escape(req.body.login))) {
+        PlayerAccount.findOneAndUpdate(
+            {_id: Util.getPathParams(req)[2]},
+            {
+                $set: {
+                    login: sanitizer.escape(req.body.login)
+                }
+            },
+            {new: true})
+        //means we want the DB to return the updated document instead of the old one
+            .populate("game user")
+            .exec(function (err, updatedPlayerAccount) {
+                if (err)
+                    return next(err.message);
+
+                if (_.isNull(updatedPlayerAccount) || _.isEmpty(updatedPlayerAccount)) {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).json(updatedPlayerAccount || {}, null, 2);
+                }
+
+                else {
+                    logger.debug("Updated playerAccount object: \n" + updatedPlayerAccount);
+                    res.set('Content-Type', 'application/json');
+                    res.status(200).end(JSON.stringify(updatedPlayerAccount || {}, null, 2));
+                }
+            });
+    }
+    else {
+        res.set('Content-Type', 'application/json');
+        res.status(400).json({error: 'login param is empty'} || {}, null, 2);
+    }
+};
+
+// Path : PUT /playerAccounts/{playerAccountId}/deletePlayer
 module.exports.deletePlayerAccount = function deletePlayerAccount(req, res, next) {
-    logger.info('Deactivating for player with id:\n ' + Util.getPathParams(req)[2]);
+    logger.info('Deactivating for playerAccount with id:\n ' + Util.getPathParams(req)[2]);
     PlayerAccount.findOneAndUpdate(
         {_id: Util.getPathParams(req)[2]},
         {
@@ -193,8 +229,14 @@ module.exports.deletePlayerAccount = function deletePlayerAccount(req, res, next
             if (err)
                 return next(err.message);
 
-            logger.debug("Deactivated player object: \n" + updatedPlayerAccount);
-            res.set('Content-Type', 'application/json');
-            res.status(200).end(JSON.stringify(updatedPlayerAccount || {}, null, 2));
+            if (_.isNull(updatedPlayerAccount) || _.isEmpty(updatedPlayerAccount)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(updatedPlayerAccount || {}, null, 2);
+            }
+            else {
+                logger.debug("Deactivated playerAccount object: \n" + updatedPlayerAccount);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(updatedPlayerAccount || {}, null, 2));
+            }
         });
 };
