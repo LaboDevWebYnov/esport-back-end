@@ -24,7 +24,7 @@ module.exports.getAddresses = function getAddresses(req, res, next) {
 
             if (_.isNull(addresses) || _.isEmpty(addresses)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify({error: "Couldn't get addresses"}, null, 2));
+                res.status(404).json({error: "Couldn't get addresses"}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');

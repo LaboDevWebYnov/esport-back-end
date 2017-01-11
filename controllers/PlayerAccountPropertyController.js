@@ -34,7 +34,7 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
             }
             if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(playerAccountProperties || {}, null, 2));
+                res.status(404).json(playerAccountProperties || {}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');
@@ -55,7 +55,7 @@ module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req,
             }
             if (_.isNull(foundPlayerAccount) || _.isEmpty(foundPlayerAccount)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(foundPlayerAccount || {}, null, 2));
+                res.status(404).json(foundPlayerAccount || {}, null, 2);
             }
             else {
                 var playerAccountPropertyToCreate = new PlayerAccountProperty({
@@ -75,7 +75,7 @@ module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req,
 
                     if (_.isNull(createdPlayerAccountProperty) || _.isEmpty(createdPlayerAccountProperty)) {
                         res.set('Content-Type', 'application/json');
-                        res.status(404).json(JSON.stringify(createdPlayerAccountProperty || {}, null, 2));
+                        res.status(404).json(createdPlayerAccountProperty || {}, null, 2);
                     }
                     else {
                         PlayerAccountProperty.findOne(
@@ -90,7 +90,7 @@ module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req,
 
                                     if (_.isNull(playerAccountUpdated) || _.isEmpty(playerAccountUpdated)) {
                                         res.set('Content-Type', 'application/json');
-                                        res.status(404).json(JSON.stringify(playerAccountUpdated || {}, null, 2));
+                                        res.status(404).json(playerAccountUpdated || {}, null, 2);
                                     }
                                     else {
                                         res.set('Content-Type', 'application/json');

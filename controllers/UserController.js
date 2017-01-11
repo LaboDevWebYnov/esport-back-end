@@ -38,7 +38,7 @@ module.exports.getUsers = function getUsers(req, res, next) {
 
             if (_.isNull(users) || _.isEmpty(users)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify({error: "Couldn't gets users"}, null, 2));
+                res.status(404).json({error: "Couldn't gets users"}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');
@@ -75,7 +75,7 @@ module.exports.addUser = function addUser(req, res, next) {
 
                 if (_.isNull(user) || _.isEmpty(user)) {
                     res.set('Content-Type', 'application/json');
-                    res.status(404).json(JSON.stringify('Error while creating user' || {}, null, 2));
+                    res.status(404).json({error: 'Error while creating user'} || {}, null, 2);
                 }
                 //user saved, now sending email
                 else {
@@ -130,7 +130,7 @@ module.exports.getUserById = function getUserById(req, res, next) {
                 return next(err.message);
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(user || {}, null, 2));
+                res.status(404).json(user || {}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');
@@ -155,7 +155,7 @@ module.exports.getUserByUsername = function getUserByUsername(req, res, next) {
 
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(user || {}, null, 2));
+                res.status(404).json(user || {}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');
@@ -468,7 +468,7 @@ module.exports.signUp = function signUp(req, res, next) {
 
                             if (_.isNull(user._doc) || _.isEmpty(user._doc)) {
                                 res.set('Content-Type', 'application/json');
-                                res.status(404).json(JSON.stringify('Error while creating user' || {}, null, 2));
+                                res.status(404).json({error: 'Error while creating user'} || {}, null, 2);
                             }
                             //user saved, now sending email
                             else {

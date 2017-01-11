@@ -58,7 +58,7 @@ module.exports.registerUser = function registerUser(req, res, next) {
 
                             if (_.isNull(user._doc) || _.isEmpty(user._doc)) {
                                 res.set('Content-Type', 'application/json');
-                                res.status(404).json(JSON.stringify('Error while creating user' || {}, null, 2));
+                                res.status(404).json({error: 'Error while creating user'} || {}, null, 2);
                             }
                             //user saved, now sending email
                             else {

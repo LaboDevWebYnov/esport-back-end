@@ -33,7 +33,7 @@ module.exports.getPlayerAccountList = function getPlayerAccountList(req, res, ne
             }
             if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(playerAccountList || {}, null, 2));
+                res.status(404).json(playerAccountList || {}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');
@@ -80,7 +80,7 @@ module.exports.addPlayerAccount = function addPlayerAccount(req, res, next) {
 
                                     if (_.isNull(playedAccountUpdated) || _.isEmpty(playedAccountUpdated)) {
                                         res.set('Content-Type', 'application/json');
-                                        res.status(404).json(JSON.stringify(playedAccountUpdated || {}, null, 2));
+                                        res.status(404).json(playedAccountUpdated || {}, null, 2);
                                     }
                                     else {
                                         res.set('Content-Type', 'application/json');
@@ -111,7 +111,7 @@ module.exports.getPlayerAccountById = function getPlayerAccountById(req, res, ne
                 logger.debug(playerAccount);
                 if (_.isNull(playerAccount) || _.isEmpty(playerAccount)) {
                     res.set('Content-Type', 'application/json');
-                    res.status(404).json(JSON.stringify(playerAccount || {}, null, 2));
+                    res.status(404).json(playerAccount || {}, null, 2);
                 }
                 else {
                     res.set('Content-Type', 'application/json');
@@ -139,7 +139,7 @@ module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req,
                 logger.debug(playerAccountList);
                 if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
                     res.set('Content-Type', 'application/json');
-                    res.status(404).json(JSON.stringify(playerAccountList || {}, null, 2));
+                    res.status(404).json(playerAccountList || {}, null, 2);
                 }
                 else {
                     res.set('Content-Type', 'application/json');
@@ -166,7 +166,7 @@ module.exports.getPlayerAccountByLogin = function getPlayerAccountByLogin(req, r
                 logger.debug(playerAccountList);
                 if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
                     res.set('Content-Type', 'application/json');
-                    res.status(404).json(JSON.stringify(playerAccountList || {}, null, 2));
+                    res.status(404).json(playerAccountList || {}, null, 2);
                 }
                 else {
                     res.set('Content-Type', 'application/json');

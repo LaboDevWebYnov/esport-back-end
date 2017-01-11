@@ -30,7 +30,7 @@ module.exports.getTeams = function getTeams(req, res, next) {
         }
         if (_.isNull(teams) || _.isEmpty(teams)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(JSON.stringify(teams || {}, null, 2));
+            res.status(404).json(teams || {}, null, 2);
         }
         else {
             res.set('Content-Type', 'application/json');
@@ -70,7 +70,7 @@ module.exports.addTeam = function addTeam(req, res, next) {
 
                         if (_.isNull(team) || _.isEmpty(team)) {
                             res.set('Content-Type', 'application/json');
-                            res.status(404).json(JSON.stringify(team || {}, null, 2));
+                            res.status(404).json(team || {}, null, 2);
                         }
                         else {
                             res.set('Content-Type', 'application/json');
@@ -98,7 +98,7 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
             logger.debug(team);
             if (_.isNull(team) || _.isEmpty(team)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(team || {}, null, 2));
+                res.status(404).json(team || {}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');
@@ -126,7 +126,7 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
 
             if (_.isNull(team) || _.isEmpty(team)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(team || {}, null, 2));
+                res.status(404).json(team || {}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');

@@ -24,7 +24,7 @@ module.exports.getGames = function getGames(req, res, next) {
         }
         if (_.isNull(games) || _.isEmpty(games)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(JSON.stringify(games || {}, null, 2));
+            res.status(404).json(games || {}, null, 2);
         }
         else {
             res.set('Content-Type', 'application/json');
@@ -54,7 +54,7 @@ module.exports.addGame = function addGame(req, res, next) {
 
         if (_.isNull(game) || _.isEmpty(game)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(JSON.stringify(game || {}, null, 2));
+            res.status(404).json(game || {}, null, 2);
         }
         else {
             res.set('Content-Type', 'application/json');
@@ -81,7 +81,7 @@ module.exports.getGameById = function getGameById(req, res, next) {
             logger.debug(game);
             if (_.isNull(game) || _.isEmpty(game)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(game || {}, null, 2));
+                res.status(404).json(game || {}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');
@@ -110,7 +110,7 @@ module.exports.getGameByName = function getGameByName(req, res, next) {
 
             if (_.isNull(game) || _.isEmpty(game)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify(game || {}, null, 2));
+                res.status(404).json(game || {}, null, 2);
             }
             else {
                 res.set('Content-Type', 'application/json');

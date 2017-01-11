@@ -24,7 +24,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
             return next(err.message);
         if (_.isNull(createdAddress) || _.isEmpty(createdAddress)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(JSON.stringify({error: "Couldn't create address"}, null, 2));
+            res.status(404).json({error: "Couldn't create address"}, null, 2);
         }
         else {
             //logger.debug('Created to insert:' + createdAddress);
@@ -49,7 +49,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
                                         throw (err.message);
                                     if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                                         res.set('Content-Type', 'application/json');
-                                        res.status(404).json(JSON.stringify({error: "Couldn't update address"}, null, 2));
+                                        res.status(404).json({error: "Couldn't update address"}, null, 2);
                                     }
                                     else {
                                         logger.debug('Updated user', updatedUser);
@@ -68,7 +68,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
                                 throw (err.message);
                             if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                                 res.set('Content-Type', 'application/json');
-                                res.status(404).json(JSON.stringify({error: "Couldn't update address"}, null, 2));
+                                res.status(404).json({error: "Couldn't update address"}, null, 2);
                             }
                             else {
                                 logger.debug('Updated user', updatedUser);
@@ -101,7 +101,7 @@ module.exports.updateAddress = function updateAddress(req, res, next) {
                 return next(err.message);
             if (_.isNull(updatedAddressFromDB) || _.isEmpty(updatedAddressFromDB)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify({error: "Couldn't update address"}, null, 2));
+                res.status(404).json({error: "Couldn't update address"}, null, 2);
             }
             else {
                 //logger.debug('Updated address', updatedAddressFromDB);
@@ -112,7 +112,7 @@ module.exports.updateAddress = function updateAddress(req, res, next) {
 
                         if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                             res.set('Content-Type', 'application/json');
-                            res.status(404).json(JSON.stringify(updatedUser || {}, null, 2));
+                            res.status(404).json(updatedUser || {}, null, 2);
                         }
                         else {
 
@@ -134,7 +134,7 @@ module.exports.getUserAddresses = function getUserAddresses(req, res, next) {
                 return next(err.message);
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(JSON.stringify({error: "Couldn't update address"}, null, 2));
+                res.status(404).json({error: "Couldn't update address"}, null, 2);
             }
             else {
                 //logger.debug('User addresses', user.address);
@@ -154,7 +154,7 @@ module.exports.getAddressById = function getAddressById(req, res, next) {
             return next(err.message);
         if (_.isNull(address) || _.isEmpty(address)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(JSON.stringify({error: "Couldn't retrieve address"}, null, 2));
+            res.status(404).json({error: "Couldn't retrieve address"}, null, 2);
         }
         else {
             //logger.debug('Retrieved address', address);
