@@ -198,6 +198,7 @@ module.exports.registerUserVerifyEmail = function registerUserVerifyEmail(req, r
  * @param res
  * @param next
  */
+//todo add registerToken for security purposes @see with TDoret for front-end refactor
 // Path: PUT api/register/{userId}/step1
 module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) {
     logger.debug('Going to update registration infos for user ' + Util.getPathParams(req)[2]);
@@ -230,7 +231,7 @@ module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) 
         });
 };
 
-//ET api/user/{email}/isVerified?t=:incomingToken
+//GET api/register/{email}/isVerified?t=:incomingToken
 module.exports.isUserVerified = function isUserVerified(req, res, next) {
     logger.debug('Original url: ' + req.originalUrl);
     logger.debug('email: ' + decodeURIComponent(Util.getPathParams(req)[2]));
@@ -300,6 +301,41 @@ module.exports.isUserVerified = function isUserVerified(req, res, next) {
     }
 };
 
-//todo add route POST api/register/{userId}/completeRegistration
+//PUT api/register/{userId}/completeRegistration?t=incomingToken
+module.exports.completeRegistration = function completeRegistration(req, res, next) {
+    logger.info('Completing registration for user with id:\n ' + Util.getPathParams(req)[2]);
+    logger.debug('registration token: ' + req.query.t);
+    var token = req.query.t;
 
-// => it should delete fields accRegisterToken and accRegisterTokenExpires from the given user
+    User.findOneAndUpdate(
+        {
+            _id: Util.getPathParams(req)[2],
+            accRegisterToken: token,
+            accRegisterTokenExpires: {$gt: moment()}
+        },
+        {
+            $unset: {
+                accRegisterToken: '',
+                accRegisterTokenExpires: ''
+            }
+        })
+        .exec(function (err, updatedUser) {
+            if (err)
+                return next(err.message);
+
+            if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json({
+                        error: {
+                            errorCode: 'E_USER_NOT_FOUND',
+                            errorMessage: 'Could not complete user registration, user not found or bad token'
+                        }
+                    } || {}, null, 2);
+            }
+            else {
+                logger.debug("Updated User object: \n" + updatedUser);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify({successCode: 'USER_REG_COMPLETE'} || {}, null, 2));
+            }
+        });
+};

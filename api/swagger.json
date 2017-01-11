@@ -601,6 +601,44 @@
         }
       }
     },
+    "/register/{userId}/completeRegistration": {
+      "put": {
+        "x-swagger-router-controller": "RegistrationController",
+        "operationId": "completeRegistration",
+        "tags": [
+          "Registration"
+        ],
+        "summary": "Completes the registration of the given user",
+        "description": "Delete fields accRegisterToken and accRegisterTokenExpires from the given user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "t",
+            "in": "query",
+            "description": "Registration token to verify user can perform action",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has successfully completed registration"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/addresses": {
       "get": {
         "x-swagger-router-controller": "AddressController",
