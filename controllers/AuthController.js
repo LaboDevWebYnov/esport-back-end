@@ -31,21 +31,28 @@ module.exports.authenticate = function authenticate(req, res, next) {
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');
                 //Todo separate to be able to determine wether it's 404 because no user was corresponding or 401 cos bad credentials
-                res.status(401).json({error: {errorCode:'E_INVALID_CREDENTIALS', errorMessage:'Invalid username or password.'}}|| {}, null, 2);
+                res.status(401).json({
+                        error: {
+                            errorCode: 'E_INVALID_CREDENTIALS',
+                            errorMessage: 'Invalid username or password.'
+                        }
+                    } || {}, null, 2);
             }
             else {
                 //TODO create token and insert it in req header ?
                 logger.info('Creating user token for: ', user.username);
-                var tokenObject = token.createBasicToken(user.username, user.firstname, user.lastname);
+                var tokenObject = token.createBasicToken(user._id, user.username, user.firstname, user.lastname);
                 token.setResponseToken(tokenObject, res);
                 var authResponse = {
+                    userId: tokenObject.userId,
                     username: tokenObject.username,
                     firstname: tokenObject.firstname,
                     lastname: tokenObject.lastname,
                     expirationDate: tokenObject.expirationDate
                 };
                 //res.json(authResponse);
-                //logger.info('user object created: \n' + user);
+                // logger.info('authResponse object created: \n' + JSON.stringify(authResponse));
+                // logger.info('user object created: \n' + user);
                 res.set('Content-Type', 'application/json');
                 res.status(200).json(authResponse || {}, null, 2);
             }

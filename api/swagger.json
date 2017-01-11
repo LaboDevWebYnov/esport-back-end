@@ -639,6 +639,44 @@
         }
       }
     },
+    "/register/{userId}/cancelRegistration": {
+      "delete": {
+        "x-swagger-router-controller": "RegistrationController",
+        "operationId": "cancelRegistration",
+        "tags": [
+          "Registration"
+        ],
+        "summary": "Cancels the registration of the given user",
+        "description": "Delete the given user from DB",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to remove.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "t",
+            "in": "query",
+            "description": "Registration token to verify user can perform action",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has successfully been removed from DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/addresses": {
       "get": {
         "x-swagger-router-controller": "AddressController",

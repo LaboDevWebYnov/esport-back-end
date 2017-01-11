@@ -335,7 +335,40 @@ module.exports.completeRegistration = function completeRegistration(req, res, ne
             else {
                 logger.debug("Updated User object: \n" + updatedUser);
                 res.set('Content-Type', 'application/json');
-                res.status(200).end(JSON.stringify({successCode: 'USER_REG_COMPLETE'} || {}, null, 2));
+                res.status(200).end(JSON.stringify({successCode: 'USER_REG_COMPLETED'} || {}, null, 2));
+            }
+        });
+};
+
+//DEL api/register/{userId}/cancelRegistration?t=incomingToken
+module.exports.cancelRegistration = function cancelRegistration(req, res, next) {
+    logger.info('Cancelling registration for user with id:\n ' + Util.getPathParams(req)[2]);
+    logger.debug('registration token: ' + req.query.t);
+    var token = req.query.t;
+
+    User.findOneAndRemove(
+        {
+            _id: Util.getPathParams(req)[2],
+            accRegisterToken: token,
+            accRegisterTokenExpires: {$gt: moment()}
+        })
+        .exec(function (err, removedUser) {
+            if (err)
+                return next(err.message);
+
+            if (_.isNull(removedUser) || _.isEmpty(removedUser)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json({
+                        error: {
+                            errorCode: 'E_USER_NOT_FOUND',
+                            errorMessage: 'Could not cancel user registration, user not found or bad token'
+                        }
+                    } || {}, null, 2);
+            }
+            else {
+                logger.debug("Removed User object: \n" + removedUser);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify({successCode: 'USER_REG_CANCELLED'} || {}, null, 2));
             }
         });
 };

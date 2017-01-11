@@ -12,6 +12,7 @@ var log4js = require('log4js'),
 var TOKEN_HEADER_NAME = 'token';
 
 function Token(options) {
+    this.userId = options.userId;
     this.expirationDate = options.expirationDate;
     this.username = options.username;
     this.firstname = options.firstname;
@@ -41,9 +42,10 @@ module.exports.initialize = function initialize() {
     logger.info('Token duration set to: ' + tokenDuration.humanize());
 };
 
-module.exports.createBasicToken = function createBasicToken(username, firstname, lastname) {
+module.exports.createBasicToken = function createBasicToken(userId, username, firstname, lastname) {
     logger.info('Creating new token with basic information');
     var tkn = {
+        userId: userId,
         expirationDate: '',
         username: username,
         firstname: firstname,
@@ -118,7 +120,7 @@ function isTokenValid(token) {
     logger.debug('type of token:' + typeof(token));
 
     //verify token
-    return token.hasOwnProperty('expirationDate', 'username', 'lastname', 'firstname');
+    return token.hasOwnProperty('userId', 'expirationDate', 'username', 'lastname', 'firstname');
 }
 
 function isTokenExpired(token) {
