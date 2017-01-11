@@ -21,9 +21,9 @@ var Promise = require("bluebird"),
 
 mongoose.Promise = Promise;
 
-//Path: GET api/players
+//Path: GET api/playerAccounts
 module.exports.getPlayerAccountList = function getPlayerAccountList(req, res, next) {
-    logger.info('Getting all players from db...');
+    logger.info('Getting all playerAccounts from db...');
     // Code necessary to consume the User API and respond
     PlayerAccount.find({})
         .populate("game user")
@@ -42,7 +42,7 @@ module.exports.getPlayerAccountList = function getPlayerAccountList(req, res, ne
         });
 };
 
-//Path: POST api/playerAccount/{userId}/addPlayerAccount/{gameId}
+//Path: POST api/playerAccounts/{userId}/addPlayerAccount/{gameId}
 module.exports.addPlayerAccount = function addPlayerAccount(req, res, next) {
     logger.info('Adding new playerAccount...');
 
@@ -93,7 +93,7 @@ module.exports.addPlayerAccount = function addPlayerAccount(req, res, next) {
 };
 
 
-// Path: GET api/players/{playerAcountId}/getPlayerAccountById
+// Path: GET api/playerAccounts/{playerAcountId}/getPlayerAccountById
 module.exports.getPlayerAccountById = function getPlayerAccountById(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
@@ -121,7 +121,7 @@ module.exports.getPlayerAccountById = function getPlayerAccountById(req, res, ne
         );
 };
 
-// Path: GET api/players/{userId}/getPlayerByUserId
+// Path: GET api/playerAccounts/{userId}/getPlayerByUserId
 module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
@@ -149,7 +149,7 @@ module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req,
         );
 };
 
-// Path: GET api/players/{login}/getPlayerByLogin
+// Path: GET api/playerAccounts/{login}/getPlayerByLogin
 module.exports.getPlayerAccountByLogin = function getPlayerAccountByLogin(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
@@ -176,7 +176,7 @@ module.exports.getPlayerAccountByLogin = function getPlayerAccountByLogin(req, r
         );
 };
 
-// Path : PUT /players/{playerId}/deletePlayer
+// Path : PUT /playerAccounts/{playerId}/deletePlayer
 module.exports.deletePlayerAccount = function deletePlayerAccount(req, res, next) {
     logger.info('Deactivating for player with id:\n ' + Util.getPathParams(req)[2]);
     PlayerAccount.findOneAndUpdate(
