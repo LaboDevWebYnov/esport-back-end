@@ -14,8 +14,6 @@ var Promise = require("bluebird"),
     PlayerAccount = mongoose.model('PlayerAccount'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
-    UserDB = require('../models/UserDB'),
-    User = mongoose.model('User'),
     GameDB = require('../models/GameDB'),
     Game = mongoose.model('Game');
 
