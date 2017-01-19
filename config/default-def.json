@@ -62,7 +62,7 @@
           }
         },
         "sendOnUserAdd": false,
-        "sendOnUserRegistration": true,
+        "sendOnUserRegistration": true
       }
     }
   }
