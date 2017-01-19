@@ -3,7 +3,7 @@
  */
 
 var log4js = require('log4js'),
-    logger = log4js.getLogger('token.middleware'),
+    logger = log4js.getLogger('service.security.token'),
     config = require('config'),
     moment = require('moment'),
     crypt = require('./crypt'),

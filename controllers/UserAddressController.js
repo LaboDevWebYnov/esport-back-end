@@ -11,7 +11,7 @@ var Promise = require("bluebird"),
     User = mongoose.model('User'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
-    UserAddressDAO = require('../DAO/UserAddressDAO');
+    UserAddressService = require('../services/UserAddressService');
 
 mongoose.Promise = Promise;
 
@@ -19,7 +19,7 @@ mongoose.Promise = Promise;
 module.exports.addAddress = function addAddress(req, res, next) {
     logger.info('Adding a new address to the user with id:\n ' + Util.getPathParams(req)[2]);
 
-    UserAddressDAO.createAddress(req, function (err, createdAddress) {
+    UserAddressService.createAddress(req, function (err, createdAddress) {
         if (err)
             return next(err.message);
         if (_.isNull(createdAddress) || _.isEmpty(createdAddress)) {
@@ -31,7 +31,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
             //get user
             //if user address list is null, push createdAddress directly in the user's addresslis
             //else
-            UserAddressDAO.getUserAddress(req, function (err, userAddress) {
+            UserAddressService.getUserAddress(req, function (err, userAddress) {
                 if (err)
                     return next(err.message);
                 else {
@@ -44,7 +44,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
                                 user.address.push(createdAddress);
                                 //logger.debug('New User finalAddressList:' + userAddress);
                                 // and update its addressList attribute with new data
-                                UserAddressDAO.updateUserAddressList(req, user.address, function (err, updatedUser) {
+                                UserAddressService.updateUserAddressList(req, user.address, function (err, updatedUser) {
                                     if (err)
                                         throw (err.message);
                                     if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
@@ -63,7 +63,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
                         userAddress.push(createdAddress);
                         //logger.debug('New User finalAddressList:' + userAddress);
                         // and update its addressList attribute with new data
-                        UserAddressDAO.updateUserAddressList(req, userAddress, function (err, updatedUser) {
+                        UserAddressService.updateUserAddressList(req, userAddress, function (err, updatedUser) {
                             if (err)
                                 throw (err.message);
                             if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {

@@ -3,7 +3,7 @@
  */
 var Promise = require("bluebird"),
     express = require('express'),
-    logger = require('log4js').getLogger('dao.user'),
+    logger = require('log4js').getLogger('service.user'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),

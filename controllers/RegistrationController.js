@@ -5,7 +5,7 @@
 
 var Promise = require("bluebird"),
     config = require('config'),
-    logger = require('log4js').getLogger('controller.Registration'),
+    logger = require('log4js').getLogger('controller.registration'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     moment = require('moment'),
@@ -20,7 +20,7 @@ var Promise = require("bluebird"),
     User = mongoose.model('User'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
-    UserDaoUtil = require('../DAO/UserDAO');
+    UserService = require('../services/UserService');
 
 mongoose.Promise = Promise;
 
@@ -36,7 +36,7 @@ mongoose.Promise = Promise;
 module.exports.registerUser = function registerUser(req, res, next) {
     logger.info('Registering new user...');
     //check if email isn't already taken
-    UserDaoUtil.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
+    UserService.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
             if (!isAlreadyTakenEmail) {
                 //regexp to verify email validity
                 var emailPattern = new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/ig);

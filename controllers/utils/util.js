@@ -6,7 +6,7 @@
 var url = require('url'),
     express = require('express'),
     bcrypt = require('bcryptjs'),
-    logger = require('log4js').getLogger('controller.util');
+    logger = require('log4js').getLogger('controller.utils.util');
 
 module.exports.getPathParams = function getPathParams(req) {
     return url.parse(req.url).pathname.split('/').slice(1);

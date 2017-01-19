@@ -4,7 +4,7 @@
 'use strict';
 
 var Promise = require("bluebird"),
-    logger = require('log4js').getLogger('controller.Games'),
+    logger = require('log4js').getLogger('controller.game'),
     mongoose = require('mongoose'),
     gameDB = require('../models/GameDB'),
     sanitizer = require('sanitizer'),
@@ -69,7 +69,7 @@ module.exports.getGameById = function getGameById(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the game with id:' + Util.getPathParams(req)[3]);
+    logger.info('Getting the game with id:' + Util.getPathParams(req)[2]);
     // Code necessary to consume the Game API and respond
 
     Game.findById(
@@ -97,11 +97,11 @@ module.exports.getGameByName = function getGameByName(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the game with name:' + Util.getPathParams(req)[3]);
+    logger.info('Getting the game with name:' + decodeURIComponent(Util.getPathParams(req)[2]));
     // Code necessary to consume the Game API and respond
 
     Game.findOne(
-        {name: Util.getPathParams(req)[2]},
+        {name: decodeURIComponent(Util.getPathParams(req)[2])},
         function (err, game) {
             if (err)
                 return next(err.message);
@@ -122,7 +122,7 @@ module.exports.getGameByName = function getGameByName(req, res, next) {
 
 // Path: PUT api/games/{gameId}/updateGame/
 module.exports.updateGame = function updateGame(req, res, next) {
-
+    logger.info('Updating the game with id:' + Util.getPathParams(req)[2]);
     Game.findOneAndUpdate(
         {_id: Util.getPathParams(req)[2]},
         {
@@ -140,17 +140,17 @@ module.exports.updateGame = function updateGame(req, res, next) {
         function (err, updatedGame) {
             if (err)
                 return next(err.message);
-
-            logger.debug("Updated game object: \n" + updatedGame);
-            res.set('Content-Type', 'application/json');
-            res.status(200).end(JSON.stringify(updatedGame || {}, null, 2));
-
+            else {
+                logger.debug("Updated game object: \n" + updatedGame);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(updatedGame || {}, null, 2));
+            }
         });
 };
 
-// Path: PUT api/games/deleteGame/{gameId}
+// Path: PUT api/games/{gameId}/deleteGame
 module.exports.deleteGame = function deleteGame(req, res, next) {
-
+    logger.info('Deactivating the game with id:' + Util.getPathParams(req)[2]);
     Game.findOneAndUpdate(
         {_id: Util.getPathParams(req)[2]},
         {
@@ -162,10 +162,10 @@ module.exports.deleteGame = function deleteGame(req, res, next) {
         function (err, updatedGame) {
             if (err)
                 return next(err.message);
-
-            logger.debug("Deactivated game object: \n" + updatedGame);
-            res.set('Content-Type', 'application/json');
-            res.status(200).end(JSON.stringify(updatedGame || {}, null, 2));
-
+            else {
+                logger.debug("Deactivated game object: \n" + updatedGame);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(updatedGame || {}, null, 2));
+            }
         });
 };

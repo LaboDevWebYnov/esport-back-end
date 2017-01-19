@@ -2,7 +2,7 @@
  * Created by Antoine on 26/01/2016.
  */
 var Promise = require("bluebird"),
-    logger = require('log4js').getLogger('controller.userAddress'),
+    logger = require('log4js').getLogger('service.userAddress'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),

@@ -4,7 +4,7 @@
 var Promise = require("bluebird"),
     config = require('config'),
     mongoose = require("mongoose"),
-    logger = require('log4js').getLogger('controller.utils.sendEmail'),
+    logger = require('log4js').getLogger('controller.utils.emailUtils'),
     ES = config.server.features.email.smtp,
     mailgun = require('mailgun-js')({apiKey: ES.mailgun.apiKey, domain: ES.mailgun.domain}),
     EM = {};

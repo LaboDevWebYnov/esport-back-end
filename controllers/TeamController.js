@@ -4,7 +4,7 @@
 'use strict';
 
 var Promise = require("bluebird"),
-    logger = require('log4js').getLogger('controller.Games'),
+    logger = require('log4js').getLogger('controller.team'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),

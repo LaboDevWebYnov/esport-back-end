@@ -20,7 +20,7 @@ var Promise = require("bluebird"),
     User = mongoose.model('User'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
-    UserDaoUtil = require('../DAO/UserDAO');
+    UserService = require('../services/UserService');
 
 mongoose.Promise = Promise;
 
@@ -51,7 +51,7 @@ module.exports.getUsers = function getUsers(req, res, next) {
 module.exports.addUser = function addUser(req, res, next) {
     logger.info('Adding new user...');
     //check if email isn't already taken
-    UserDaoUtil.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
+    UserService.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
         if (!isAlreadyTakenEmail) {
             //TODO check password difficulty(later)
             //TODO check phone number(later)
@@ -446,7 +446,7 @@ module.exports.isUserVerified = function isUserVerified(req, res, next) {
 module.exports.signUp = function signUp(req, res, next) {
     logger.info('Signing up new user...');
     //check if email isn't already taken
-    UserDaoUtil.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
+    UserService.alreadyTakenEmail(req, function (err, isAlreadyTakenEmail) {
             if (!isAlreadyTakenEmail) {
                 //regexp to verify email validity
                 var emailPattern = new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/ig);

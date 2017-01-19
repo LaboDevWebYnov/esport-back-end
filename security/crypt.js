@@ -2,7 +2,7 @@
  * Created by Antoine on 02/03/2016.
  */
 var crypto = require('crypto');
-var logger = require('log4js').getLogger('service.security');
+var logger = require('log4js').getLogger('service.security.crypt');
 
 var algorithm = 'aes-256-ctr';
 var password = '9595csapoRMLqwcscuUYHEBCJQ';
