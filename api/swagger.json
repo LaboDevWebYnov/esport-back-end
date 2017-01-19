@@ -1409,7 +1409,7 @@
     "/playerAccountProperties/properties": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountPropertyController",
-        "operationId": "getPlayerAccountProperties",
+        "operationId": "getPlayerAccountsProperties",
         "tags": [
           "PlayerAccountProperty"
         ],
@@ -1429,11 +1429,90 @@
           "200": {
             "description": "An array of all PlayerAccountProperty of all PlayerAccounts",
             "schema": {
-              "title": "ArrayOfPlayerAccount",
+              "title": "ArrayOfPlayerAccountProperty",
               "type": "array",
               "items": {
                 "$ref": "#/definitions/PlayerAccountProperty"
               }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccountProperties/{playerAccountId}/properties": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "getPlayerAccountProperties",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Get all PlayerAccountProperties of the given PlayerAccount",
+        "description": "Get all PlayerAccountProperty objects of the given PlayerAccount",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount linked to the PlayerAccountProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all PlayerAccountProperty of the given PlayerAccount",
+            "schema": {
+              "title": "ArrayOfPlayerAccountProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccountProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccountProperties/{playerAccountId}/properties/{key}": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "getPlayerAccountProperty",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Get the given PlayerAccountProperty of the given PlayerAccount",
+        "description": "Get the given PlayerAccountProperty object of the given PlayerAccount",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount linked to the PlayerAccountProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "key of PlayerAccountProperty to retrieve",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved PlayerAccountProperty object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccountProperty"
             }
           },
           "default": {

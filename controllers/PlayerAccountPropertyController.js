@@ -23,7 +23,7 @@ var Promise = require("bluebird"),
 mongoose.Promise = Promise;
 
 //Path: GET api/playerAccountProperties/properties
-module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(req, res, next) {
+module.exports.getPlayerAccountsProperties = function getPlayerAccountsProperties(req, res, next) {
     logger.info('Getting all playerAccounts properties from db...');
 
     PlayerAccountProperty.find({})
@@ -102,9 +102,54 @@ module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req,
             }
         });
 };
+
+//Path GET api/playerAccountProperties/{playerAccountId}/properties
+module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(req, res, next) {
+    logger.info('Getting all playerAccount properties of playerAccount with playerAccountId: ' + Util.getPathParams(req)[2]);
+
+    PlayerAccountProperty.find({playerAccount: Util.getPathParams(req)[2]})
+        .populate("playerAccount")
+        .exec(function (err, playerAccountProperties) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(playerAccountProperties || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(playerAccountProperties || {}, null, 2));
+            }
+        });
+};
+
+//Path GET api/playerAccountProperties/{playerAccountId}/properties/{key}
+module.exports.getPlayerAccountProperty = function getPlayerAccountProperty(req, res, next) {
+    logger.info('Getting playerAccountProperty ' + Util.getPathParams(req)[4] + ' of playerAccount with playerAccountId: ' + Util.getPathParams(req)[2]);
+
+    PlayerAccountProperty.findOne({
+        playerAccount: Util.getPathParams(req)[2],
+        key: Util.getPathParams(req)[4]
+    })
+    .populate("playerAccount")
+    .exec(function (err, playerAccountProperty) {
+        if (err) {
+            return next(err.message);
+        }
+        if (_.isNull(playerAccountProperty) || _.isEmpty(playerAccountProperty)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(playerAccountProperty || {}, null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(playerAccountProperty || {}, null, 2));
+        }
+    });
+};
 //done GET playerAccountProperties/properties/ --get all properties of all playerAccounts
-//todo GET playerAccountProperties/{playerAccountId}/properties/ --get all properties of a playerAccount
-//todo GET playerAccountProperties/{playerAccountId}/properties/{key} --get properties of a playerAccount by key
+//done GET playerAccountProperties/{playerAccountId}/properties/ --get all properties of a playerAccount
+//done GET playerAccountProperties/{playerAccountId}/properties/{key} --get properties of a playerAccount by key
 //todo GET playerAccountProperties/{playerAccountId}/properties/{value} --get properties of a playerAccount by value
 
 //done POST playerAccountProperties/{playerAccountId}/addproperty/ + body --add property-ies to a playerAccount
