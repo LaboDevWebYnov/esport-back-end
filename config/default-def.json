@@ -61,7 +61,8 @@
             "domain": "sandboxac05877c9fb5494eabcee21e7eaafd61.mailgun.org"
           }
         },
-        "sendOnUserAdd": false
+        "sendOnUserAdd": false,
+        "sendOnUserRegistration": true,
       }
     }
   }

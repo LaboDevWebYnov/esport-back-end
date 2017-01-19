@@ -62,11 +62,11 @@ module.exports.registerUser = function registerUser(req, res, next) {
                             }
                             //user saved, now sending email
                             else {
-                                //if email sendOnUserAdd activated in config, sending account validation email
-                                if (config.server.features.email.sendOnUserAdd) {
+                                //if email sendOnUserRegistration activated in config, sending account validation email
+                                if (config.server.features.email.sendOnUserRegistration) {
                                     var mailOpts = config.server.features.email.smtp.mailOpts;
 
-                                    logger.debug("sendOnUserAdd config: " + JSON.stringify(mailOpts));
+                                    logger.debug("sendOnUserRegistration config: " + JSON.stringify(mailOpts));
                                     logger.debug("sending email....");
 
                                     //send email
@@ -227,7 +227,7 @@ module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) 
                         if (err)
                             return next(err.message);
                         else {
-                            logger.debug("Updated game object: \n" + updatedUser);
+                            logger.debug("Updated user object: \n" + updatedUser);
                             res.set('Content-Type', 'application/json');
                             res.status(200).end(JSON.stringify(updatedUser || {}, null, 2));
                         }
@@ -242,6 +242,12 @@ module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) 
 
 };
 
+/**
+ * @description Route utilisée pour vérifier que
+ * @param req
+ * @param res
+ * @param next
+ */
 //GET api/register/{email}/isVerified?t=:incomingToken
 module.exports.isUserVerified = function isUserVerified(req, res, next) {
     logger.debug('Original url: ' + req.originalUrl);
