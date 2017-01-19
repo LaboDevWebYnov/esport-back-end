@@ -178,13 +178,12 @@ User.statics.getAuthenticated = function (username, password, cb) {
 
 User.pre('update', function (next) {
     this.update({}, {$set: {updated_at: new Date()}});
-    next();
+    return next();
 });
 
 User.pre('findOneAndUpdate', function (next) {
     this.update({}, {$set: {updated_at: new Date()}});
-    next();
+    return next();
 });
 
 exports.User = mongoose.model('User', User);
-

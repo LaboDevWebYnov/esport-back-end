@@ -203,32 +203,43 @@ module.exports.registerUserVerifyEmail = function registerUserVerifyEmail(req, r
 module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) {
     logger.debug('Going to update registration infos for user ' + Util.getPathParams(req)[2]);
 
-    //todo add handle password comparision before update
-    User.findOneAndUpdate(
-        {_id: Util.getPathParams(req)[2]},
-        {
-            $set: {
-                //TODO add phone number check
-                //todo check password and password confirmation;
-                firstname: req.body.firstname || null,
-                lastname: req.body.lastname || null,
-                username: req.body.username || null,
-                birthDate: req.body.birthDate || null,
-                password: req.body.password || null,
-                phoneNumber: req.body.phoneNumber || null,
-                updated_at: Date.now()
-            }
-        },
-        {new: true}, //means we want the DB to return the updated document instead of the old one
-        function (err, updatedUser) {
-            if (err)
-                return next(err.message);
+    if (sanitizer.escape(req.body.password) === sanitizer.escape(req.body.passwordConfirmation)) {
+        Util.saltPassword(sanitizer.escape(req.body.password), function (err, saltedNewPassword) {
+            if (err) return next(err);
             else {
-                logger.debug("Updated game object: \n" + updatedUser);
-                res.set('Content-Type', 'application/json');
-                res.status(200).end(JSON.stringify(updatedUser || {}, null, 2));
+                logger.debug('saltedNewPassword:' + saltedNewPassword);
+                User.findOneAndUpdate(
+                    {_id: Util.getPathParams(req)[2]},
+                    {
+                        $set: {
+                            //TODO add phone number check
+                            firstname: req.body.firstname || null,
+                            lastname: req.body.lastname || null,
+                            username: req.body.username || null,
+                            birthDate: req.body.birthDate || null,
+                            password: saltedNewPassword || null,
+                            phoneNumber: req.body.phoneNumber || null,
+                            updated_at: Date.now()
+                        }
+                    },
+                    {new: true}, //means we want the DB to return the updated document instead of the old one
+                    function (err, updatedUser) {
+                        if (err)
+                            return next(err.message);
+                        else {
+                            logger.debug("Updated game object: \n" + updatedUser);
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(updatedUser || {}, null, 2));
+                        }
+                    });
             }
         });
+    }
+    else {
+        res.set('Content-Type', 'application/json');
+        res.status(400).end(JSON.stringify({error: 'Passwords are not the same'} || {}, null, 2));
+    }
+
 };
 
 //GET api/register/{email}/isVerified?t=:incomingToken
