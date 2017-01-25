@@ -1295,6 +1295,51 @@
         }
       }
     },
+    "/playerAccounts/{userId}/game/{gameId}": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "getPlayerAccountsByUserAndGame",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "summary": "Get the playerAccounts related to the given game for the given user",
+        "description": "Gets `PlayerAccount` objects related to the given game for the given user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to search for.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of the Game object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of PlayerAccount",
+            "schema": {
+              "title": "ArrayOfPlayerAccount",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccount"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/playerAccounts/{userId}/getPlayerAccountByUserId": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountController",

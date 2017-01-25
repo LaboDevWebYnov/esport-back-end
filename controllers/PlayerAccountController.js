@@ -238,3 +238,33 @@ module.exports.deletePlayerAccount = function deletePlayerAccount(req, res, next
             }
         });
 };
+
+//Path:  GET api/playerAccounts/{userId}/game/{gameId}
+module.exports.getPlayerAccountsByUserAndGame = function getPlayerAccountsByUserAndGame(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
+    logger.info('Getting the playerAccounts for user with id:' + Util.getPathParams(req)[2] + ' and game with game id: ' + Util.getPathParams(req)[4]);
+
+    PlayerAccount.find(
+        {
+            user: Util.getPathParams(req)[2],
+            game: Util.getPathParams(req)[4]
+        }
+    )
+        .populate("game user")
+        .exec(function (err, playerAccountList) {
+                if (err)
+                    return next(err.message);
+
+                logger.debug(playerAccountList);
+                if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).json(playerAccountList || {}, null, 2);
+                }
+                else {
+                    res.set('Content-Type', 'application/json');
+                    res.status(200).end(JSON.stringify(playerAccountList || {}, null, 2));
+                }
+            }
+        );
+};
