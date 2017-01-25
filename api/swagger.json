@@ -1060,6 +1060,44 @@
         }
       }
     },
+    "/games/{userId}/getUserGames": {
+      "get": {
+        "x-swagger-router-controller": "GameController",
+        "operationId": "getUserGames",
+        "tags": [
+          "Game"
+        ],
+        "summary": "Get the games for user with given userId",
+        "description": "Gets `Game` objects for which user with given userId has at least one registered player account",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "user Id of user to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of Games",
+            "schema": {
+              "title": "ArrayOfGames",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/games/{gameId}/updateGame": {
       "put": {
         "x-swagger-router-controller": "GameController",

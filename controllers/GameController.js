@@ -6,11 +6,13 @@
 var Promise = require("bluebird"),
     logger = require('log4js').getLogger('controller.game'),
     mongoose = require('mongoose'),
-    gameDB = require('../models/GameDB'),
+    GameDB = require('../models/GameDB'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
     Util = require('./utils/util.js'),
-    Game = mongoose.model('Game');
+    Game = mongoose.model('Game'),
+    PlayerAccountDB = require('../models/PlayerAccountDB'),
+    PlayerAccount = mongoose.model('PlayerAccount');
 
 mongoose.Promise = Promise;
 
@@ -128,12 +130,12 @@ module.exports.updateGame = function updateGame(req, res, next) {
         {
             $set: {
                 //TODO Check that it won't set not updated attributes to 'null'
-                name: req.body.name,
-                releaseDate: req.body.releaseDate,
-                multiPlayer: req.body.multiPlayer,
-                description: req.body.description,
-                editor: req.body.editor,
-                active: req.body.active
+                name: sanitizer.escape(req.body.name),
+                releaseDate: sanitizer.escape(req.body.releaseDate),
+                multiPlayer: sanitizer.escape(req.body.multiPlayer),
+                description: sanitizer.escape(req.body.description),
+                editor: sanitizer.escape(req.body.editor),
+                active: sanitizer.escape(req.body.active)
             }
         },
         {new: true}, //means we want the DB to return the updated document instead of the old one
@@ -168,4 +170,38 @@ module.exports.deleteGame = function deleteGame(req, res, next) {
                 res.status(200).end(JSON.stringify(updatedGame || {}, null, 2));
             }
         });
+};
+
+//Path: GET api/games/{userId}/getUserGames
+module.exports.getUserGames = function getUserGames(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
+
+    logger.info('Getting the games for which user with id:' + Util.getPathParams(req)[2] + ' has at last a registered player account ');
+
+    //get the playerAccounts for the given user
+    PlayerAccount.find({
+        user: Util.getPathParams(req)[2]
+    })
+        .populate("game")
+        .exec(function (err, playerAccountList) {
+                if (err)
+                    return next(err.message);
+
+                logger.debug(playerAccountList);
+                if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).json(playerAccountList || {}, null, 2);
+                }
+                else {
+                    //get the games related to these playerAccounts and retrieve only the game properties (gameId, gameName)
+                    var userGames = _.uniq(_.map(playerAccountList, function (playerAccount) {
+                        return playerAccount._doc.game._doc;
+                    }));
+
+                    res.set('Content-Type', 'application/json');
+                    res.status(200).end(JSON.stringify(userGames || {}, null, 2));
+                }
+            }
+        );
 };
