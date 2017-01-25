@@ -11,15 +11,15 @@
   "tags": [
     {
       "name": "Security",
-      "description": "login and permissions"
+      "description": "login and permissions, email verify"
     },
     {
       "name": "User",
-      "description": "account, friends, interests"
+      "description": "accounts, friends, interests"
     },
     {
       "name": "Game",
-      "description": "games"
+      "description": "games, users' games"
     },
     {
       "name": "PlayerAccount",
@@ -27,15 +27,15 @@
     },
     {
       "name": "PlayerAccountProperty",
-      "description": "player account properties"
+      "description": "player account(s) properties"
     },
     {
       "name": "Address",
-      "description": "addresses, user addresses"
+      "description": "addresses, users' addresses"
     },
     {
       "name": "Team",
-      "description": "team, captain, manage team"
+      "description": "teams, captain, manage teams"
     },
     {
       "name": "Registration",
