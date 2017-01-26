@@ -96,7 +96,7 @@ module.exports.getPlayerAccountById = function getPlayerAccountById(req, res, ne
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the playerAccount with id:' + Util.getPathParams(req)[1]);
+    logger.info('Getting the playerAccount with id:' + Util.getPathParams(req)[2]);
     // Code necessary to consume the User API and respond
 
     PlayerAccount.findById(
@@ -124,7 +124,7 @@ module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req,
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the playerAccount with id:' + Util.getPathParams(req)[1]);
+    logger.info('Getting the playerAccount with id:' + Util.getPathParams(req)[2]);
     // Code necessary to consume the User API and respond
 
     PlayerAccount.find(
@@ -151,11 +151,11 @@ module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req,
 module.exports.getPlayerAccountByLogin = function getPlayerAccountByLogin(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
-    logger.info('Getting the playerAccount with id:' + Util.getPathParams(req)[1]);
+    logger.info('Getting the playerAccount with login:' + decodeURIComponent(Util.getPathParams(req)[2]));
     // Code necessary to consume the User API and respond
 
     PlayerAccount.find(
-        {login: Util.getPathParams(req)[2]})
+        {login: decodeURIComponent(Util.getPathParams(req)[2])})
         .populate("game user")
         .exec(function (err, playerAccountList) {
                 if (err)

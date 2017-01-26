@@ -23,6 +23,12 @@ var Promise = require("bluebird"),
 mongoose.Promise = Promise;
 
 //Path: GET api/playerAccountProperties/properties
+/**
+ * @description Route permettant de récupérer toutes les propriétés de tous les playerAccounts de la base
+ * @param req
+ * @param res
+ * @param next
+ */
 module.exports.getPlayerAccountsProperties = function getPlayerAccountsProperties(req, res, next) {
     logger.info('Getting all playerAccounts properties from db...');
 
@@ -43,7 +49,76 @@ module.exports.getPlayerAccountsProperties = function getPlayerAccountsPropertie
         });
 };
 
+//Path: GET api/playerAccountProperties/propertiesByKey/{key}
+/**
+ * @description Route permettant de récupérer toutes les propriétés ayant pour nom/clé la key passée en paramètre
+ * de tous les playerAccounts de la base
+ * @param req
+ *      - key
+ * @param res
+ * @param next
+ */
+module.exports.getPlayerAccountsPropertiesByKey = function getPlayerAccountsPropertiesByKey(req, res, next) {
+    logger.info('Getting all playerAccounts properties with key ' + decodeURIComponent(Util.getPathParams(req)[3]) + 'from db...');
+
+    PlayerAccountProperty.find({
+        key: decodeURIComponent(Util.getPathParams(req)[3])
+    })
+        .populate("playerAccount")
+        .exec(function (err, playerAccountProperties) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(playerAccountProperties || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(playerAccountProperties || {}, null, 2));
+            }
+        });
+};
+
+//Path: GET api/playerAccountProperties/propertiesByValue/{value}
+/**
+ * @description Route permettant de récupérer toutes les propriétés ayant pour valeur la value passée en paramètre
+ * de tous les playerAccounts de la base
+ * @param req
+ *      - key
+ * @param res
+ * @param next
+ */
+module.exports.getPlayerAccountsPropertiesByValue = function getPlayerAccountsPropertiesByValue(req, res, next) {
+    logger.info('Getting all playerAccounts properties with value ' + decodeURIComponent(Util.getPathParams(req)[3]) + 'from db...');
+
+    PlayerAccountProperty.find({
+        value: decodeURIComponent(Util.getPathParams(req)[3])
+    })
+        .populate("playerAccount")
+        .exec(function (err, playerAccountProperties) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(playerAccountProperties || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(playerAccountProperties || {}, null, 2));
+            }
+        });
+};
+
 //Path: POST api/playerAccountProperties/{playerAccountId}/addProperty
+/**
+ * @description Route permettant d'ajouter une propriété à un playerAccount
+ * @param req:
+ *          - playerAccountId
+ * @param res
+ * @param next
+ */
 module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req, res, next) {
     logger.info('Adding new playerAccountProperty to the given playerAccount with ID: ' + Util.getPathParams(req)[2]);
 
@@ -104,6 +179,13 @@ module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req,
 };
 
 //Path GET api/playerAccountProperties/{playerAccountId}/properties
+/**
+ * @description Route permettant de récupérer toutes les propriétés d'un playerAccount identifié par son playerAccountId passé en paramètre
+ * @param req:
+ *          - playerAccountId
+ * @param res
+ * @param next
+ */
 module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(req, res, next) {
     logger.info('Getting all playerAccount properties of playerAccount with playerAccountId: ' + Util.getPathParams(req)[2]);
 
@@ -125,32 +207,82 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
 };
 
 //Path GET api/playerAccountProperties/{playerAccountId}/properties/{key}
-module.exports.getPlayerAccountProperty = function getPlayerAccountProperty(req, res, next) {
-    logger.info('Getting playerAccountProperty ' + Util.getPathParams(req)[4] + ' of playerAccount with playerAccountId: ' + Util.getPathParams(req)[2]);
+/**
+ * @description Route permettant de récupérer la ou les propriété(s) existante(s) ayant pour nom le nom passé en paramètre
+ * pour le playerAccount identifié par son playerAccountId passé en paramètre
+ * @param req:
+ *          - playerAccountId
+ *          - key
+ * @param res
+ *      - playerAccountProperty Object
+ * @param next
+ *      - error if present
+ */
+module.exports.getPlayerAccountPropertyByKey = function getPlayerAccountPropertyByKey(req, res, next) {
+    logger.info('Getting playerAccountProperty with key ' + Util.getPathParams(req)[4] + ' of playerAccount with playerAccountId: ' + Util.getPathParams(req)[2]);
 
     PlayerAccountProperty.findOne({
         playerAccount: Util.getPathParams(req)[2],
         key: Util.getPathParams(req)[4]
     })
-    .populate("playerAccount")
-    .exec(function (err, playerAccountProperty) {
-        if (err) {
-            return next(err.message);
-        }
-        if (_.isNull(playerAccountProperty) || _.isEmpty(playerAccountProperty)) {
-            res.set('Content-Type', 'application/json');
-            res.status(404).json(playerAccountProperty || {}, null, 2);
-        }
-        else {
-            res.set('Content-Type', 'application/json');
-            res.end(JSON.stringify(playerAccountProperty || {}, null, 2));
-        }
-    });
+        .populate("playerAccount")
+        .exec(function (err, playerAccountProperty) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(playerAccountProperty) || _.isEmpty(playerAccountProperty)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(playerAccountProperty || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(playerAccountProperty || {}, null, 2));
+            }
+        });
+};
+
+//Path GET api/playerAccountProperties/{playerAccountId}/properties/{value}
+/**
+ * @description Route permettant de récupérer la ou les propriété(s) existante(s) ayant pour valeur la valeur passée en paramètre
+ * pour le playerAccount identifié par son playerAccountId passé en paramètre
+ * @param req:
+ *          - playerAccountId
+ *          - value
+ * @param res
+ *      - array of PlayerAccountProperty
+ * @param next
+ *      - error if present
+ */
+module.exports.getPlayerAccountPropertyByValue = function getPlayerAccountPropertyByValue(req, res, next) {
+    logger.info('Getting playerAccountProperty with value ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' of playerAccount with playerAccountId: ' + Util.getPathParams(req)[2]);
+
+    PlayerAccountProperty.find({
+        playerAccount: Util.getPathParams(req)[2],
+        value: decodeURIComponent(Util.getPathParams(req)[4])
+    })
+        .populate("playerAccount")
+        .exec(function (err, playerAccountProperties) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(playerAccountProperties || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(playerAccountProperties || {}, null, 2));
+            }
+        });
 };
 //done GET playerAccountProperties/properties/ --get all properties of all playerAccounts
+//done GET playerAccountProperties/propertiesByValue/{value} --get all properties with the given  value of all playerAccounts
+//done GET playerAccountProperties/propertiesByKey/{key} --get all properties with the given key of all playerAccounts
+
 //done GET playerAccountProperties/{playerAccountId}/properties/ --get all properties of a playerAccount
 //done GET playerAccountProperties/{playerAccountId}/properties/{key} --get properties of a playerAccount by key
-//todo GET playerAccountProperties/{playerAccountId}/properties/{value} --get properties of a playerAccount by value
+//done GET playerAccountProperties/{playerAccountId}/properties/{value} --get properties of a playerAccount by value
+
 
 //done POST playerAccountProperties/{playerAccountId}/addproperty/ + body --add property-ies to a playerAccount
 //todo PUT playerAccountProperties/{playerAccountId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a playerAccount

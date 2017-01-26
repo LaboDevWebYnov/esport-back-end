@@ -1528,6 +1528,98 @@
         }
       }
     },
+    "/playerAccountProperties/propertiesByKey/{key}": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "getPlayerAccountsPropertiesByKey",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Get all PlayerAccountProperty with existing given key from all PlayerAccounts ",
+        "description": "Gets all `PlayerAccountProperty` objects with existing given key from all PlayerAccounts.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "key of PlayerAccountProperty to search occurrences for",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all PlayerAccountProperty with existing given key from all PlayerAccounts",
+            "schema": {
+              "title": "ArrayOfPlayerAccountProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccountProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccountProperties/propertiesByValue/{value}": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "getPlayerAccountsPropertiesByValue",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Get all PlayerAccountProperty with existing given value from all PlayerAccounts ",
+        "description": "Gets all `PlayerAccountProperty` objects with existing given value from all PlayerAccounts.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "value",
+            "in": "path",
+            "description": "value of PlayerAccountProperty to search occurrences for",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all PlayerAccountProperty with existing given value from all PlayerAccounts",
+            "schema": {
+              "title": "ArrayOfPlayerAccountProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccountProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/playerAccountProperties/{playerAccountId}/properties": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountPropertyController",
@@ -1566,15 +1658,15 @@
         }
       }
     },
-    "/playerAccountProperties/{playerAccountId}/properties/{key}": {
+    "/playerAccountProperties/{playerAccountId}/propertiesByKey/{key}": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountPropertyController",
-        "operationId": "getPlayerAccountProperty",
+        "operationId": "getPlayerAccountPropertyByKey",
         "tags": [
           "PlayerAccountProperty"
         ],
-        "summary": "Get the given PlayerAccountProperty of the given PlayerAccount",
-        "description": "Get the given PlayerAccountProperty object of the given PlayerAccount",
+        "summary": "Get the values for the given PlayerAccountProperty key of the given PlayerAccount",
+        "description": "Get the value(s - if more than one occurrence of the property identified by the given key) for the given PlayerAccountProperty object of the given PlayerAccount",
         "parameters": [
           {
             "name": "playerAccountId",
@@ -1596,6 +1688,51 @@
             "description": "Retrieved PlayerAccountProperty object",
             "schema": {
               "$ref": "#/definitions/PlayerAccountProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccountProperties/{playerAccountId}/propertiesByValue/{value}": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "getPlayerAccountPropertyByValue",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Get the PlayerAccountProperty where value corresponds to the given value for the given PlayerAccount",
+        "description": "Get the PlayerAccountProperty (could be more than one if it's the case) where value corresponds to the given value for the given PlayerAccount",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount linked to the PlayerAccountProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "in": "path",
+            "description": "value of PlayerAccountProperty to search for",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all PlayerAccountProperty that match the value for the given PlayerAccount",
+            "schema": {
+              "title": "ArrayOfPlayerAccountProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccountProperty"
+              }
             }
           },
           "default": {
