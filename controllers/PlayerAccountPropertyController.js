@@ -206,7 +206,7 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
         });
 };
 
-//Path GET api/playerAccountProperties/{playerAccountId}/properties/{key}
+//Path GET api/playerAccountProperties/{playerAccountId}/propertiesByKey/{key}
 /**
  * @description Route permettant de récupérer la ou les propriété(s) existante(s) ayant pour nom le nom passé en paramètre
  * pour le playerAccount identifié par son playerAccountId passé en paramètre
@@ -241,7 +241,7 @@ module.exports.getPlayerAccountPropertyByKey = function getPlayerAccountProperty
         });
 };
 
-//Path GET api/playerAccountProperties/{playerAccountId}/properties/{value}
+//Path GET api/playerAccountProperties/{playerAccountId}/propertiesByValue/{value}
 /**
  * @description Route permettant de récupérer la ou les propriété(s) existante(s) ayant pour valeur la valeur passée en paramètre
  * pour le playerAccount identifié par son playerAccountId passé en paramètre
@@ -275,6 +275,47 @@ module.exports.getPlayerAccountPropertyByValue = function getPlayerAccountProper
             }
         });
 };
+
+//Path: PUT api/playerAccountProperties/{playerAccountId}/updateProperty/{key}
+/**
+ * @description Route permettant de mettre à jour la propriété spécifiée par la key passée en paramètre du playerAccount sépécifié par son id
+ * @param req
+ *          - playerAccountId
+ *          - key
+ *          - body: contient la nouvelle valeur à appliquer à la key passée en paramètre
+ * @param res
+ * @param next
+ */
+module.exports.updatePlayerAccountProperty = function updatePlayerAccountProperty(req, res, next) {
+    logger.info('Updating playerAccountProperty with id: ' + Util.getPathParams(req)[2] + ' and key ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' with value: ' + sanitizer.escape(req.body.value));
+
+    PlayerAccountProperty.findOneAndUpdate(
+        {
+            playerAccount: Util.getPathParams(req)[2],
+            key: decodeURIComponent(Util.getPathParams(req)[4])
+        },
+        {
+            $set: {
+                value: sanitizer.escape(req.body.value)
+            }
+        },
+        {new: true})
+        .populate("playerAccount")
+        .exec(function (err, playerAccountProperty) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(playerAccountProperty) || _.isEmpty(playerAccountProperty)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(playerAccountProperty || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(playerAccountProperty || {}, null, 2));
+            }
+        });
+};
+
 //done GET playerAccountProperties/properties/ --get all properties of all playerAccounts
 //done GET playerAccountProperties/propertiesByValue/{value} --get all properties with the given  value of all playerAccounts
 //done GET playerAccountProperties/propertiesByKey/{key} --get all properties with the given key of all playerAccounts
@@ -285,5 +326,5 @@ module.exports.getPlayerAccountPropertyByValue = function getPlayerAccountProper
 
 
 //done POST playerAccountProperties/{playerAccountId}/addproperty/ + body --add property-ies to a playerAccount
-//todo PUT playerAccountProperties/{playerAccountId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a playerAccount
+//done PUT playerAccountProperties/{playerAccountId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a playerAccount
 //todo DELETE playerAccountProperties/{playerAccountId}/removeProperty/{key} --remove property-ies from a playerAccount

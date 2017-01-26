@@ -1784,6 +1784,56 @@
         }
       }
     },
+    "/playerAccountProperties/{playerAccountId}/updateProperty/{key}": {
+      "put": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "updatePlayerAccountProperty",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Update the values for the given PlayerAccountProperty key of the given PlayerAccount",
+        "description": "Update the value for the given PlayerAccountProperty object specified by its key for the given PlayerAccount",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount linked to the PlayerAccountProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "key of PlayerAccountProperty to update value",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "playerAccountPropertyObject",
+            "in": "body",
+            "description": "PlayerAccountProperty object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PlayerAccountPropertyUpdateObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved PlayerAccountProperty object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccountProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/teams": {
       "get": {
         "x-swagger-router-controller": "TeamController",
@@ -2302,6 +2352,14 @@
           "type": "string"
         },
         "active": {
+          "type": "string"
+        }
+      }
+    },
+    "PlayerAccountPropertyUpdateObject": {
+      "type": "object",
+      "properties": {
+        "value": {
           "type": "string"
         }
       }
