@@ -1541,7 +1541,7 @@
           {
             "name": "playerAccountPropertyId",
             "in": "path",
-            "description": "playerAccountPropertyId of the PlayerAccountProperty object to retrieve.",
+            "description": "_id of the PlayerAccountProperty object to retrieve.",
             "required": true,
             "type": "string"
           }
@@ -1549,6 +1549,79 @@
         "responses": {
           "200": {
             "description": "Retrieved PlayerAccountProperty object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccountProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "updatePlayerAccountPropertyById",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Update the value for the given PlayerAccountProperty with the given PlayerAccountPropertyId",
+        "description": "Update the value for the given PlayerAccountProperty object specified by its PlayerAccountPropertyId",
+        "parameters": [
+          {
+            "name": "playerAccountPropertyId",
+            "in": "path",
+            "description": "_id of PlayerAccountProperty object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "playerAccountPropertyObject",
+            "in": "body",
+            "description": "PlayerAccountProperty object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PlayerAccountPropertyUpdateObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved PlayerAccountProperty object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccountProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "deletePlayerAccountPropertyById",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Delete the given PlayerAccountProperty with the given playerAccountPropertyId",
+        "description": "Delete the given PlayerAccountProperty object specified by its playerAccountPropertyId",
+        "parameters": [
+          {
+            "name": "playerAccountPropertyId",
+            "in": "path",
+            "description": "_id of PlayerAccountProperty to remove.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Removed PlayerAccountProperty object",
             "schema": {
               "$ref": "#/definitions/PlayerAccountProperty"
             }
@@ -1854,7 +1927,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Retrieved PlayerAccountProperty object",
+            "description": "Updated PlayerAccountProperty object",
             "schema": {
               "$ref": "#/definitions/PlayerAccountProperty"
             }
@@ -1888,7 +1961,7 @@
           {
             "name": "key",
             "in": "path",
-            "description": "key of PlayerAccountProperty to update value",
+            "description": "key of PlayerAccountProperty to remove",
             "required": true,
             "type": "string"
           }

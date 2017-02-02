@@ -343,6 +343,44 @@ module.exports.updatePlayerAccountProperty = function updatePlayerAccountPropert
         });
 };
 
+//Path: PUT api/playerAccountProperties/{playerAccountPropertyId}
+/**
+ * @description Route permettant de mettre à jour la propriété spécifiée par son id
+ * @param req
+ *          - playerAccountPropertyId
+ *          - body: contient la nouvelle valeur à appliquer à la key passée en paramètre
+ * @param res
+ * @param next
+ */
+module.exports.updatePlayerAccountPropertyById = function updatePlayerAccountPropertyById(req, res, next) {
+    logger.info('Updating playerAccountProperty with id: ' + Util.getPathParams(req)[2]);
+
+    PlayerAccountProperty.findOneAndUpdate(
+        {
+            _id: Util.getPathParams(req)[2]
+        },
+        {
+            $set: {
+                value: sanitizer.escape(req.body.value)
+            }
+        },
+        {new: true})
+        .populate("playerAccount")
+        .exec(function (err, updatedPlayerAccountProperty) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(updatedPlayerAccountProperty) || _.isEmpty(updatedPlayerAccountProperty)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(updatedPlayerAccountProperty || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(updatedPlayerAccountProperty || {}, null, 2));
+            }
+        });
+};
+
 //Path: DELETE api/playerAccountProperties/{playerAccountId}/removeProperty/{key}
 /**
  * @description Route permettant de supprimer une playerAccountProperty spécifiée par sa key du playerAccount spécifié par son
@@ -358,6 +396,37 @@ module.exports.deletePlayerAccountProperty = function deletePlayerAccountPropert
         {
             playerAccount: Util.getPathParams(req)[2],
             key: decodeURIComponent(Util.getPathParams(req)[4])
+        },
+        {new: false})
+        .populate("playerAccount")
+        .exec(function (err, removedPlayerAccountProperty) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(removedPlayerAccountProperty) || _.isEmpty(removedPlayerAccountProperty)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(removedPlayerAccountProperty || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(removedPlayerAccountProperty || {}, null, 2));
+            }
+        });
+};
+
+//Path: DELETE api/playerAccountProperties/{playerAccounPropertytId}
+/**
+ * @description Route permettant de supprimer une playerAccountProperty spécifiée par son playerAccountPropertyId
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.deletePlayerAccountPropertyById = function deletePlayerAccountPropertyById(req, res, next) {
+    logger.info('Deleting playerAccountProperty with id: ' + Util.getPathParams(req)[2] + ' and key ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' with value: ' + sanitizer.escape(req.body.value));
+
+    PlayerAccountProperty.findOneAndRemove(
+        {
+            _id: Util.getPathParams(req)[2]
         },
         {new: false})
         .populate("playerAccount")
