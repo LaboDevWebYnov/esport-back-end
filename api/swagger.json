@@ -1528,6 +1528,40 @@
         }
       }
     },
+    "/playerAccountProperties/{playerAccountPropertyId}": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "getPlayerAccountPropertyById",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Get PlayerAccountProperty based on the given PlayerAccountPropertyId",
+        "description": "Get PlayerAccountProperty based on the given PlayerAccountPropertyId",
+        "parameters": [
+          {
+            "name": "playerAccountPropertyId",
+            "in": "path",
+            "description": "playerAccountPropertyId of the PlayerAccountProperty object to retrieve.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved PlayerAccountProperty object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccountProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/playerAccountProperties/propertiesByKey/{key}": {
       "get": {
         "x-swagger-router-controller": "PlayerAccountPropertyController",
@@ -1821,6 +1855,47 @@
         "responses": {
           "200": {
             "description": "Retrieved PlayerAccountProperty object",
+            "schema": {
+              "$ref": "#/definitions/PlayerAccountProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccountProperties/{playerAccountId}/removeProperty/{key}": {
+      "delete": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "deletePlayerAccountProperty",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Delete the values for the given PlayerAccountProperty key of the given PlayerAccount",
+        "description": "Delete the value for the given PlayerAccountProperty object specified by its key for the given PlayerAccount",
+        "parameters": [
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount linked to the PlayerAccountProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "key of PlayerAccountProperty to update value",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Removed PlayerAccountProperty object",
             "schema": {
               "$ref": "#/definitions/PlayerAccountProperty"
             }

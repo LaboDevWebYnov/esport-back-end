@@ -49,6 +49,33 @@ module.exports.getPlayerAccountsProperties = function getPlayerAccountsPropertie
         });
 };
 
+//Path: GET api/playerAccountProperties/{playerAccountPropertyId}
+/**
+ * @description Route permettant de récupérer la playerAccountProperty spécifiée par son playerAccountPropertyId
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.getPlayerAccountPropertyById = function getPlayerAccountPropertyById(req, res, next) {
+    logger.info('Getting the playerAccount property with given id: '+ Util.getPathParams(req)[3]+ ' from db...');
+
+    PlayerAccountProperty.findOne({_id: Util.getPathParams(req)[2]})
+        .populate("playerAccount")
+        .exec(function (err, playerAccountProperty) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(playerAccountProperty) || _.isEmpty(playerAccountProperty)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(playerAccountProperty || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(playerAccountProperty || {}, null, 2));
+            }
+        });
+};
+
 //Path: GET api/playerAccountProperties/propertiesByKey/{key}
 /**
  * @description Route permettant de récupérer toutes les propriétés ayant pour nom/clé la key passée en paramètre
@@ -316,6 +343,39 @@ module.exports.updatePlayerAccountProperty = function updatePlayerAccountPropert
         });
 };
 
+//Path: DELETE api/playerAccountProperties/{playerAccountId}/removeProperty/{key}
+/**
+ * @description Route permettant de supprimer une playerAccountProperty spécifiée par sa key du playerAccount spécifié par son
+ * playerAccountId
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.deletePlayerAccountProperty = function deletePlayerAccountProperty(req, res, next) {
+    logger.info('Deleting playerAccountProperty with id: ' + Util.getPathParams(req)[2] + ' and key ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' with value: ' + sanitizer.escape(req.body.value));
+
+    PlayerAccountProperty.findOneAndRemove(
+        {
+            playerAccount: Util.getPathParams(req)[2],
+            key: decodeURIComponent(Util.getPathParams(req)[4])
+        },
+        {new: false})
+        .populate("playerAccount")
+        .exec(function (err, removedPlayerAccountProperty) {
+            if (err) {
+                return next(err.message);
+            }
+            if (_.isNull(removedPlayerAccountProperty) || _.isEmpty(removedPlayerAccountProperty)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(removedPlayerAccountProperty || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(removedPlayerAccountProperty || {}, null, 2));
+            }
+        });
+};
+
 //done GET playerAccountProperties/properties/ --get all properties of all playerAccounts
 //done GET playerAccountProperties/propertiesByValue/{value} --get all properties with the given  value of all playerAccounts
 //done GET playerAccountProperties/propertiesByKey/{key} --get all properties with the given key of all playerAccounts
@@ -324,7 +384,6 @@ module.exports.updatePlayerAccountProperty = function updatePlayerAccountPropert
 //done GET playerAccountProperties/{playerAccountId}/properties/{key} --get properties of a playerAccount by key
 //done GET playerAccountProperties/{playerAccountId}/properties/{value} --get properties of a playerAccount by value
 
-
 //done POST playerAccountProperties/{playerAccountId}/addproperty/ + body --add property-ies to a playerAccount
 //done PUT playerAccountProperties/{playerAccountId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a playerAccount
-//todo DELETE playerAccountProperties/{playerAccountId}/removeProperty/{key} --remove property-ies from a playerAccount
+//done DELETE playerAccountProperties/{playerAccountId}/removeProperty/{key} --remove property-ies from a playerAccount
