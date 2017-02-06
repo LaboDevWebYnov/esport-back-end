@@ -18,7 +18,8 @@ var Promise = require("bluebird"),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
     GameDB = require('../models/GameDB'),
-    Game = mongoose.model('Game');
+    Game = mongoose.model('Game'),
+    playerAccountPropertyService = require('../services/PlayerAccountPropertyService');
 
 mongoose.Promise = Promise;
 
@@ -301,6 +302,31 @@ module.exports.getPlayerAccountPropertyByValue = function getPlayerAccountProper
                 res.end(JSON.stringify(playerAccountProperties || {}, null, 2));
             }
         });
+};
+
+//Path GET api/playerAccountProperties/{gameId}
+/**
+ * @description Route permettant de récupérer les properties des playerAccounts liées à jeu donné
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.getPlayerAccountPropertiesByGameId = function getPlayerAccountPropertiesByGameId(req, res, next) {
+    logger.info('Getting playerAccountProperties related to game with id ' + Util.getPathParams(req)[2]);
+
+    playerAccountPropertyService.findByGameId(Util.getPathParams(req)[2], function (err, playerAccountPropertiesList) {
+        if (err) {
+            return next(err);
+        }
+        if (_.isNull(playerAccountPropertiesList) || _.isEmpty(playerAccountPropertiesList)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(playerAccountPropertiesList || [], null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(playerAccountPropertiesList || [], null, 2));
+        }
+    });
 };
 
 //Path: PUT api/playerAccountProperties/{playerAccountId}/updateProperty/{key}

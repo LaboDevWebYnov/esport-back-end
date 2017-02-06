@@ -1851,6 +1851,44 @@
         }
       }
     },
+    "/playerAccountProperties/{gameId}/getByGameId": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "getPlayerAccountPropertiesByGameId",
+        "tags": [
+          "PlayerAccountProperty"
+        ],
+        "summary": "Get the PlayerAccountProperties for the given game",
+        "description": "Get the PlayerAccountProperties for the given game",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of Game to retrieve corresponding PlayerAccountProperty keys.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all PlayerAccountProperty keys of the given game",
+            "schema": {
+              "title": "ArrayOfPlayerAccountPropertyKeys",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/playerAccountProperties/{playerAccountId}/addProperty": {
       "post": {
         "x-swagger-router-controller": "PlayerAccountPropertyController",
