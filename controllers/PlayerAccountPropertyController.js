@@ -37,7 +37,7 @@ module.exports.getPlayerAccountsProperties = function getPlayerAccountsPropertie
         .populate("playerAccount")
         .exec(function (err, playerAccountProperties) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
                 res.set('Content-Type', 'application/json');
@@ -64,7 +64,7 @@ module.exports.getPlayerAccountPropertyById = function getPlayerAccountPropertyB
         .populate("playerAccount")
         .exec(function (err, playerAccountProperty) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountProperty) || _.isEmpty(playerAccountProperty)) {
                 res.set('Content-Type', 'application/json');
@@ -95,7 +95,7 @@ module.exports.getPlayerAccountsPropertiesByKey = function getPlayerAccountsProp
         .populate("playerAccount")
         .exec(function (err, playerAccountProperties) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
                 res.set('Content-Type', 'application/json');
@@ -126,7 +126,7 @@ module.exports.getPlayerAccountsPropertiesByValue = function getPlayerAccountsPr
         .populate("playerAccount")
         .exec(function (err, playerAccountProperties) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
                 res.set('Content-Type', 'application/json');
@@ -154,7 +154,7 @@ module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req,
         {_id: Util.getPathParams(req)[2]},
         function (err, foundPlayerAccount) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(foundPlayerAccount) || _.isEmpty(foundPlayerAccount)) {
                 res.set('Content-Type', 'application/json');
@@ -174,7 +174,7 @@ module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req,
 
                 playerAccountPropertyToCreate.save(function (err, createdPlayerAccountProperty) {
                     if (err)
-                        return next(err.message);
+                        return next(err);
 
                     if (_.isNull(createdPlayerAccountProperty) || _.isEmpty(createdPlayerAccountProperty)) {
                         res.set('Content-Type', 'application/json');
@@ -187,7 +187,7 @@ module.exports.addPlayerAccountProperty = function addPlayerAccountProperty(req,
                             .exec(
                                 function (err, playerAccountUpdated) {
                                     if (err)
-                                        return next(err.message);
+                                        return next(err);
 
                                     logger.debug(playerAccountUpdated);
 
@@ -221,7 +221,7 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
         .populate("playerAccount")
         .exec(function (err, playerAccountProperties) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
                 res.set('Content-Type', 'application/json');
@@ -256,7 +256,7 @@ module.exports.getPlayerAccountPropertyByKey = function getPlayerAccountProperty
         .populate("playerAccount")
         .exec(function (err, playerAccountProperty) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountProperty) || _.isEmpty(playerAccountProperty)) {
                 res.set('Content-Type', 'application/json');
@@ -291,7 +291,7 @@ module.exports.getPlayerAccountPropertyByValue = function getPlayerAccountProper
         .populate("playerAccount")
         .exec(function (err, playerAccountProperties) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
                 res.set('Content-Type', 'application/json');
@@ -356,7 +356,7 @@ module.exports.updatePlayerAccountProperty = function updatePlayerAccountPropert
         .populate("playerAccount")
         .exec(function (err, playerAccountProperty) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountProperty) || _.isEmpty(playerAccountProperty)) {
                 res.set('Content-Type', 'application/json');
@@ -394,7 +394,7 @@ module.exports.updatePlayerAccountPropertyById = function updatePlayerAccountPro
         .populate("playerAccount")
         .exec(function (err, updatedPlayerAccountProperty) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(updatedPlayerAccountProperty) || _.isEmpty(updatedPlayerAccountProperty)) {
                 res.set('Content-Type', 'application/json');
@@ -427,7 +427,7 @@ module.exports.deletePlayerAccountProperty = function deletePlayerAccountPropert
         .populate("playerAccount")
         .exec(function (err, removedPlayerAccountProperty) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(removedPlayerAccountProperty) || _.isEmpty(removedPlayerAccountProperty)) {
                 res.set('Content-Type', 'application/json');
@@ -458,7 +458,7 @@ module.exports.deletePlayerAccountPropertyById = function deletePlayerAccountPro
         .populate("playerAccount")
         .exec(function (err, removedPlayerAccountProperty) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(removedPlayerAccountProperty) || _.isEmpty(removedPlayerAccountProperty)) {
                 res.set('Content-Type', 'application/json');

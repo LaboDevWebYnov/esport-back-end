@@ -34,7 +34,7 @@ module.exports.getUsers = function getUsers(req, res, next) {
         .populate('address')
         .exec(function (err, users) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             if (_.isNull(users) || _.isEmpty(users)) {
                 res.set('Content-Type', 'application/json');
@@ -70,7 +70,7 @@ module.exports.addUser = function addUser(req, res, next) {
             user.save(function (err, user) {
                 if (err) {
                     logger.error("got an error while creating user: ", err);
-                    return next(err.message);
+                    return next(err);
                 }
 
                 if (_.isNull(user) || _.isEmpty(user)) {
@@ -127,7 +127,7 @@ module.exports.getUserById = function getUserById(req, res, next) {
         .populate('address')
         .exec(function (err, user) {
             if (err)
-                return next(err.message);
+                return next(err);
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');
                 res.status(404).json(user || {}, null, 2);
@@ -151,7 +151,7 @@ module.exports.getUserByUsername = function getUserByUsername(req, res, next) {
         .populate('address')
         .exec(function (err, user) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');
@@ -182,7 +182,7 @@ module.exports.updateUser = function updateUser(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedUser) {
             if (err)
-                return next(err.message);
+                return next(err);
             else {
                 logger.debug("Updated game object: \n" + updatedUser);
                 res.set('Content-Type', 'application/json');
@@ -205,7 +205,7 @@ module.exports.updatePassword = function updatePassword(req, res, next) {
         Util.getPathParams(req)[2],
         function (err, user) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             // test for a matching password
             user.comparePassword(userOldPassword, function (err, isMatch) {
@@ -220,7 +220,7 @@ module.exports.updatePassword = function updatePassword(req, res, next) {
                             user.update({
                                 $set: {password: saltedNewPassword}
                             }, function (err, raw) {
-                                if (err) return next(err.message);
+                                if (err) return next(err);
                                 res.set('Content-Type', 'application/json');
                                 res.status(200).end(JSON.stringify(raw || {}, null, 2));
                             });
@@ -257,7 +257,7 @@ module.exports.updateEmail = function updateEmail(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedUser) {
             if (err)
-                return next(err.message);
+                return next(err);
             else {
                 logger.debug("Updated game object: \n" + updatedUser);
                 res.set('Content-Type', 'application/json');
@@ -280,7 +280,7 @@ module.exports.deleteUser = function deleteUser(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedUser) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             else {
                 logger.debug("Deactivated game object: \n" + updatedUser);
@@ -463,7 +463,7 @@ module.exports.signUp = function signUp(req, res, next) {
                         user.save(function (err, user) {
                             if (err) {
                                 logger.error("got an error while creating user: ", err);
-                                return next(err.message);
+                                return next(err);
                             }
 
                             if (_.isNull(user._doc) || _.isEmpty(user._doc)) {
@@ -482,7 +482,7 @@ module.exports.signUp = function signUp(req, res, next) {
                                     //send email
                                     emailUtils.dispatchAccountValidationLink(mailOpts, user, token, function (err, user) {
                                         if (err) {
-                                            return next(err.message);
+                                            return next(err);
                                         }
                                         else {
                                             delete user._doc.accVerifyTokenExpires;

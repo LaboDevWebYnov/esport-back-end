@@ -53,7 +53,7 @@ module.exports.registerUser = function registerUser(req, res, next) {
                         user.save(function (err, user) {
                             if (err) {
                                 logger.error("got an error while creating user: ", err);
-                                return next(err.message);
+                                return next(err);
                             }
 
                             if (_.isNull(user._doc) || _.isEmpty(user._doc)) {
@@ -72,7 +72,7 @@ module.exports.registerUser = function registerUser(req, res, next) {
                                     //send email
                                     emailUtils.dispatchAccountValidationLink(mailOpts, user, token, function (err, user) {
                                         if (err) {
-                                            return next(err.message);
+                                            return next(err);
                                         }
                                         else {
                                             delete user._doc.accVerifyTokenExpires;
@@ -225,7 +225,7 @@ module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) 
                     {new: true}, //means we want the DB to return the updated document instead of the old one
                     function (err, updatedUser) {
                         if (err)
-                            return next(err.message);
+                            return next(err);
                         else {
                             logger.debug("Updated user object: \n" + updatedUser);
                             res.set('Content-Type', 'application/json');
@@ -338,7 +338,7 @@ module.exports.completeRegistration = function completeRegistration(req, res, ne
         })
         .exec(function (err, updatedUser) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                 res.set('Content-Type', 'application/json');
@@ -371,7 +371,7 @@ module.exports.cancelRegistration = function cancelRegistration(req, res, next) 
         })
         .exec(function (err, removedUser) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             if (_.isNull(removedUser) || _.isEmpty(removedUser)) {
                 res.set('Content-Type', 'application/json');

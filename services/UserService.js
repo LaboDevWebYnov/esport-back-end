@@ -16,7 +16,7 @@ module.exports.alreadyTakenUsername = function alreadyTakenUsername(req, next) {
     User.findOne({username: sanitizer.escape(req.body.username)},
         function (err, user) {
             if (err)
-                return next(err.message, null);
+                return next(err, null);
             if (_.isNull(user) || _.isEmpty(user)) {
                 return next(null, false);
             }
@@ -30,7 +30,7 @@ module.exports.alreadyTakenEmail = function alreadyTakenEmail(req, next) {
     User.findOne({email: sanitizer.escape(req.body.email)},
         function (err, user) {
             if (err)
-                return next(err.message, null);
+                return next(err, null);
             if (_.isNull(user) || _.isEmpty(user)) {
                 return next(null, false);
             }

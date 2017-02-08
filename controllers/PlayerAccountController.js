@@ -27,7 +27,7 @@ module.exports.getPlayerAccountList = function getPlayerAccountList(req, res, ne
         .populate("game user")
         .exec(function (err, playerAccountList) {
             if (err) {
-                return next(err.message);
+                return next(err);
             }
             if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
                 res.set('Content-Type', 'application/json');
@@ -64,7 +64,7 @@ module.exports.addPlayerAccount = function addPlayerAccount(req, res, next) {
 
                     playerAccountToCreate.save(function (err, playerAccountFinded) {
                         if (err)
-                            return next(err.message);
+                            return next(err);
 
                         PlayerAccount.findOne(
                             {_id: playerAccountFinded._id})
@@ -104,7 +104,7 @@ module.exports.getPlayerAccountById = function getPlayerAccountById(req, res, ne
         .populate("game user")
         .exec(function (err, playerAccount) {
                 if (err)
-                    return next(err.message);
+                    return next(err);
 
                 logger.debug(playerAccount);
                 if (_.isNull(playerAccount) || _.isEmpty(playerAccount)) {
@@ -132,7 +132,7 @@ module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req,
         .populate("game user")
         .exec(function (err, playerAccountList) {
                 if (err)
-                    return next(err.message);
+                    return next(err);
 
                 logger.debug(playerAccountList);
                 if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
@@ -159,7 +159,7 @@ module.exports.getPlayerAccountByLogin = function getPlayerAccountByLogin(req, r
         .populate("game user")
         .exec(function (err, playerAccountList) {
                 if (err)
-                    return next(err.message);
+                    return next(err);
 
                 logger.debug(playerAccountList);
                 if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
@@ -190,7 +190,7 @@ module.exports.updatePlayerAccount = function updatePlayerAccount(req, res, next
             .populate("game user")
             .exec(function (err, updatedPlayerAccount) {
                 if (err)
-                    return next(err.message);
+                    return next(err);
 
                 if (_.isNull(updatedPlayerAccount) || _.isEmpty(updatedPlayerAccount)) {
                     res.set('Content-Type', 'application/json');
@@ -225,7 +225,7 @@ module.exports.deletePlayerAccount = function deletePlayerAccount(req, res, next
 {new: true})
         .exec(function (err, updatedPlayerAccount) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             if (_.isNull(updatedPlayerAccount) || _.isEmpty(updatedPlayerAccount)) {
                 res.set('Content-Type', 'application/json');
@@ -254,7 +254,7 @@ module.exports.getPlayerAccountsByUserAndGame = function getPlayerAccountsByUser
         .populate("game user")
         .exec(function (err, playerAccountList) {
                 if (err)
-                    return next(err.message);
+                    return next(err);
 
                 logger.debug(playerAccountList);
                 if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {

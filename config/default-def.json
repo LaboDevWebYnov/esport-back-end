@@ -56,6 +56,7 @@
             "port": "4200"
           },
           "sender":"labodevtest@gmail.com",
+          "sendgridapikey": "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",
           "mailgun":{
             "apiKey": "key-ecfb943b9b9d9233cc67d73ba22c7498",
             "domain": "sandboxac05877c9fb5494eabcee21e7eaafd61.mailgun.org"

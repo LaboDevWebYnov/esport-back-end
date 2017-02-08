@@ -33,7 +33,6 @@ mongoose.Promise = Promise;
 //CS:GO: todo add corresponding props
 const CSGOProps = ['current_rank', 'fav_map', 'highest_rank', 'fav_weapon', 'adr', 'kdr'];
 
-
 //LoL: todo add corresponding props
 const LOLProps = [];
 

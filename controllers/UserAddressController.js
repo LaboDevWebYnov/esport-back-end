@@ -21,7 +21,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
 
     UserAddressService.createAddress(req, function (err, createdAddress) {
         if (err)
-            return next(err.message);
+            return next(err);
         if (_.isNull(createdAddress) || _.isEmpty(createdAddress)) {
             res.set('Content-Type', 'application/json');
             res.status(404).json({error: "Couldn't create address"}, null, 2);
@@ -33,7 +33,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
             //else
             UserAddressService.getUserAddress(req, function (err, userAddress) {
                 if (err)
-                    return next(err.message);
+                    return next(err);
                 else {
                     logger.debug('User addressList:' + userAddress);
                     //insert new address _id in ObjectId list
@@ -46,7 +46,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
                                 // and update its addressList attribute with new data
                                 UserAddressService.updateUserAddressList(req, user.address, function (err, updatedUser) {
                                     if (err)
-                                        throw (err.message);
+                                        throw (err);
                                     if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                                         res.set('Content-Type', 'application/json');
                                         res.status(404).json({error: "Couldn't update address"}, null, 2);
@@ -65,7 +65,7 @@ module.exports.addAddress = function addAddress(req, res, next) {
                         // and update its addressList attribute with new data
                         UserAddressService.updateUserAddressList(req, userAddress, function (err, updatedUser) {
                             if (err)
-                                throw (err.message);
+                                throw (err);
                             if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                                 res.set('Content-Type', 'application/json');
                                 res.status(404).json({error: "Couldn't update address"}, null, 2);
@@ -98,7 +98,7 @@ module.exports.updateAddress = function updateAddress(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedAddressFromDB) {
             if (err)
-                return next(err.message);
+                return next(err);
             if (_.isNull(updatedAddressFromDB) || _.isEmpty(updatedAddressFromDB)) {
                 res.set('Content-Type', 'application/json');
                 res.status(404).json({error: "Couldn't update address"}, null, 2);
@@ -108,7 +108,7 @@ module.exports.updateAddress = function updateAddress(req, res, next) {
                 User.findOne({_id: Util.getPathParams(req)[2]},
                     function (err, updatedUser) {
                         if (err)
-                            return next(err.message);
+                            return next(err);
 
                         if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                             res.set('Content-Type', 'application/json');
@@ -131,7 +131,7 @@ module.exports.getUserAddresses = function getUserAddresses(req, res, next) {
         .populate('address')
         .exec(function (err, user) {
             if (err)
-                return next(err.message);
+                return next(err);
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');
                 res.status(404).json({error: "Couldn't update address"}, null, 2);
@@ -151,7 +151,7 @@ module.exports.getAddressById = function getAddressById(req, res, next) {
     logger.info('Getting address with addressId: ' + Util.getPathParams(req)[2]);
     Address.findById(Util.getPathParams(req)[2], function (err, address) {
         if (err)
-            return next(err.message);
+            return next(err);
         if (_.isNull(address) || _.isEmpty(address)) {
             res.set('Content-Type', 'application/json');
             res.status(404).json({error: "Couldn't retrieve address"}, null, 2);
@@ -178,7 +178,7 @@ module.exports.deactivateAddress = function deactivateAddress(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, deactivatedAddress) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             logger.debug("Deactivated game object: \n" + deactivatedAddress);
             res.set('Content-Type', 'application/json');

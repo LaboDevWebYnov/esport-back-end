@@ -26,7 +26,7 @@ module.exports.getTeams = function getTeams(req, res, next) {
     // Code necessary to consume the Game API and respond
     Team.find({}, function (err, teams) {
         if (err) {
-            return next(err.message);
+            return next(err);
         }
         if (_.isNull(teams) || _.isEmpty(teams)) {
             res.set('Content-Type', 'application/json');
@@ -66,7 +66,7 @@ module.exports.addTeam = function addTeam(req, res, next) {
 
                     team.save(function (err, team) {
                         if (err)
-                            return next(err.message);
+                            return next(err);
 
                         if (_.isNull(team) || _.isEmpty(team)) {
                             res.set('Content-Type', 'application/json');
@@ -93,7 +93,7 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
         Util.getPathParams(req)[2],
         function (err, team) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             logger.debug(team);
             if (_.isNull(team) || _.isEmpty(team)) {
@@ -120,7 +120,7 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
         {name: Util.getPathParams(req)[2]},
         function (err, team) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             logger.debug(team);
 
@@ -152,7 +152,7 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedTeam) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             logger.debug("Updated team object: \n" + updatedTeam);
             res.set('Content-Type', 'application/json');
@@ -173,7 +173,7 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedTeam) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             logger.debug("Deactivated team object: \n" + updatedTeam);
             res.set('Content-Type', 'application/json');

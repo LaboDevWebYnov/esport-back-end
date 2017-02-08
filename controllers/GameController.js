@@ -22,7 +22,7 @@ module.exports.getGames = function getGames(req, res, next) {
     // Code necessary to consume the Game API and respond
     Game.find({}, function (err, games) {
         if (err) {
-            return next(err.message);
+            return next(err);
         }
         if (_.isNull(games) || _.isEmpty(games)) {
             res.set('Content-Type', 'application/json');
@@ -52,7 +52,7 @@ module.exports.addGame = function addGame(req, res, next) {
 
     game.save(function (err, game) {
         if (err)
-            return next(err.message);
+            return next(err);
 
         if (_.isNull(game) || _.isEmpty(game)) {
             res.set('Content-Type', 'application/json');
@@ -78,7 +78,7 @@ module.exports.getGameById = function getGameById(req, res, next) {
         Util.getPathParams(req)[2],
         function (err, game) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             logger.debug(game);
             if (_.isNull(game) || _.isEmpty(game)) {
@@ -106,7 +106,7 @@ module.exports.getGameByName = function getGameByName(req, res, next) {
         {name: decodeURIComponent(Util.getPathParams(req)[2])},
         function (err, game) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             logger.debug(game);
 
@@ -141,7 +141,7 @@ module.exports.updateGame = function updateGame(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedGame) {
             if (err)
-                return next(err.message);
+                return next(err);
             else {
                 logger.debug("Updated game object: \n" + updatedGame);
                 res.set('Content-Type', 'application/json');
@@ -163,7 +163,7 @@ module.exports.deleteGame = function deleteGame(req, res, next) {
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedGame) {
             if (err)
-                return next(err.message);
+                return next(err);
             else {
                 logger.debug("Deactivated game object: \n" + updatedGame);
                 res.set('Content-Type', 'application/json');
@@ -186,7 +186,7 @@ module.exports.getUserGames = function getUserGames(req, res, next) {
         .populate("game")
         .exec(function (err, playerAccountList) {
                 if (err)
-                    return next(err.message);
+                    return next(err);
 
                 logger.debug(playerAccountList);
                 if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {

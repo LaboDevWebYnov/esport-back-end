@@ -25,7 +25,7 @@ module.exports.createAddress = function createAddress(req, next) {
 
     address.save(function (err, savedAddress) {
         if (err)
-            return next(err.message);
+            return next(err);
 
         if (_.isNull(savedAddress) || _.isEmpty(savedAddress)) {
             return next({error: 'Bad object from DB for address'}, null);
@@ -41,7 +41,7 @@ module.exports.getUserAddress = function getUserAddress(req, next) {
     User.findById(Util.getPathParams(req)[2],
         function (err, user) {
             if (err)
-                return next(err.message);
+                return next(err);
             if (_.isNull(user) || _.isEmpty(user)) {
                 return next({error: 'Bad object from DB for address'}, null);
             }
@@ -62,7 +62,7 @@ module.exports.updateUserAddressList = function updateUserAddressList(req, addre
         {new: true}, //means we want the DB to return the updated document instead of the old one
         function (err, updatedUser) {
             if (err)
-                return next(err.message);
+                return next(err);
             if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                 return next({error: 'Bad object user from DB'}, null);
             }

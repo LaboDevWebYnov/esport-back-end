@@ -67,9 +67,9 @@ function allowCORS(req, res, next) {
 }
 
 function errorHandler(err, req, res, next) {
-    logger.error(err.message, err);
+    logger.error(err, err);
     res.status(err.status || 500).send({
-        message: err.message,
+        message: err,
         error: err
     });
 }
@@ -209,7 +209,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     var host = config.server.instance.host;
 
     http.createServer(app).listen(port, function (err) {
-        if (err) logger.error(err.message);
+        if (err) logger.error(err);
         logger.info('The API sample is now running at http://' + host + ':' + port);
     });
 });

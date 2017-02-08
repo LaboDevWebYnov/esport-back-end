@@ -26,7 +26,7 @@ module.exports.authenticate = function authenticate(req, res, next) {
     User.getAuthenticated(login, password,
         function (err, user) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             if (_.isNull(user) || _.isEmpty(user)) {
                 res.set('Content-Type', 'application/json');

@@ -20,7 +20,7 @@ module.exports.getAddresses = function getAddresses(req, res, next) {
     Address.find({})
         .exec(function (err, addresses) {
             if (err)
-                return next(err.message);
+                return next(err);
 
             if (_.isNull(addresses) || _.isEmpty(addresses)) {
                 res.set('Content-Type', 'application/json');

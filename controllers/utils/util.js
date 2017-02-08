@@ -34,7 +34,7 @@ module.exports.saltPassword = function saltPassword(password, cb) {
 //        getPathParams(req)[2],
 //        function (err, user) {
 //         if (err)
-//          next(err.message);
+//          next(err);
 //
 //         logger.debug('password retrieved:' + user.password);
 //         //if (!! user.password ||_.isNull(user.password) || _.isEmpty(user.password)) {
