@@ -179,10 +179,10 @@ module.exports.deactivateAddress = function deactivateAddress(req, res, next) {
         function (err, deactivatedAddress) {
             if (err)
                 return next(err);
-
-            logger.debug("Deactivated game object: \n" + deactivatedAddress);
-            res.set('Content-Type', 'application/json');
-            res.status(200).end(JSON.stringify(deactivatedAddress || {}, null, 2));
-
+            else {
+                logger.debug("Deactivated game object: \n" + deactivatedAddress);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(deactivatedAddress || {}, null, 2));
+            }
         });
 };
