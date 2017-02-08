@@ -92,7 +92,7 @@ module.exports.addUser = function addUser(req, res, next) {
                             //send email
                             emailUtils.dispatchAccountValidationLink(mailOpts, user, token, function (err, user) {
                                 if (err) {
-                                    return next(err.message);
+                                    return next(err);
                                 }
                                 else {
                                     res.set('Content-Type', 'application/json');

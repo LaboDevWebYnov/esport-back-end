@@ -45,6 +45,13 @@ const DOTA2props = [];
 //OverWatch todo add corresponding props
 const OWprops = [];
 
+/**
+ * @description Given a gameId, we retrieve the corresponding keys for the playerAccountProperty
+ * @param gameId
+ * @param next:
+ *      -error le cas échéant
+ *      -l'array de props sinon
+ */
 module.exports.findByGameId = function findByGameId(gameId, next) {
     logger.info("Retrieving properties for game with id: " + gameId);
     Game.findOne({_id: gameId})

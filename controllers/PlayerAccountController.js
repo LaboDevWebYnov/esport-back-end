@@ -72,7 +72,7 @@ module.exports.addPlayerAccount = function addPlayerAccount(req, res, next) {
                             .exec(
                                 function (err, playedAccountUpdated) {
                                     if (err)
-                                        logger.info(err.message);
+                                        return next(err);
 
                                     logger.debug(playedAccountUpdated);
 

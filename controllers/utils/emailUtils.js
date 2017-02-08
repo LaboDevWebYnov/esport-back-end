@@ -6,6 +6,10 @@ var Promise = require("bluebird"),
     mongoose = require("mongoose"),
     logger = require('log4js').getLogger('controller.utils.emailUtils'),
     ES = config.server.features.email.smtp,
+    // using SendGrid's v3 Node.js Library
+    // https://github.com/sendgrid/sendgrid-nodejs
+    helper = require('sendgrid').mail,
+    sg = require('sendgrid')(config.server.features.email.smtp.sendgridapikey),
     mailgun = require('mailgun-js')({apiKey: ES.mailgun.apiKey, domain: ES.mailgun.domain}),
     EM = {};
 mongoose.Promise = Promise;
@@ -21,28 +25,32 @@ module.exports = EM;
 EM.dispatchAccountValidationLink = function (mailOpts, user, token, callback) {
     logger.debug('creating AccountValidationLink email for user ' + user);
     // send mail
-    var data = {
-        //Specify email data
-        from: ES.sender,
-        //The email to contact
-        to: user.email,
-        //Subject and text data
-        subject: 'Email validation',
-        html: EM.composeEmailAccountValidation(mailOpts, user, token) // html body
-    };
+    var from_email = new helper.Email(config.server.features.email.smtp.sender);
+    var to_email = new helper.Email(user.email);
+    var subject = 'Email validation';
+    var content = new helper.Content('text/html', EM.composeEmailAccountValidation(mailOpts, user, token));
+    var mail = new helper.Mail(from_email, subject, to_email, content);
 
-    //Invokes the method to send emails given the above data with the helper library
-    mailgun.messages().send(data, function (err, body) {
+    var request = sg.emptyRequest({
+        method: 'POST',
+        path: '/v3/mail/send',
+        body: mail.toJSON()
+    });
+
+    sg.API(request, function(err, response) {
+        logger.debug(response.statusCode);
+        logger.debug(response.body);
+        logger.debug(response.headers);
         //If there is an error, render the error page
         if (err) {
             //res.render('error', { error : err});
             logger.error("got an error while sending email: ", err);
-            return callback(err);
+            return callback(err, null);
         }
         //Else we can greet    and leave
         else {
-            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
-            callback(null, user);
+            logger.debug('Message sent' + JSON.stringify(response) + ' to mail:' + user.email);
+            return callback(null, user);
         }
     });
 };
@@ -56,28 +64,32 @@ EM.dispatchAccountValidationLink = function (mailOpts, user, token, callback) {
  */
 EM.dispatchResetPasswordLink = function (mailOpts, user, token, callback) {
     // send mail
-    var data = {
-        //Specify email data
-        from: ES.sender,
-        //The email to contact
-        to: user.email,
-        //Subject and text data
-        subject: 'Password recovery',
-        html: EM.composeEmailResetPassword(mailOpts, user, token) // html body
-    };
+    var from_email = new helper.Email(config.server.features.email.smtp.sender);
+    var to_email = new helper.Email(user.email);
+    var subject = 'Password recovery';
+    var content = new helper.Content('text/html', EM.composeEmailResetPassword(mailOpts, user, token));
+    var mail = new helper.Mail(from_email, subject, to_email, content);
 
-    //Invokes the method to send emails given the above data with the helper library
-    mailgun.messages().send(data, function (err, body) {
+    var request = sg.emptyRequest({
+        method: 'POST',
+        path: '/v3/mail/send',
+        body: mail.toJSON()
+    });
+
+    sg.API(request, function(err, response) {
+        logger.debug(response.statusCode);
+        logger.debug(response.body);
+        logger.debug(response.headers);
         //If there is an error, render the error page
         if (err) {
             //res.render('error', { error : err});
-            logger.error("got an error: ", err);
+            logger.error("got an error while sending email: ", err);
             return callback(err);
         }
         //Else we can greet    and leave
         else {
-            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
-            callback(null);
+            logger.debug('Message sent' + JSON.stringify(response) + ' to mail:' + user.email);
+            return callback(null);
         }
     });
 };
@@ -89,28 +101,32 @@ EM.dispatchResetPasswordLink = function (mailOpts, user, token, callback) {
  */
 EM.dispatchResetPasswordConfirmation = function (user, callback) {
     // send mail
-    var data = {
-        //Specify email data
-        from: ES.sender,
-        //The email to contact
-        to: user.email,
-        //Subject and text data
-        subject: 'Password reset confirmation',
-        html: EM.composeEmailResetPasswordConfirmation(user) // html body
-    };
+    var from_email = new helper.Email(config.server.features.email.smtp.sender);
+    var to_email = new helper.Email(user.email);
+    var subject = 'Password recovery';
+    var content = new helper.Content('text/html', EM.composeEmailResetPasswordConfirmation(user));
+    var mail = new helper.Mail(from_email, subject, to_email, content);
 
-    //Invokes the method to send emails given the above data with the helper library
-    mailgun.messages().send(data, function (err, body) {
+    var request = sg.emptyRequest({
+        method: 'POST',
+        path: '/v3/mail/send',
+        body: mail.toJSON()
+    });
+
+    sg.API(request, function(err, response) {
+        logger.debug(response.statusCode);
+        logger.debug(response.body);
+        logger.debug(response.headers);
         //If there is an error, render the error page
         if (err) {
             //res.render('error', { error : err});
-            logger.error("got an error: ", err);
+            logger.error("got an error while sending email: ", err);
             return callback(err);
         }
         //Else we can greet    and leave
         else {
-            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
-            callback(null);
+            logger.debug('Message sent' + JSON.stringify(response) + ' to mail:' + user.email);
+            return callback(null);
         }
     });
 };
