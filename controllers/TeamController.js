@@ -18,7 +18,7 @@ var PlayerAccountBD = require('../models/PlayerAccountDB'),
     PlayerAccount = mongoose.model('PlayerAccount'),
     Game = mongoose.model('Game'),
     Team = mongoose.model('Team');
-    User = mongoose.model('User');
+User = mongoose.model('User');
 
 mongoose.Promise = Promise;
 
@@ -190,11 +190,11 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the team with name:' + decodeURIComponent(Util.getPathParams(req)[2]),Util.getPathParams(req)[4]);
+    logger.info('Getting the team with name:' + decodeURIComponent(Util.getPathParams(req)[2]), Util.getPathParams(req)[4]);
     // Code necessary to consume the Team API and respond
 
     Team.find(
-        {game : decodeURIComponent(Util.getPathParams(req)[4])},
+        {game: decodeURIComponent(Util.getPathParams(req)[4])},
         function (err, teams) {
             if (err)
                 return next(err);
@@ -203,8 +203,8 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
 
             var tab;
 
-            for(var y=0;y in teams;y++){
-                if(teams[y].players.user._id == Util.getPathParams(req)[2]){
+            for (var y = 0; y in teams; y++) {
+                if (teams[y].players.user._id == Util.getPathParams(req)[2]) {
                     tab.push(teams[y]);
                 }
             }
@@ -219,4 +219,37 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
             }
         }
     );
+};
+
+// Path: PUT api/teams/addUser/{userId}/Team/{teamId}
+module.exports.addPlayer = function addPlayer(req, res, next) {
+
+    PlayerAccount.findOne({_id: Util.getPathParams(req)[3]}, function (err, playyerAcc) {
+        if (err)
+            return next(err);
+        Team.findOne({_id: Util.getPathParams(req)[5]}, function (err, team) {
+            if (err)
+                return next(err);
+
+            team.players = team.players.push(playyerAcc._id);
+            Team.findOneAndUpdate(
+                {_id: Util.getPathParams(req)[5]},
+                {
+                    $set: {
+                        //TODO Check that it won't set not updated attributes to 'null'
+                        players: team.players
+                    }
+                },
+                {new: true}, //means we want the DB to return the updated document instead of the old one
+                function (err, updatedTeam) {
+                    if (err)
+                        return next(err);
+
+                    logger.debug("Updated team object: \n" + updatedTeam);
+                    res.set('Content-Type', 'application/json');
+                    res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                });
+        });
+    });
+
 };
