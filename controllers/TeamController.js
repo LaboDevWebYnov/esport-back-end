@@ -39,26 +39,27 @@ module.exports.getTeams = function getTeams(req, res, next) {
     });
 };
 
-//Path: GET api/team/{playerAccountId}/addTeam/{gameId}
+//Path: GET api/teams/{playerAccountId}/addTeam/{gameId}
 module.exports.addTeam = function addTeam(req, res, next) {
     logger.info('Adding new team...');
     // Code necessary to consume the Team API and respond
     PlayerAccount.findOne(
         {_id: Util.getPathParams(req)[2]},
-        function (err, PlayerAccountFinded) {
+        function (err, playerAccountFinded) {
             Game.findOne(
                 {_id: Util.getPathParams(req)[4]},
                 function (err, gameFinded) {
 
-                    //TODO Check that it won't set not updated attributes to 'null'
+                    //définition d'une team
                     var team = new Team({
                         name: sanitizer.escape(req.body.teamName),
                         tag: sanitizer.escape(req.body.teamTag),
-                        captain: PlayerAccountFinded,
+                        captain: playerAccountFinded,
                         players: null,
                         invitedPlayers: null,
                         postulatedPlayers: null,
                         active: true,
+                        country: sanitizer.escape(req.body.teamCountry),
                         game: gameFinded,
                         created_at: Date.now(),
                         updated_at: Date.now()
@@ -81,7 +82,7 @@ module.exports.addTeam = function addTeam(req, res, next) {
         });
 };
 
-// Path: GET api/team/{teamId}/getTeamById
+// Path: GET api/teams/{teamId}/getTeamById
 module.exports.getTeamById = function getTeamById(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
@@ -108,16 +109,16 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
     );
 };
 
-// Path: GET api/games/{teamName}/getTeamByName
+// Path: GET api/teams/{teamName}/getTeamByName
 module.exports.getTeamByName = function getTeamByName(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the team with name:' + Util.getPathParams(req)[3]);
+    logger.info('Getting the team with name:' + decodeURIComponent(Util.getPathParams(req)[2]));
     // Code necessary to consume the Team API and respond
 
     Team.findOne(
-        {name: Util.getPathParams(req)[2]},
+        {name: decodeURIComponent(Util.getPathParams(req)[2])},
         function (err, team) {
             if (err)
                 return next(err);
@@ -136,7 +137,7 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
     );
 };
 
-// Path: PUT api/team/{teamId}/updateTeam/
+// Path: PUT api/teams/{teamId}/updateTeam/
 module.exports.updateTeam = function updateTeam(req, res, next) {
 
     Team.findOneAndUpdate(
@@ -160,7 +161,7 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
         });
 };
 
-// Path: PUT api/team/deleteTeam/{teamId}
+// Path: PUT api/teams/deleteTeam/{teamId}
 module.exports.deleteTeam = function deleteTeam(req, res, next) {
 
     Team.findOneAndUpdate(
@@ -181,3 +182,5 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
 
         });
 };
+
+//Path: GET api/teams/{userId}/games/{gameId}
