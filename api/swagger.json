@@ -2162,7 +2162,7 @@
           "200": {
             "description": "Retrieved Team object",
             "schema": {
-              "$ref": "#/definitions/Game"
+              "$ref": "#/definitions/Team"
             }
           },
           "default": {
