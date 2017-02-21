@@ -2059,7 +2059,7 @@
         }
       }
     },
-    "/team/{playerAccountId}/addTeam/{gameId}": {
+    "/teams/{playerAccountId}/addTeam/{gameId}": {
       "post": {
         "x-swagger-router-controller": "TeamController",
         "operationId": "addTeam",
@@ -2106,7 +2106,7 @@
         }
       }
     },
-    "/team/{teamId}/getTeamById": {
+    "/teams/{teamId}/getTeamById": {
       "get": {
         "x-swagger-router-controller": "TeamController",
         "operationId": "getTeamById",
@@ -2140,7 +2140,52 @@
         }
       }
     },
-    "/team/{teamName}/getTeamByName": {
+    "/teams/{userId}/games/{gameId}": {
+      "get": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "getTeamByUserIdByGameId",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Get the specified teams for the given user and the given game",
+        "description": "Gets `Team` objects for the given user and the given game.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to search for.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of Game object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of retrieved Team objects",
+            "schema": {
+              "title": "ArrayOfTeams",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Team"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamName}/getTeamByName": {
       "get": {
         "x-swagger-router-controller": "TeamController",
         "operationId": "getTeamByName",
@@ -2174,7 +2219,7 @@
         }
       }
     },
-    "/team/{teamId}/updateTeam": {
+    "/teams/{teamId}/updateTeam": {
       "put": {
         "x-swagger-router-controller": "TeamController",
         "operationId": "updateTeam",
@@ -2217,7 +2262,7 @@
         }
       }
     },
-    "/team/{teamId}/deleteTeam": {
+    "/teams/{teamId}/deleteTeam": {
       "put": {
         "x-swagger-router-controller": "TeamController",
         "operationId": "deleteTeam",
