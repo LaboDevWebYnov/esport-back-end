@@ -7,7 +7,8 @@ var Schema = mongoose.Schema;
 var Team = new Schema({
     name: {type: String, required: true},
     tag: {type: String, required: true},
-    captain: {type: Schema.ObjectId, ref: 'PlayerAccount', required: true},
+    owner: {type: Schema.ObjectId, ref: 'User', required: true},
+    captain: {type: Schema.ObjectId, ref: 'PlayerAccount', required: false},
     players: {type: [{type: Schema.ObjectId, ref: 'PlayerAccount'}], required: false},
     invitedPlayers: {type: [{type: Schema.ObjectId, ref: 'PlayerAccount'}], required: false},
     postulatedPlayers: {type: [{type: Schema.ObjectId, ref: 'PlayerAccount'}], required: false},

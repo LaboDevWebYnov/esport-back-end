@@ -41,25 +41,26 @@ module.exports.getTeams = function getTeams(req, res, next) {
     });
 };
 
-//Path: GET api/teams/{playerAccountId}/addTeam/{gameId}
+//Path: GET api/teams/{userId}/addTeam/{gameId}
 module.exports.addTeam = function addTeam(req, res, next) {
-    logger.info('Adding new team...');
+    logger.info('Adding new team to game with gameId '+Util.getPathParams(req)[4]+' with user '+ Util.getPathParams(req)[2]);
     // Code necessary to consume the Team API and respond
-    PlayerAccount.findOne(
+    User.findOne(
         {_id: Util.getPathParams(req)[2]},
-        function (err, playerAccountFinded) {
+        function (err, userFinded) {
             Game.findOne(
                 {_id: Util.getPathParams(req)[4]},
                 function (err, gameFinded) {
 
                     //définition d'une team
-                    var team = new Team({
+                    let team = new Team({
                         name: sanitizer.escape(req.body.teamName),
                         tag: sanitizer.escape(req.body.teamTag),
-                        captain: playerAccountFinded,
-                        players: null,
-                        invitedPlayers: null,
-                        postulatedPlayers: null,
+                        owner: userFinded,
+                        players: [],
+                        captain: sanitizer.escape(req.body.captainPlayerAccountId) || undefined,
+                        invitedPlayers: [],
+                        postulatedPlayers: [],
                         active: true,
                         country: sanitizer.escape(req.body.teamCountry),
                         game: gameFinded,
@@ -157,9 +158,15 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
             if (err)
                 return next(err);
 
-            logger.debug("Updated team object: \n" + updatedTeam);
-            res.set('Content-Type', 'application/json');
-            res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+            if (_.isNull(updatedTeam) || _.isEmpty(updatedTeam)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(updatedTeam || {}, null, 2);
+            }
+            else {
+                logger.debug("Updated team object: \n" + updatedTeam);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+            }
         });
 };
 
@@ -181,7 +188,6 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
             logger.debug("Deactivated team object: \n" + updatedTeam);
             res.set('Content-Type', 'application/json');
             res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
-
         });
 };
 

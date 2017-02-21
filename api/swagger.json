@@ -2059,7 +2059,7 @@
         }
       }
     },
-    "/teams/{playerAccountId}/addTeam/{gameId}": {
+    "/teams/{userId}/addTeam/{gameId}": {
       "post": {
         "x-swagger-router-controller": "TeamController",
         "operationId": "addTeam",
@@ -2070,9 +2070,9 @@
         "description": "Adds new `Team` object to the DB.",
         "parameters": [
           {
-            "name": "playerAccountId",
+            "name": "userId",
             "in": "path",
-            "description": "playerAccountId of PlayerAccount object to add.",
+            "description": "userId of User object to add as owner",
             "required": true,
             "type": "string"
           },
@@ -2606,8 +2606,16 @@
         },
         "teamCountry": {
           "type": "string"
+        },
+        "captainPlayerAccountId": {
+          "type": "string"
         }
-      }
+      },
+      "required": [
+        "teamName",
+        "teamTag",
+        "teamCountry"
+      ]
     },
     "Email": {
       "type": "object",
