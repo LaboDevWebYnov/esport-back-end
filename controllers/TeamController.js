@@ -43,7 +43,7 @@ module.exports.getTeams = function getTeams(req, res, next) {
 
 //Path: GET api/teams/{userId}/addTeam/{gameId}
 module.exports.addTeam = function addTeam(req, res, next) {
-    logger.info('Adding new team to game with gameId '+Util.getPathParams(req)[4]+' with user '+ Util.getPathParams(req)[2]);
+    logger.info('Adding new team to game with gameId ' + Util.getPathParams(req)[4] + ' with user ' + Util.getPathParams(req)[2]);
     // Code necessary to consume the Team API and respond
     User.findOne(
         {_id: Util.getPathParams(req)[2]},
@@ -196,66 +196,66 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting teams for user with userId ' + Util.getPathParams(req)[2] + ' and game with gameId:' + Util.getPathParams(req)[4]);
+    logger.info('Getting the team with name:' + decodeURIComponent(Util.getPathParams(req)[2]), Util.getPathParams(req)[4]);
+    // Code necessary to consume the Team API and respond
 
-    //get playerAccounts of user
-    PlayerAccount.find({_id: Util.getPathParams(req)[2]}, function (err, playerAccounts) {
+    Team.find(
+        {game: decodeURIComponent(Util.getPathParams(req)[4])},
+        function (err, teams) {
+            if (err)
+                return next(err);
+
+            logger.debug(teams);
+
+            var tab;
+
+            for (var y = 0; y in teams; y++) {
+                if (teams[y].players.user._id == Util.getPathParams(req)[2]) {
+                    tab.push(teams[y]);
+                }
+            }
+
+            if (_.isNull(tab) || _.isEmpty(tab)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(tab || {}, null, 2);
+            }
+            else {
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(tab || {}, null, 2));
+            }
+        }
+    );
+};
+
+// Path: PUT api/teams/addUser/{userId}/Team/{teamId}
+module.exports.addPlayer = function addPlayer(req, res, next) {
+
+    PlayerAccount.findOne({_id: Util.getPathParams(req)[3]}, function (err, playyerAcc) {
         if (err)
             return next(err);
+        Team.findOne({_id: Util.getPathParams(req)[5]}, function (err, team) {
+            if (err)
+                return next(err);
 
-        if (_.isNull(playerAccounts) || _.isEmpty(playerAccounts)) {
-            res.set('Content-Type', 'application/json');
-            res.status(404).json(playerAccounts || {}, null, 2);
-        }
-        else {
-            let criteria = _.map(playerAccounts, '_id');
+            team.players = team.players.push(playyerAcc._id);
+            Team.findOneAndUpdate(
+                {_id: Util.getPathParams(req)[5]},
+                {
+                    $set: {
+                        //TODO Check that it won't set not updated attributes to 'null'
+                        players: team.players
+                    }
+                },
+                {new: true}, //means we want the DB to return the updated document instead of the old one
+                function (err, updatedTeam) {
+                    if (err)
+                        return next(err);
 
-            //get teams where gameId and playerAccountIds are present
-            Team.find({
-                game: Util.getPathParams(req)[4],
-                players: criteria
-            }, function (err, foundTeams) {
-                if (err)
-                    return next(err);
-
-                if (_.isNull(foundTeams) || _.isEmpty(foundTeams)) {
+                    logger.debug("Updated team object: \n" + updatedTeam);
                     res.set('Content-Type', 'application/json');
-                    res.status(404).json(tab || {}, null, 2);
-                }
-                else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
-                }
-            });
-        }
-
+                    res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                });
+        });
     });
-    // Team.find(
-    //     {game: Util.getPathParams(req)[4]},
-    //     function (err, teams) {
-    //         if (err)
-    //             return next(err);
-    //
-    //         logger.debug(teams);
-    //
-    //         var tabTeams = _.filter(teams, function (team) {
-    //             return team._doc.players.user._id == Util.getPathParams(req)[2]
-    //         });
-    //
-    //         // for (var y = 0; y in teams; y++) {
-    //         //     if (teams[y].players.user._id == Util.getPathParams(req)[2]) {
-    //         //         tab.push(teams[y]);
-    //         //     }
-    //         // }
-    //
-    //         if (_.isNull(tabTeams) || _.isEmpty(tabTeams)) {
-    //             res.set('Content-Type', 'application/json');
-    //             res.status(404).json(tab || {}, null, 2);
-    //         }
-    //         else {
-    //             res.set('Content-Type', 'application/json');
-    //             res.status(200).end(JSON.stringify(tabTeams || {}, null, 2));
-    //         }
-    //     }
-    // );
+
 };
