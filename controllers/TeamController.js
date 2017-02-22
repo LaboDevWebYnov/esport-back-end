@@ -252,7 +252,7 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
     PlayerAccount.findOne({_id: Util.getPathParams(req)[4]}, function (err, foundPlayerAccount) {
         if (err)
             return next(err);
-        if (_.isNull(foundPlayerAccount) || _.isEmpty(foundPlayerAccount)) {
+        if (_.isNil(foundPlayerAccount) || _.isEmpty(foundPlayerAccount)) {
             res.set('Content-Type', 'application/json');
             res.status(404).json(foundPlayerAccount || {}, null, 2);
         }
@@ -261,13 +261,19 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
             Team.findOne({_id: Util.getPathParams(req)[2]}, function (err, team) {
                 if (err)
                     return next(err);
-                if (_.isNull(team) || _.isEmpty(team)) {
+                if (_.isNil(team) || _.isEmpty(team)) {
                     res.set('Content-Type', 'application/json');
                     res.status(404).json(team || {}, null, 2);
                 }
                 else {
+                    //in case players doesn't exist or is empty, create an empty array
+                    if(_.isNil(team.players) || _.isEmpty(team.players))
+                        team.players = [];
+
                     //adding new player to team players list
                     team.players = team.players.push(foundPlayerAccount._id);
+
+                    //updating team with updated players list
                     Team.findOneAndUpdate(
                         {_id: Util.getPathParams(req)[2]},
                         {
@@ -279,7 +285,7 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
                         function (err, updatedTeam) {
                             if (err)
                                 return next(err);
-                            if (_.isNull(updatedTeam) || _.isEmpty(updatedTeam)) {
+                            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
                                 res.set('Content-Type', 'application/json');
                                 res.status(404).json(updatedTeam || {}, null, 2);
                             }
