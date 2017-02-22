@@ -2106,6 +2106,44 @@
         }
       }
     },
+    "/teams/{teamId}/addPlayer/{playerAccountId}": {
+      "put": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "addPlayer",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Adds a player to a team",
+        "description": "Adds new `PlayerAccount` object to the given team's players.",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of team object to update",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount object to add to the team.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PlayerAccount has been successfully added to the team"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/teams/{teamId}/getTeamById": {
       "get": {
         "x-swagger-router-controller": "TeamController",

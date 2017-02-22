@@ -44,44 +44,52 @@ module.exports.getTeams = function getTeams(req, res, next) {
 //Path: GET api/teams/{userId}/addTeam/{gameId}
 module.exports.addTeam = function addTeam(req, res, next) {
     logger.info('Adding new team to game with gameId ' + Util.getPathParams(req)[4] + ' with user ' + Util.getPathParams(req)[2]);
-    // Code necessary to consume the Team API and respond
+
     User.findOne(
         {_id: Util.getPathParams(req)[2]},
         function (err, userFinded) {
-            Game.findOne(
-                {_id: Util.getPathParams(req)[4]},
-                function (err, gameFinded) {
+            if (err)
+                return next(err);
+            if (_.isNull(userFinded) || _.isEmpty(userFinded)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(userFinded || {}, null, 2);
+            }
+            else {
+                Game.findOne(
+                    {_id: Util.getPathParams(req)[4]},
+                    function (err, gameFinded) {
 
-                    //définition d'une team
-                    let team = new Team({
-                        name: sanitizer.escape(req.body.teamName),
-                        tag: sanitizer.escape(req.body.teamTag),
-                        owner: userFinded,
-                        players: [],
-                        captain: sanitizer.escape(req.body.captainPlayerAccountId) || undefined,
-                        invitedPlayers: [],
-                        postulatedPlayers: [],
-                        active: true,
-                        country: sanitizer.escape(req.body.teamCountry),
-                        game: gameFinded,
-                        created_at: Date.now(),
-                        updated_at: Date.now()
+                        //définition d'une team
+                        let team = new Team({
+                            name: sanitizer.escape(req.body.teamName),
+                            tag: sanitizer.escape(req.body.teamTag),
+                            owner: userFinded._id,
+                            players: [],
+                            captain: sanitizer.escape(req.body.captainPlayerAccountId) || undefined,
+                            invitedPlayers: [],
+                            postulatedPlayers: [],
+                            active: true,
+                            country: sanitizer.escape(req.body.teamCountry),
+                            game: gameFinded,
+                            created_at: Date.now(),
+                            updated_at: Date.now()
+                        });
+
+                        team.save(function (err, team) {
+                            if (err)
+                                return next(err);
+
+                            if (_.isNull(team) || _.isEmpty(team)) {
+                                res.set('Content-Type', 'application/json');
+                                res.status(404).json(team || {}, null, 2);
+                            }
+                            else {
+                                res.set('Content-Type', 'application/json');
+                                res.end(JSON.stringify(team || {}, null, 2));
+                            }
+                        });
                     });
-
-                    team.save(function (err, team) {
-                        if (err)
-                            return next(err);
-
-                        if (_.isNull(team) || _.isEmpty(team)) {
-                            res.set('Content-Type', 'application/json');
-                            res.status(404).json(team || {}, null, 2);
-                        }
-                        else {
-                            res.set('Content-Type', 'application/json');
-                            res.end(JSON.stringify(team || {}, null, 2));
-                        }
-                    });
-                });
+            }
         });
 };
 
@@ -184,10 +192,15 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
         function (err, updatedTeam) {
             if (err)
                 return next(err);
-
-            logger.debug("Deactivated team object: \n" + updatedTeam);
-            res.set('Content-Type', 'application/json');
-            res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+            if (_.isNull(updatedTeam) || _.isEmpty(updatedTeam)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(tab || {}, null, 2);
+            }
+            else {
+                logger.debug("Deactivated team object: \n" + updatedTeam);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+            }
         });
 };
 
@@ -229,35 +242,55 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
     });
 };
 
-// Path: PUT api/teams/addUser/{userId}/Team/{teamId}
+// Path: PUT api/teams/{teamId}/addPlayer/{playerAccountId}
 module.exports.addPlayer = function addPlayer(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
 
-    PlayerAccount.findOne({_id: Util.getPathParams(req)[3]}, function (err, playyerAcc) {
+    logger.info('Adding playerAccount with id ' + Util.getPathParams(req)[4] + ' to team with teamId' + Util.getPathParams(req)[2]);
+
+    PlayerAccount.findOne({_id: Util.getPathParams(req)[4]}, function (err, foundPlayerAccount) {
         if (err)
             return next(err);
-        Team.findOne({_id: Util.getPathParams(req)[5]}, function (err, team) {
-            if (err)
-                return next(err);
-
-            team.players = team.players.push(playyerAcc._id);
-            Team.findOneAndUpdate(
-                {_id: Util.getPathParams(req)[5]},
-                {
-                    $set: {
-                        //TODO Check that it won't set not updated attributes to 'null'
-                        players: team.players
-                    }
-                },
-                {new: true}, //means we want the DB to return the updated document instead of the old one
-                function (err, updatedTeam) {
-                    if (err)
-                        return next(err);
-
-                    logger.debug("Updated team object: \n" + updatedTeam);
+        if (_.isNull(foundPlayerAccount) || _.isEmpty(foundPlayerAccount)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(foundPlayerAccount || {}, null, 2);
+        }
+        else {
+            //recherche de la team
+            Team.findOne({_id: Util.getPathParams(req)[2]}, function (err, team) {
+                if (err)
+                    return next(err);
+                if (_.isNull(team) || _.isEmpty(team)) {
                     res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
-                });
-        });
+                    res.status(404).json(team || {}, null, 2);
+                }
+                else {
+                    //adding new player to team players list
+                    team.players = team.players.push(foundPlayerAccount._id);
+                    Team.findOneAndUpdate(
+                        {_id: Util.getPathParams(req)[2]},
+                        {
+                            $set: {
+                                players: team.players
+                            }
+                        },
+                        {new: true}, //means we want the DB to return the updated document instead of the old one
+                        function (err, updatedTeam) {
+                            if (err)
+                                return next(err);
+                            if (_.isNull(updatedTeam) || _.isEmpty(updatedTeam)) {
+                                res.set('Content-Type', 'application/json');
+                                res.status(404).json(updatedTeam || {}, null, 2);
+                            }
+                            else {
+                                logger.debug("Updated team object: \n" + updatedTeam);
+                                res.set('Content-Type', 'application/json');
+                                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                            }
+                        });
+                }
+            });
+        }
     });
-
 };
