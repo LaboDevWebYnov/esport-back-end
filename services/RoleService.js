@@ -22,7 +22,7 @@ var PlayerAccountBD = require('../models/PlayerAccountDB'),
 mongoose.Promise = Promise;
 
 module.exports.getTeamRoles = function getTeamRoles(teamId, next) {
-    Role.find({team: teamId},
+    Role.find({_id: teamId},
         function (err, roles) {
             if (err)
                 return next(err, null);

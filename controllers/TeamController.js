@@ -108,11 +108,10 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
     logger.debug('Path:' + req.path);
 
     logger.info('Getting the game with id:' + Util.getPathParams(req)[2]);
-    // Code necessary to consume the Team API and respond
 
-    Team.findById(
-        Util.getPathParams(req)[2],
-        function (err, team) {
+    Team.findById(Util.getPathParams(req)[2])
+        .populate("players")
+        .exec(function (err, team) {
             if (err)
                 return next(err);
 
@@ -122,8 +121,9 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
                 res.status(404).json(team || {}, null, 2);
             }
             else {
-                if (team.players.length) {
-                    roleService.getTeamRoles(Util.getPathParams(req)[2], function (err, foundRoles) {
+                //si il y a des users
+                if (team._doc.players.length) {
+                    roleService.getTeamRoles(team._id, function (err, foundRoles) {
                         if (err)
                             return next(err);
 
@@ -132,8 +132,9 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
                             res.status(404).json(foundRoles || {}, null, 2);
                         }
                         else {
+                            //affectation des roles aux players
                             _.forEach(team.players, function (player) {
-                                player.role = _.find(foundRoles, function (role) {
+                                player._doc.role = _.find(foundRoles, function (role) {
                                     return player._id == role._doc.playerAccount;
                                 });
                             });
@@ -143,12 +144,12 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
                     });
                 }
                 else {
+                    //pas de players, on renvoie directement
                     res.set('Content-Type', 'application/json');
                     res.end(JSON.stringify(team || {}, null, 2));
                 }
             }
-        }
-    );
+        });
 };
 
 // Path: GET api/teams/{teamName}/getTeamByName
