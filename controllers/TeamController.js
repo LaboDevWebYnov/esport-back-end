@@ -58,36 +58,43 @@ module.exports.addTeam = function addTeam(req, res, next) {
                 Game.findOne(
                     {_id: Util.getPathParams(req)[4]},
                     function (err, gameFinded) {
+                        if (err)
+                            return next(err);
+                        if (_.isNull(gameFinded) || _.isEmpty(gameFinded)) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(404).json(gameFinded || {}, null, 2);
+                        }
+                        else {
+                            //définition d'une team
+                            let team = new Team({
+                                name: sanitizer.escape(req.body.teamName),
+                                tag: sanitizer.escape(req.body.teamTag),
+                                owner: userFinded._id,
+                                players: sanitizer.escape(req.body.captainPlayerAccountId) || [],
+                                captain: sanitizer.escape(req.body.captainPlayerAccountId) || undefined,
+                                invitedPlayers: [],
+                                postulatedPlayers: [],
+                                active: true,
+                                country: sanitizer.escape(req.body.teamCountry),
+                                game: gameFinded,
+                                created_at: Date.now(),
+                                updated_at: Date.now()
+                            });
 
-                        //définition d'une team
-                        let team = new Team({
-                            name: sanitizer.escape(req.body.teamName),
-                            tag: sanitizer.escape(req.body.teamTag),
-                            owner: userFinded._id,
-                            players: [],
-                            captain: sanitizer.escape(req.body.captainPlayerAccountId) || undefined,
-                            invitedPlayers: [],
-                            postulatedPlayers: [],
-                            active: true,
-                            country: sanitizer.escape(req.body.teamCountry),
-                            game: gameFinded,
-                            created_at: Date.now(),
-                            updated_at: Date.now()
-                        });
+                            team.save(function (err, team) {
+                                if (err)
+                                    return next(err);
 
-                        team.save(function (err, team) {
-                            if (err)
-                                return next(err);
-
-                            if (_.isNull(team) || _.isEmpty(team)) {
-                                res.set('Content-Type', 'application/json');
-                                res.status(404).json(team || {}, null, 2);
-                            }
-                            else {
-                                res.set('Content-Type', 'application/json');
-                                res.end(JSON.stringify(team || {}, null, 2));
-                            }
-                        });
+                                if (_.isNull(team) || _.isEmpty(team)) {
+                                    res.set('Content-Type', 'application/json');
+                                    res.status(404).json(team || {}, null, 2);
+                                }
+                                else {
+                                    res.set('Content-Type', 'application/json');
+                                    res.end(JSON.stringify(team || {}, null, 2));
+                                }
+                            });
+                        }
                     });
             }
         });
@@ -166,7 +173,7 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
             if (err)
                 return next(err);
 
-            if (_.isNull(updatedTeam) || _.isEmpty(updatedTeam)) {
+            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
                 res.set('Content-Type', 'application/json');
                 res.status(404).json(updatedTeam || {}, null, 2);
             }
@@ -192,7 +199,7 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
         function (err, updatedTeam) {
             if (err)
                 return next(err);
-            if (_.isNull(updatedTeam) || _.isEmpty(updatedTeam)) {
+            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
                 res.set('Content-Type', 'application/json');
                 res.status(404).json(tab || {}, null, 2);
             }
@@ -212,26 +219,26 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
     logger.info('Getting teams for user with userId ' + Util.getPathParams(req)[2] + ' and game with gameId:' + Util.getPathParams(req)[4]);
 
     //get playerAccounts of user
-    PlayerAccount.find({_id: Util.getPathParams(req)[2]}, function (err, playerAccounts) {
+    PlayerAccount.find({user: Util.getPathParams(req)[2]}, function (err, playerAccounts) {
         if (err)
             return next(err);
-        if (_.isNull(playerAccounts) || _.isEmpty(playerAccounts)) {
+        if (_.isNil(playerAccounts) || _.isEmpty(playerAccounts)) {
             res.set('Content-Type', 'application/json');
             res.status(404).json(playerAccounts || {}, null, 2);
         }
         else {
-            let criteria = _.map(playerAccounts, '_id');
+            let criteriaId = _.map(playerAccounts, '_id');
 
             //get teams where gameId and playerAccountIds are present
             Team.find({
                 game: Util.getPathParams(req)[4],
-                players: criteria
+                players: {$in: criteriaId}
             }, function (err, foundTeams) {
                 if (err)
                     return next(err);
-                if (_.isNull(foundTeams) || _.isEmpty(foundTeams)) {
+                if (_.isNil(foundTeams) || _.isEmpty(foundTeams)) {
                     res.set('Content-Type', 'application/json');
-                    res.status(404).json(tab || {}, null, 2);
+                    res.status(404).json(foundTeams || {}, null, 2);
                 }
                 else {
                     res.set('Content-Type', 'application/json');
@@ -267,7 +274,7 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
                 }
                 else {
                     //in case players doesn't exist or is empty, create an empty array
-                    if(_.isNil(team.players) || _.isEmpty(team.players))
+                    if (_.isNil(team.players) || _.isEmpty(team.players))
                         team.players = [];
 
                     //adding new player to team players list
