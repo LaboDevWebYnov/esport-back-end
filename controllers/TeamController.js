@@ -196,35 +196,37 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the team with name:' + decodeURIComponent(Util.getPathParams(req)[2]), Util.getPathParams(req)[4]);
-    // Code necessary to consume the Team API and respond
+    logger.info('Getting teams for user with userId ' + Util.getPathParams(req)[2] + ' and game with gameId:' + Util.getPathParams(req)[4]);
 
-    Team.find(
-        {game: decodeURIComponent(Util.getPathParams(req)[4])},
-        function (err, teams) {
-            if (err)
-                return next(err);
-
-            logger.debug(teams);
-
-            var tab;
-
-            for (var y = 0; y in teams; y++) {
-                if (teams[y].players.user._id == Util.getPathParams(req)[2]) {
-                    tab.push(teams[y]);
-                }
-            }
-
-            if (_.isNull(tab) || _.isEmpty(tab)) {
-                res.set('Content-Type', 'application/json');
-                res.status(404).json(tab || {}, null, 2);
-            }
-            else {
-                res.set('Content-Type', 'application/json');
-                res.status(200).end(JSON.stringify(tab || {}, null, 2));
-            }
+    //get playerAccounts of user
+    PlayerAccount.find({_id: Util.getPathParams(req)[2]}, function (err, playerAccounts) {
+        if (err)
+            return next(err);
+        if (_.isNull(playerAccounts) || _.isEmpty(playerAccounts)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(playerAccounts || {}, null, 2);
         }
-    );
+        else {
+            let criteria = _.map(playerAccounts, '_id');
+
+            //get teams where gameId and playerAccountIds are present
+            Team.find({
+                game: Util.getPathParams(req)[4],
+                players: criteria
+            }, function (err, foundTeams) {
+                if (err)
+                    return next(err);
+                if (_.isNull(foundTeams) || _.isEmpty(foundTeams)) {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).json(tab || {}, null, 2);
+                }
+                else {
+                    res.set('Content-Type', 'application/json');
+                    res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
+                }
+            });
+        }
+    });
 };
 
 // Path: PUT api/teams/addUser/{userId}/Team/{teamId}
