@@ -202,6 +202,11 @@ module.exports.registerUserVerifyEmail = function registerUserVerifyEmail(req, r
 // Path: PUT api/register/{userId}/step1
 module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) {
     logger.debug('Going to update registration infos for user ' + Util.getPathParams(req)[2]);
+    logger.debug('date: ' + req.body.birthDate);
+
+    var darr = req.body.birthDate.split("-");    // ["29", "1", "2016"]
+    var dobj = new Date(parseInt(darr[2]),parseInt(darr[1])-1,parseInt(darr[0]));
+    logger.debug('date: ' + dobj/*moment(req.body.birthDate).toISOString()*/);
 
     if (sanitizer.escape(req.body.password) === sanitizer.escape(req.body.passwordConfirmation)) {
         Util.saltPassword(sanitizer.escape(req.body.password), function (err, saltedNewPassword) {
@@ -216,7 +221,7 @@ module.exports.registerUpdateUser = function registerUpdateUser(req, res, next) 
                             firstname: req.body.firstname || null,
                             lastname: req.body.lastname || null,
                             username: req.body.username || null,
-                            birthDate: req.body.birthDate || null,
+                            birthDate: dobj || null,
                             password: saltedNewPassword || null,
                             phoneNumber: req.body.phoneNumber || null,
                             updated_at: Date.now()
