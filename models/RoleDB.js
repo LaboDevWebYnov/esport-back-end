@@ -5,10 +5,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Role = new Schema({
-    playerAccount: {type: Schema.ObjectId, ref: 'PlayerAccount', required: true},
     role: {type: String, required: true},
+    playerAccount: {type: Schema.ObjectId, ref: 'PlayerAccount', required: true},
     team: {type: Schema.ObjectId, ref: 'Team', required: true},
-    active: {type: Boolean, required: true, default: true},
+    active: {type: Boolean, required: true},
     created_at: {type: Date, required: true, default: new Date()},
     updated_at: {type: Date, required: true, default: new Date()}
 });

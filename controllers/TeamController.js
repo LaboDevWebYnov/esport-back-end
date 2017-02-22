@@ -8,7 +8,8 @@ var Promise = require("bluebird"),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
-    Util = require('./utils/util.js');
+    Util = require('./utils/util.js'),
+    roleService = require('../services/RoleService');
 
 var PlayerAccountBD = require('../models/PlayerAccountDB'),
     gameDB = require('../models/GameDB'),
@@ -35,6 +36,7 @@ module.exports.getTeams = function getTeams(req, res, next) {
             res.status(404).json(teams || {}, null, 2);
         }
         else {
+            //todo ajouter les roles pour chaque team
             res.set('Content-Type', 'application/json');
             res.end(JSON.stringify(teams || {}, null, 2));
         }
@@ -105,7 +107,7 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Getting the game with id:' + Util.getPathParams(req)[3]);
+    logger.info('Getting the game with id:' + Util.getPathParams(req)[2]);
     // Code necessary to consume the Team API and respond
 
     Team.findById(
@@ -120,8 +122,30 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
                 res.status(404).json(team || {}, null, 2);
             }
             else {
-                res.set('Content-Type', 'application/json');
-                res.end(JSON.stringify(team || {}, null, 2));
+                if (team.players.length) {
+                    roleService.getTeamRoles(Util.getPathParams(req)[2], function (err, foundRoles) {
+                        if (err)
+                            return next(err);
+
+                        if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(404).json(foundRoles || {}, null, 2);
+                        }
+                        else {
+                            _.forEach(team.players, function (player) {
+                                player.role = _.find(foundRoles, function (role) {
+                                    return player._id == role._doc.playerAccount;
+                                });
+                            });
+                            res.set('Content-Type', 'application/json');
+                            res.end(JSON.stringify(team || {}, null, 2));
+                        }
+                    });
+                }
+                else {
+                    res.set('Content-Type', 'application/json');
+                    res.end(JSON.stringify(team || {}, null, 2));
+                }
             }
         }
     );
