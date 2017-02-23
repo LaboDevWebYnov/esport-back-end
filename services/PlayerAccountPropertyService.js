@@ -20,6 +20,7 @@ var Promise = require("bluebird"),
     GameDB = require('../models/GameDB'),
     steamService = require('../services/SteamService'),
     riotService = require('../services/RiotService'),
+    owService = require('../services/BlizzardService'),
     Game = mongoose.model('Game');
 
 mongoose.Promise = Promise;
@@ -138,7 +139,12 @@ module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties
                             return next(null, playerAccProps);
                             break;
                         case 'overwatch':
-                            return next(null, playerAccProps);
+                            getOWProperties(foundPlayerAccount.login,function (err,lolProperties) {
+                                if(!err){
+                                    playerAccProps.push(lolProperties);
+                                    return next(null, _.flatten(playerAccProps));
+                                }
+                            });
                             break;
                         default:
                             //logger.error("Could not find corresponding props for the game name: " + gameName);
@@ -151,14 +157,6 @@ module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties
                     }
                 }
             });
-        // getGameProperties(foundPlayerAccount,function (err,foundGameProperties) {
-        //
-        // });
-        // module.exports.findByGameId(foundPlayerAccount.game._id, function (err, gameProperties) {
-        //     PlayerAccountProperty.find({playerAccount:playerAccountId, key:gameProperties}, function (err, foundPlayerAccountProperties) {
-        //
-        //     })
-        // });
     })
 };
 
@@ -181,6 +179,38 @@ function getLOLProperties(summonersName,callback) {
                             playerAccountPropertiesContent.push(body[y]);
                     }
                     cb(error,'recuperation des infos du user lol');
+                });
+            }
+        ],
+        function (err, results) {
+            if(err){
+                callback(err,null);
+            }
+            else{
+                callback(null,playerAccountPropertiesContent);
+            }
+        });
+}
+
+function getOWProperties(UserName,callback) {
+    let playerAccountPropertiesContent = [];
+    async.parallel([
+            function (cb) {
+                owService.getUserHeroesCompetitiveStats(UserName, function (error, resp, body) {
+                    if(!error && !_.isNull(body)){
+                        for(let y=0;y in body;y++)
+                            playerAccountPropertiesContent.push(body[y]);
+                    }
+                    cb(error,'recuperation des stats des heros de OW');
+                });
+            },
+            function (cb) {
+                owService.getUserProfileStats(UserName, function (error, resp, body) {
+                    if(!error && !_.isNull(body)){
+                        for(let y=0;y in body;y++)
+                            playerAccountPropertiesContent.push(body[y]);
+                    }
+                    cb(error,'recuperation des infos du user OW');
                 });
             }
         ],

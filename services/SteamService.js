@@ -26,9 +26,7 @@ let RLContent = [];
 const DOTA2props = [];
 let DOTA2Content = [];
 
-//OverWatch todo add corresponding props
-const OWprops = [];
-let OWContent = [];
+
 
 
 
