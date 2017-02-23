@@ -19,8 +19,7 @@ var Promise = require("bluebird"),
     Address = mongoose.model('Address'),
     GameDB = require('../models/GameDB'),
     Game = mongoose.model('Game'),
-    playerAccountPropertyService = require('../services/PlayerAccountPropertyService'),
-    steamService = require('../services/SteamService');
+    playerAccountPropertyService = require('../services/PlayerAccountPropertyService');
 
 mongoose.Promise = Promise;
 
@@ -33,9 +32,6 @@ mongoose.Promise = Promise;
  */
 module.exports.getPlayerAccountsProperties = function getPlayerAccountsProperties(req, res, next) {
     logger.info('Getting all playerAccounts properties from db...');
-
-
-
 
     PlayerAccountProperty.find({})
         .populate("playerAccount")

@@ -15,6 +15,7 @@ var Promise = require("bluebird"),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
     GameDB = require('../models/GameDB'),
+    playerAccountPropertyService = require('../services/PlayerAccountPropertyService'),
     Game = mongoose.model('Game');
 
 mongoose.Promise = Promise;
@@ -112,8 +113,21 @@ module.exports.getPlayerAccountById = function getPlayerAccountById(req, res, ne
                     res.status(404).json(playerAccount || {}, null, 2);
                 }
                 else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(playerAccount || {}, null, 2));
+                    playerAccountPropertyService.getPlayerAccountProperties(playerAccount._id,function (err,playerAccountProperties) {
+                        if (err)
+                            return next(err);
+
+                        logger.debug(playerAccountProperties);
+                        if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(404).json(playerAccountProperties || {}, null, 2);
+                        }
+                        else {
+                            playerAccount._doc.properties = playerAccountProperties;
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(playerAccount || {}, null, 2));
+                        }
+                    });
                 }
             }
         );

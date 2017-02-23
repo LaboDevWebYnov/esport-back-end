@@ -7,6 +7,7 @@ var Promise = require("bluebird"),
     sanitizer = require('sanitizer'),
     moment = require('moment'),
     _ = require('lodash'),
+    async = require('async'),
     Util = require('../controllers/utils/util.js'),
     PlayerAccountPropertyDB = require('../models/PlayerAccountPropertyDB'),
     PlayerAccountDB = require('../models/PlayerAccountDB'),
@@ -17,6 +18,7 @@ var Promise = require("bluebird"),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
     GameDB = require('../models/GameDB'),
+    steamService = require('../services/SteamService'),
     Game = mongoose.model('Game');
 
 mongoose.Promise = Promise;
@@ -31,7 +33,8 @@ mongoose.Promise = Promise;
 //todo deletePropById
 
 //CS:GO: todo add corresponding props
-const CSGOProps = ['current_rank', 'fav_map', 'highest_rank', 'fav_weapon', 'adr', 'kdr'];
+const CSGOProps = ['total_kills', 'kill_death_ratio', 'total_time_played', 'total_mvps', 'ratio_win_loose', 'percentage_kills_by_heads_shot', 'accuracy', 'country', 'name', 'pseudo'];
+
 
 //LoL: todo add corresponding props
 const LOLProps = [];
@@ -92,4 +95,96 @@ module.exports.findByGameId = function findByGameId(gameId, next) {
                 }
             }
         });
+};
+
+module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties(playerAccountId, next) {
+    let playerAccProps =[];
+    PlayerAccount.findOne({_id: playerAccountId}, function (err, foundPlayerAccount) {
+        let gameId = foundPlayerAccount._doc.game;
+        logger.info("Retrieving properties for game with id: " + gameId);
+        Game.findOne({_id: gameId})
+            .exec(function (err, foundGame) {
+                if (err) {
+                    return next(err, null);
+                }
+                if (_.isNull(foundGame) || _.isEmpty(foundGame)) {
+                    return next({error: {code: 'E_GAME_NOT_FOUND', message: 'Game with given id not found'}});
+                }
+                else {
+                    let gameName = _.toLower(foundGame._doc.name.replace(/\s/g, ""));
+                    logger.debug("trying to link corresponding props for the game with name: " + gameName);
+                    switch (gameName) {
+                        case 'counter-strike:globaloffensive':
+                            getCSGOProperties(foundPlayerAccount.login,function (err,csgoProperties) {
+                                if(!err){
+                                    playerAccProps.push(csgoProperties);
+                                    return next(null, playerAccProps);
+                                }
+                            });
+                            break;
+                        case 'leagueoflegends':
+                            return next(null, playerAccProps);
+                            break;
+                        case 'rocketleague':
+                            return next(null, playerAccProps);
+                            break;
+                        case 'dota2':
+                            return next(null, playerAccProps);
+                            break;
+                        case 'overwatch':
+                            return next(null, playerAccProps);
+                            break;
+                        default:
+                            //logger.error("Could not find corresponding props for the game name: " + gameName);
+                            return next({
+                                error: {
+                                    code: 'E_GAMEPROPS_NOT_FOUND',
+                                    message: 'Corresponding game properties not found for the retrieved game: ' + gameName
+                                }
+                            })
+                    }
+                }
+            });
+        // getGameProperties(foundPlayerAccount,function (err,foundGameProperties) {
+        //
+        // });
+        // module.exports.findByGameId(foundPlayerAccount.game._id, function (err, gameProperties) {
+        //     PlayerAccountProperty.find({playerAccount:playerAccountId, key:gameProperties}, function (err, foundPlayerAccountProperties) {
+        //
+        //     })
+        // });
+    })
+}
+
+
+
+function getCSGOProperties(steamId, callback) {
+    let playerAccountPropertiesContent = [];
+    async.parallel([
+        function (cb) {
+            steamService.getUserStatsForCSGO(steamId, function (error, resp, body) {
+                if(!error){
+                    for(let y=0;y in body;y++)
+                        playerAccountPropertiesContent.push(body[y]);
+                }
+                cb(error,'recuperation des stats de csgo');
+            });
+        },
+        function (cb) {
+            steamService.getUserInformation(steamId, function (error, resp, body) {
+                if(!error){
+                    for(let y=0;y in body;y++)
+                        playerAccountPropertiesContent.push(body[y]);
+                }
+                cb(error,'recuperation des infos du user steam');
+            });
+        }
+    ], function (err, results) {
+        if(err){
+            callback(err,null);
+        }
+        else{
+            callback(null,playerAccountPropertiesContent);
+        }
+    });
 };
