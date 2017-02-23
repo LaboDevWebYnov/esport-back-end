@@ -19,6 +19,7 @@ var Promise = require("bluebird"),
     Address = mongoose.model('Address'),
     GameDB = require('../models/GameDB'),
     steamService = require('../services/SteamService'),
+    riotService = require('../services/RiotService'),
     Game = mongoose.model('Game');
 
 mongoose.Promise = Promise;
@@ -118,12 +119,17 @@ module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties
                             getCSGOProperties(foundPlayerAccount.login,function (err,csgoProperties) {
                                 if(!err){
                                     playerAccProps.push(csgoProperties);
-                                    return next(null, playerAccProps);
+                                    return next(null, _.flatten(playerAccProps));
                                 }
                             });
                             break;
                         case 'leagueoflegends':
-                            return next(null, playerAccProps);
+                            getLOLProperties(foundPlayerAccount.login,function (err,lolProperties) {
+                                if(!err){
+                                    playerAccProps.push(lolProperties);
+                                    return next(null, _.flatten(playerAccProps));
+                                }
+                            });
                             break;
                         case 'rocketleague':
                             return next(null, playerAccProps);
@@ -154,16 +160,46 @@ module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties
         //     })
         // });
     })
+};
+
+function getLOLProperties(summonersName,callback) {
+    let playerAccountPropertiesContent = [];
+    async.parallel([
+            function (cb) {
+                riotService.getUserStatsForLol(summonersName, function (error, resp, body) {
+                    if(!error && !_.isNull(body)){
+                        for(let y=0;y in body;y++)
+                            playerAccountPropertiesContent.push(body[y]);
+                    }
+                    cb(error,'recuperation des stats de lol');
+                });
+            },
+            function (cb) {
+                riotService.getUserStatsForSeason(summonersName, function (error, resp, body) {
+                    if(!error && !_.isNull(body)){
+                        for(let y=0;y in body;y++)
+                            playerAccountPropertiesContent.push(body[y]);
+                    }
+                    cb(error,'recuperation des infos du user lol');
+                });
+            }
+        ],
+        function (err, results) {
+            if(err){
+                callback(err,null);
+            }
+            else{
+                callback(null,playerAccountPropertiesContent);
+            }
+        });
 }
-
-
 
 function getCSGOProperties(steamId, callback) {
     let playerAccountPropertiesContent = [];
     async.parallel([
         function (cb) {
             steamService.getUserStatsForCSGO(steamId, function (error, resp, body) {
-                if(!error){
+                if(!error && !_.isNull(body)){
                     for(let y=0;y in body;y++)
                         playerAccountPropertiesContent.push(body[y]);
                 }
@@ -172,14 +208,15 @@ function getCSGOProperties(steamId, callback) {
         },
         function (cb) {
             steamService.getUserInformation(steamId, function (error, resp, body) {
-                if(!error){
+                if(!error && !_.isNull(body)){
                     for(let y=0;y in body;y++)
                         playerAccountPropertiesContent.push(body[y]);
                 }
                 cb(error,'recuperation des infos du user steam');
             });
         }
-    ], function (err, results) {
+    ],
+        function (err, results) {
         if(err){
             callback(err,null);
         }
@@ -187,4 +224,4 @@ function getCSGOProperties(steamId, callback) {
             callback(null,playerAccountPropertiesContent);
         }
     });
-};
+}

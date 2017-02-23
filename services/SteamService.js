@@ -2,9 +2,7 @@
  * Created by probe on 22/02/2017.
  */
 
-var Promise = require("bluebird"),
-    logger = require('log4js').getLogger('service.steam'),
-    mongoose = require('mongoose'),
+var mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
     steamApiUrl = "http://api.steampowered.com/",
@@ -19,9 +17,6 @@ let CSGOStatsContent = [];
 const CSGOUserProperties = ['country','name','pseudo'];
 let CSGOUserPropertiesContent = [];
 
-//LoL: todo add corresponding props
-const LOLProps = [];
-let LOLContent = [];
 
 //Rocket League: todo add corresponding props
 const RLprops = [];
