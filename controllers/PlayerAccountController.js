@@ -14,7 +14,9 @@ var Promise = require("bluebird"),
     PlayerAccount = mongoose.model('PlayerAccount'),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
+    async = require('async'),
     GameDB = require('../models/GameDB'),
+    playerAccountPropertyService = require('../services/PlayerAccountPropertyService'),
     Game = mongoose.model('Game');
 
 mongoose.Promise = Promise;
@@ -34,8 +36,31 @@ module.exports.getPlayerAccountList = function getPlayerAccountList(req, res, ne
                 res.status(404).json(playerAccountList || {}, null, 2);
             }
             else {
-                res.set('Content-Type', 'application/json');
-                res.end(JSON.stringify(playerAccountList || {}, null, 2));
+                async.filter(playerAccountList,function (playerAccount,cb) {
+                    playerAccountPropertyService.getPlayerAccountProperties(playerAccount._id,function (err,playerAccountProperties) {
+                        if (err)
+                            cb(err);
+
+                        logger.debug(playerAccountProperties);
+                        if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                            cb(null);
+                            // res.set('Content-Type', 'application/json');
+                            // res.status(404).json(playerAccountProperties || {}, null, 2);
+                        }
+                        else {
+                            playerAccount._doc.properties = playerAccountProperties;
+                            cb(null);
+                        }
+                    });
+                },function (err,results) {
+                    if(err){
+                        return next(err);
+                    }
+                    else{
+                        res.set('Content-Type', 'application/json');
+                        res.status(200).end(JSON.stringify(playerAccountList || {}, null, 2));
+                    }
+                } )
             }
         });
 };
@@ -112,8 +137,21 @@ module.exports.getPlayerAccountById = function getPlayerAccountById(req, res, ne
                     res.status(404).json(playerAccount || {}, null, 2);
                 }
                 else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(playerAccount || {}, null, 2));
+                    playerAccountPropertyService.getPlayerAccountProperties(playerAccount._id,function (err,playerAccountProperties) {
+                        if (err)
+                            return next(err);
+
+                        logger.debug(playerAccountProperties);
+                        if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(404).json(playerAccountProperties || {}, null, 2);
+                        }
+                        else {
+                            playerAccount._doc.properties = playerAccountProperties;
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(playerAccount || {}, null, 2));
+                        }
+                    });
                 }
             }
         );
@@ -140,8 +178,31 @@ module.exports.getPlayerAccountByUserId = function getPlayerAccountByUserId(req,
                     res.status(404).json(playerAccountList || {}, null, 2);
                 }
                 else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(playerAccountList || {}, null, 2));
+                    async.filter(playerAccountList,function (playerAccount,cb) {
+                        playerAccountPropertyService.getPlayerAccountProperties(playerAccount._id,function (err,playerAccountProperties) {
+                            if (err)
+                                cb(err);
+
+                            logger.debug(playerAccountProperties);
+                            if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                                cb(null);
+                                // res.set('Content-Type', 'application/json');
+                                // res.status(404).json(playerAccountProperties || {}, null, 2);
+                            }
+                            else {
+                                playerAccount._doc.properties = playerAccountProperties;
+                                cb(null);
+                            }
+                        });
+                    },function (err,results) {
+                        if(err){
+                            return next(err);
+                        }
+                        else{
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(playerAccountList || {}, null, 2));
+                        }
+                    } )
                 }
             }
         );
@@ -154,21 +215,34 @@ module.exports.getPlayerAccountByLogin = function getPlayerAccountByLogin(req, r
     logger.info('Getting the playerAccount with login:' + decodeURIComponent(Util.getPathParams(req)[2]));
     // Code necessary to consume the User API and respond
 
-    PlayerAccount.find(
+    PlayerAccount.findOne(
         {login: decodeURIComponent(Util.getPathParams(req)[2])})
         .populate("game user")
-        .exec(function (err, playerAccountList) {
+        .exec(function (err, playerAccount) {
                 if (err)
                     return next(err);
 
-                logger.debug(playerAccountList);
-                if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
+                logger.debug(playerAccount);
+                if (_.isNull(playerAccount) || _.isEmpty(playerAccount)) {
                     res.set('Content-Type', 'application/json');
-                    res.status(404).json(playerAccountList || {}, null, 2);
+                    res.status(404).json(playerAccount || {}, null, 2);
                 }
                 else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(playerAccountList || {}, null, 2));
+                    playerAccountPropertyService.getPlayerAccountProperties(playerAccount._id,function (err,playerAccountProperties) {
+                        if (err)
+                            return next(err);
+
+                        logger.debug(playerAccountProperties);
+                        if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(404).json(playerAccountProperties || {}, null, 2);
+                        }
+                        else {
+                            playerAccount._doc.properties = playerAccountProperties;
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(playerAccount || {}, null, 2));
+                        }
+                    });
                 }
             }
         );
@@ -262,8 +336,31 @@ module.exports.getPlayerAccountsByUserAndGame = function getPlayerAccountsByUser
                     res.status(404).json(playerAccountList || {}, null, 2);
                 }
                 else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(playerAccountList || {}, null, 2));
+                    async.filter(playerAccountList,function (playerAccount,cb) {
+                        playerAccountPropertyService.getPlayerAccountProperties(playerAccount._id,function (err,playerAccountProperties) {
+                            if (err)
+                                cb(err);
+
+                            logger.debug(playerAccountProperties);
+                            if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                                cb(null);
+                                // res.set('Content-Type', 'application/json');
+                                // res.status(404).json(playerAccountProperties || {}, null, 2);
+                            }
+                            else {
+                                playerAccount._doc.properties = playerAccountProperties;
+                                cb(null);
+                            }
+                        });
+                    },function (err,results) {
+                        if(err){
+                            return next(err);
+                        }
+                        else{
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(playerAccountList || {}, null, 2));
+                        }
+                    } )
                 }
             }
         );
