@@ -28,7 +28,17 @@ module.exports.getTeams = function getTeams(req, res, next) {
     logger.info('Getting all teams from db...');
     // Code necessary to consume the Game API and respond
     Team.find({})
-        .populate("captain game players")
+        .populate("game")
+        .populate(
+            {
+                path: 'captain',
+                populate: {path: 'user'}
+            })
+        .populate(
+            {
+                path: 'players',
+                populate: {path: 'user'}
+            })
         .exec(function (err, teams) {
             if (err) {
                 return next(err);
@@ -94,8 +104,24 @@ module.exports.addTeam = function addTeam(req, res, next) {
                                     res.status(404).json(team || {}, null, 2);
                                 }
                                 else {
+                                    //todo handle populating on team creation + roles
+                                    //populating players, game and captain
+                                    // Team.populate(team, {path: 'players'}, function (err, team) {
+                                    //     if(err)
+                                    //         return next(err);
+                                    //     else {
+                                    //         Team.populate(team, {path: 'captain'}, function (err, team) {
+                                    //             if(err)
+                                    //                 return next(err);
+                                    //             else {
+                                    //                 res.set('Content-Type', 'application/json');
+                                    //                 res.end(JSON.stringify(team || {}, null, 2));
+                                    //             }
+                                    //         });
                                     res.set('Content-Type', 'application/json');
                                     res.end(JSON.stringify(team || {}, null, 2));
+                                    //     }
+                                    // });
                                 }
                             });
                         }
@@ -114,7 +140,17 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
 
     Team.findById(
         Util.getPathParams(req)[2])
-        .populate("captain game players")
+        .populate("game")
+        .populate(
+            {
+                path: 'captain',
+                populate: {path: 'user'}
+            })
+        .populate(
+            {
+                path: 'players',
+                populate: {path: 'user'}
+            })
         .exec(function (err, team) {
                 if (err)
                     return next(err);
@@ -164,7 +200,17 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
 
     Team.findOne(
         {name: decodeURIComponent(Util.getPathParams(req)[2])})
-        .populate("captain game players")
+        .populate("game")
+        .populate(
+            {
+                path: 'captain',
+                populate: {path: 'user'}
+            })
+        .populate(
+            {
+                path: 'players',
+                populate: {path: 'user'}
+            })
         .exec(function (err, team) {
                 if (err)
                     return next(err);
@@ -198,7 +244,17 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
         },
         //means we want the DB to return the updated document instead of the old one
         {new: true})
-        .populate("captain game players")
+        .populate("game")
+        .populate(
+            {
+                path: 'captain',
+                populate: {path: 'user'}
+            })
+        .populate(
+            {
+                path: 'players',
+                populate: {path: 'user'}
+            })
         .exec(function (err, updatedTeam) {
             if (err)
                 return next(err);
@@ -225,8 +281,19 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
                 active: false
             }
         },
-        {new: true}, //means we want the DB to return the updated document instead of the old one
-        function (err, updatedTeam) {
+        {new: true}) //means we want the DB to return the updated document instead of the old one
+        .populate("game")
+        .populate(
+            {
+                path: 'captain',
+                populate: {path: 'user'}
+            })
+        .populate(
+            {
+                path: 'players',
+                populate: {path: 'user'}
+            })
+        .exec(function (err, updatedTeam) {
             if (err)
                 return next(err);
             if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
@@ -264,7 +331,17 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
                 game: Util.getPathParams(req)[4],
                 players: {$in: criteriaId}
             })
-                .populate("captain game players")
+                .populate("game")
+                .populate(
+                    {
+                        path: 'captain',
+                        populate: {path: 'user'}
+                    })
+                .populate(
+                    {
+                        path: 'players',
+                        populate: {path: 'user'}
+                    })
                 .exec(function (err, foundTeams) {
                     if (err)
                         return next(err);
@@ -300,44 +377,55 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
             Team.findOne({_id: Util.getPathParams(req)[2]})
                 .populate("captain game players")
                 .exec(function (err, team) {
-                if (err)
-                    return next(err);
-                if (_.isNil(team) || _.isEmpty(team)) {
-                    res.set('Content-Type', 'application/json');
-                    res.status(404).json(team || {}, null, 2);
-                }
-                else {
-                    //in case players doesn't exist or is empty, create an empty array
-                    if (_.isNil(team.players) || _.isEmpty(team.players))
-                        team.players = [];
+                    if (err)
+                        return next(err);
+                    if (_.isNil(team) || _.isEmpty(team)) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(404).json(team || {}, null, 2);
+                    }
+                    else {
+                        //in case players doesn't exist or is empty, create an empty array
+                        if (_.isNil(team.players) || _.isEmpty(team.players))
+                            team.players = [];
 
-                    //adding new player to team players list
-                    team.players = team.players.push(foundPlayerAccount._id);
+                        //adding new player to team players list
+                        team.players = team.players.push(foundPlayerAccount._id);
 
-                    //updating team with updated players list
-                    Team.findOneAndUpdate(
-                        {_id: Util.getPathParams(req)[2]},
-                        {
-                            $set: {
-                                players: team.players
-                            }
-                        },
-                        {new: true}, //means we want the DB to return the updated document instead of the old one
-                        function (err, updatedTeam) {
-                            if (err)
-                                return next(err);
-                            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
-                                res.set('Content-Type', 'application/json');
-                                res.status(404).json(updatedTeam || {}, null, 2);
-                            }
-                            else {
-                                logger.debug("Updated team object: \n" + updatedTeam);
-                                res.set('Content-Type', 'application/json');
-                                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
-                            }
-                        });
-                }
-            });
+                        //updating team with updated players list
+                        Team.findOneAndUpdate(
+                            {_id: Util.getPathParams(req)[2]},
+                            {
+                                $set: {
+                                    players: team.players
+                                }
+                            },
+                            {new: true}) //means we want the DB to return the updated document instead of the old one
+                            .populate("game")
+                            .populate(
+                                {
+                                    path: 'captain',
+                                    populate: {path: 'user'}
+                                })
+                            .populate(
+                                {
+                                    path: 'players',
+                                    populate: {path: 'user'}
+                                })
+                            .exec(function (err, updatedTeam) {
+                                if (err)
+                                    return next(err);
+                                if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+                                    res.set('Content-Type', 'application/json');
+                                    res.status(404).json(updatedTeam || {}, null, 2);
+                                }
+                                else {
+                                    logger.debug("Updated team object: \n" + updatedTeam);
+                                    res.set('Content-Type', 'application/json');
+                                    res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                                }
+                            });
+                    }
+                });
         }
     });
 };
