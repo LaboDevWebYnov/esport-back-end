@@ -27,20 +27,22 @@ mongoose.Promise = Promise;
 module.exports.getTeams = function getTeams(req, res, next) {
     logger.info('Getting all teams from db...');
     // Code necessary to consume the Game API and respond
-    Team.find({}, function (err, teams) {
-        if (err) {
-            return next(err);
-        }
-        if (_.isNull(teams) || _.isEmpty(teams)) {
-            res.set('Content-Type', 'application/json');
-            res.status(404).json(teams || {}, null, 2);
-        }
-        else {
-            //todo ajouter les roles pour chaque team
-            res.set('Content-Type', 'application/json');
-            res.end(JSON.stringify(teams || {}, null, 2));
-        }
-    });
+    Team.find({})
+        .populate("captain game players")
+        .exec(function (err, teams) {
+            if (err) {
+                return next(err);
+            }
+            if (_.isNull(teams) || _.isEmpty(teams)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(teams || {}, null, 2);
+            }
+            else {
+                //todo ajouter les roles pour chaque team
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(teams || {}, null, 2));
+            }
+        });
 };
 
 //Path: GET api/teams/{userId}/addTeam/{gameId}
@@ -111,44 +113,45 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
     // Code necessary to consume the Team API and respond
 
     Team.findById(
-        Util.getPathParams(req)[2],
-        function (err, team) {
-            if (err)
-                return next(err);
+        Util.getPathParams(req)[2])
+        .populate("captain game players")
+        .exec(function (err, team) {
+                if (err)
+                    return next(err);
 
-            logger.debug(team);
-            if (_.isNull(team) || _.isEmpty(team)) {
-                res.set('Content-Type', 'application/json');
-                res.status(404).json(team || {}, null, 2);
-            }
-            else {
-                if (team.players.length) {
-                    roleService.getTeamRoles(Util.getPathParams(req)[2], function (err, foundRoles) {
-                        if (err)
-                            return next(err);
-
-                        if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
-                            res.set('Content-Type', 'application/json');
-                            res.status(404).json(foundRoles || {}, null, 2);
-                        }
-                        else {
-                            _.forEach(team.players, function (player) {
-                                player.role = _.find(foundRoles, function (role) {
-                                    return player._id == role._doc.playerAccount;
-                                });
-                            });
-                            res.set('Content-Type', 'application/json');
-                            res.end(JSON.stringify(team || {}, null, 2));
-                        }
-                    });
+                logger.debug(team);
+                if (_.isNull(team) || _.isEmpty(team)) {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).json(team || {}, null, 2);
                 }
                 else {
-                    res.set('Content-Type', 'application/json');
-                    res.end(JSON.stringify(team || {}, null, 2));
+                    if (team.players.length) {
+                        roleService.getTeamRoles(Util.getPathParams(req)[2], function (err, foundRoles) {
+                            if (err)
+                                return next(err);
+
+                            if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                                res.set('Content-Type', 'application/json');
+                                res.status(404).json(foundRoles || {}, null, 2);
+                            }
+                            else {
+                                _.forEach(team.players, function (player) {
+                                    player.role = _.find(foundRoles, function (role) {
+                                        return player._id == role._doc.playerAccount;
+                                    });
+                                });
+                                res.set('Content-Type', 'application/json');
+                                res.end(JSON.stringify(team || {}, null, 2));
+                            }
+                        });
+                    }
+                    else {
+                        res.set('Content-Type', 'application/json');
+                        res.end(JSON.stringify(team || {}, null, 2));
+                    }
                 }
             }
-        }
-    );
+        );
 };
 
 // Path: GET api/teams/{teamName}/getTeamByName
@@ -160,23 +163,24 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
     // Code necessary to consume the Team API and respond
 
     Team.findOne(
-        {name: decodeURIComponent(Util.getPathParams(req)[2])},
-        function (err, team) {
-            if (err)
-                return next(err);
+        {name: decodeURIComponent(Util.getPathParams(req)[2])})
+        .populate("captain game players")
+        .exec(function (err, team) {
+                if (err)
+                    return next(err);
 
-            logger.debug(team);
+                logger.debug(team);
 
-            if (_.isNull(team) || _.isEmpty(team)) {
-                res.set('Content-Type', 'application/json');
-                res.status(404).json(team || {}, null, 2);
+                if (_.isNull(team) || _.isEmpty(team)) {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).json(team || {}, null, 2);
+                }
+                else {
+                    res.set('Content-Type', 'application/json');
+                    res.status(200).end(JSON.stringify(team || {}, null, 2));
+                }
             }
-            else {
-                res.set('Content-Type', 'application/json');
-                res.status(200).end(JSON.stringify(team || {}, null, 2));
-            }
-        }
-    );
+        );
 };
 
 // Path: PUT api/teams/{teamId}/updateTeam/
@@ -192,8 +196,10 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
                 updated_at: Date.now()
             }
         },
-        {new: true}, //means we want the DB to return the updated document instead of the old one
-        function (err, updatedTeam) {
+        //means we want the DB to return the updated document instead of the old one
+        {new: true})
+        .populate("captain game players")
+        .exec(function (err, updatedTeam) {
             if (err)
                 return next(err);
 
@@ -257,18 +263,20 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
             Team.find({
                 game: Util.getPathParams(req)[4],
                 players: {$in: criteriaId}
-            }, function (err, foundTeams) {
-                if (err)
-                    return next(err);
-                if (_.isNil(foundTeams) || _.isEmpty(foundTeams)) {
-                    res.set('Content-Type', 'application/json');
-                    res.status(404).json(foundTeams || {}, null, 2);
-                }
-                else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
-                }
-            });
+            })
+                .populate("captain game players")
+                .exec(function (err, foundTeams) {
+                    if (err)
+                        return next(err);
+                    if (_.isNil(foundTeams) || _.isEmpty(foundTeams)) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(404).json(foundTeams || {}, null, 2);
+                    }
+                    else {
+                        res.set('Content-Type', 'application/json');
+                        res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
+                    }
+                });
         }
     });
 };
@@ -289,7 +297,9 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
         }
         else {
             //recherche de la team
-            Team.findOne({_id: Util.getPathParams(req)[2]}, function (err, team) {
+            Team.findOne({_id: Util.getPathParams(req)[2]})
+                .populate("captain game players")
+                .exec(function (err, team) {
                 if (err)
                     return next(err);
                 if (_.isNil(team) || _.isEmpty(team)) {
