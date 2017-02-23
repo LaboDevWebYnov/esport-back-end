@@ -130,10 +130,10 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
                             if (err)
                                 return next(err);
 
-                            if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
-                                res.set('Content-Type', 'application/json');
-                                res.status(404).json(foundRoles || {}, null, 2);
-                            }
+                            // if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                            //     res.set('Content-Type', 'application/json');
+                            //     res.status(404).json(foundRoles || {}, null, 2);
+                            // }
                             else {
                                 _.forEach(team.players, function (player) {
                                     player.role = _.find(foundRoles, function (role) {
