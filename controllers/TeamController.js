@@ -15,11 +15,13 @@ var PlayerAccountBD = require('../models/PlayerAccountDB'),
     gameDB = require('../models/GameDB'),
     teamDB = require('../models/TeamDB'),
     userDB = require('../models/UserDB'),
+    roleDB = require('../models/RoleDB'),
 
     PlayerAccount = mongoose.model('PlayerAccount'),
     Game = mongoose.model('Game'),
     Team = mongoose.model('Team'),
-    User = mongoose.model('User');
+    User = mongoose.model('User'),
+    Role = mongoose.model('Role');
 
 mongoose.Promise = Promise;
 
@@ -67,6 +69,8 @@ module.exports.addTeam = function addTeam(req, res, next) {
                             res.status(404).json(gameFinded || {}, null, 2);
                         }
                         else {
+                            //todo handle captain's role in case there is a captain
+                            //todo verify captain playerAccountId exists
                             //définition d'une team
                             let team = new Team({
                                 name: sanitizer.escape(req.body.teamName),
@@ -121,7 +125,7 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
                 res.status(404).json(team || {}, null, 2);
             }
             else {
-                //si il y a des users
+                //si il y a des players
                 if (team._doc.players.length) {
                     roleService.getTeamRoles(team._id, function (err, foundRoles) {
                         if (err)
@@ -173,8 +177,33 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
                 res.status(404).json(team || {}, null, 2);
             }
             else {
-                res.set('Content-Type', 'application/json');
-                res.status(200).end(JSON.stringify(team || {}, null, 2));
+                //si il y a des players
+                if (team._doc.players.length) {
+                    roleService.getTeamRoles(team._id, function (err, foundRoles) {
+                        if (err)
+                            return next(err);
+
+                        if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(404).json(foundRoles || {}, null, 2);
+                        }
+                        else {
+                            //affectation des roles aux players
+                            _.forEach(team.players, function (player) {
+                                player._doc.role = _.find(foundRoles, function (role) {
+                                    return player._id == role._doc.playerAccount;
+                                });
+                            });
+                            res.set('Content-Type', 'application/json');
+                            res.end(JSON.stringify(team || {}, null, 2));
+                        }
+                    });
+                }
+                else {
+                    //pas de players, on renvoie directement
+                    res.set('Content-Type', 'application/json');
+                    res.end(JSON.stringify(team || {}, null, 2));
+                }
             }
         }
     );
@@ -203,9 +232,35 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
                 res.status(404).json(updatedTeam || {}, null, 2);
             }
             else {
-                logger.debug("Updated team object: \n" + updatedTeam);
-                res.set('Content-Type', 'application/json');
-                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                //si il y a des players
+                if (updatedTeam._doc.players.length) {
+                    roleService.getTeamRoles(updatedTeam._id, function (err, foundRoles) {
+                        if (err)
+                            return next(err);
+
+                        if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(404).json(foundRoles || {}, null, 2);
+                        }
+                        else {
+                            //affectation des roles aux players
+                            _.forEach(updatedTeam.players, function (player) {
+                                player._doc.role = _.find(foundRoles, function (role) {
+                                    return player._id == role._doc.playerAccount;
+                                });
+                            });
+                            logger.debug("Updated team object: \n" + updatedTeam);
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                        }
+                    });
+                }
+                else {
+                    //pas de players, on renvoie directement
+                    logger.debug("Updated team object: \n" + updatedTeam);
+                    res.set('Content-Type', 'application/json');
+                    res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                }
             }
         });
 };
@@ -266,6 +321,7 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
                     res.status(404).json(foundTeams || {}, null, 2);
                 }
                 else {
+                    //todo get roles
                     res.set('Content-Type', 'application/json');
                     res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
                 }
@@ -302,31 +358,48 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
                     if (_.isNil(team.players) || _.isEmpty(team.players))
                         team.players = [];
 
-                    //adding new player to team players list
+                    //adding new player to team's players list
                     team.players = team.players.push(foundPlayerAccount._id);
 
-                    //updating team with updated players list
-                    Team.findOneAndUpdate(
-                        {_id: Util.getPathParams(req)[2]},
-                        {
-                            $set: {
-                                players: team.players
-                            }
+                    let teamToReturn = {};
+
+                    async.series([
+                        function (cb) {
+                            //todo add role
                         },
-                        {new: true}, //means we want the DB to return the updated document instead of the old one
-                        function (err, updatedTeam) {
-                            if (err)
-                                return next(err);
-                            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
-                                res.set('Content-Type', 'application/json');
-                                res.status(404).json(updatedTeam || {}, null, 2);
-                            }
-                            else {
-                                logger.debug("Updated team object: \n" + updatedTeam);
-                                res.set('Content-Type', 'application/json');
-                                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
-                            }
-                        });
+                        function (cb) {
+                            //updating team with updated players list
+                            Team.findOneAndUpdate(
+                                {_id: Util.getPathParams(req)[2]},
+                                {
+                                    $set: {
+                                        players: team.players
+                                    }
+                                },
+                                {new: true}, //means we want the DB to return the updated document instead of the old one
+                                function (err, updatedTeam) {
+                                    if (err)
+                                        cb(err, 'Mise à jour players list');
+                                    if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+                                        cb({error: {code:'E_TEAM_NOT_FOUND', message:'Could not find team to update'}}, 'Mise à jour players list');
+                                    }
+                                    else {
+                                        teamToReturn = updatedTeam;
+                                        cb(null, 'Mise à jour players list');
+                                    }
+                                });
+                        }
+                    ], function (err, results) {
+                        logger.debug('results: '+results);
+                        if(err) {
+                            res.set('Content-Type', 'application/json');
+                            res.status(404).json(teamToReturn || {}, null, 2);
+                        }
+                        else {
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(teamToReturn || {}, null, 2));
+                        }
+                    });
                 }
             });
         }

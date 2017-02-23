@@ -218,11 +218,11 @@ module.exports.deletePlayerAccount = function deletePlayerAccount(req, res, next
         {
             $set: {
                 active: false
-    //means we want the DB to return the updated document instead of the old one
+            }
+        },
+        //means we want the DB to return the updated document instead of the old one
+        {new: true})
         .populate("game user")
-}
-},
-{new: true})
         .exec(function (err, updatedPlayerAccount) {
             if (err)
                 return next(err);

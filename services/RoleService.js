@@ -8,9 +8,9 @@ var Promise = require("bluebird"),
     sanitizer = require('sanitizer'),
     _ = require('lodash');
 var PlayerAccountBD = require('../models/PlayerAccountDB'),
-    gameDB = require('../models/GameDB'),
-    teamDB = require('../models/TeamDB'),
-    userDB = require('../models/UserDB'),
+    GameDB = require('../models/GameDB'),
+    TeamDB = require('../models/TeamDB'),
+    UserDB = require('../models/UserDB'),
     RoleDB = require('../models/RoleDB'),
 
     PlayerAccount = mongoose.model('PlayerAccount'),
