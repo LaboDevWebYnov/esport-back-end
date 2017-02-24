@@ -2181,7 +2181,7 @@
     "/teams/{userId}/games/{gameId}": {
       "get": {
         "x-swagger-router-controller": "TeamController",
-        "operationId": "getTeamByUserIdByGameId",
+        "operationId": "getTeamsByUserIdByGameId",
         "tags": [
           "Team"
         ],
@@ -2199,6 +2199,44 @@
             "name": "gameId",
             "in": "path",
             "description": "gameId of Game object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of retrieved Team objects",
+            "schema": {
+              "title": "ArrayOfTeams",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Team"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teams/{userId}": {
+      "get": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "getTeamsByUserId",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Get the specified teams for the given user",
+        "description": "Gets `Team` objects for the given user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to search for.",
             "required": true,
             "type": "string"
           }

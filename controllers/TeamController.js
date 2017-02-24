@@ -309,7 +309,7 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
 };
 
 //Path: GET api/teams/{userId}/games/{gameId}
-module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, res, next) {
+module.exports.getTeamsByUserIdByGameId = function getTeamsByUserIdByGameId(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
@@ -329,6 +329,55 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
             //get teams where gameId and playerAccountIds are present
             Team.find({
                 game: Util.getPathParams(req)[4],
+                players: {$in: criteriaId}
+            })
+                .populate("game")
+                .populate(
+                    {
+                        path: 'captain',
+                        populate: {path: 'user'}
+                    })
+                .populate(
+                    {
+                        path: 'players',
+                        populate: {path: 'user'}
+                    })
+                .exec(function (err, foundTeams) {
+                    if (err)
+                        return next(err);
+                    if (_.isNil(foundTeams) || _.isEmpty(foundTeams)) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(404).json(foundTeams || {}, null, 2);
+                    }
+                    else {
+                        res.set('Content-Type', 'application/json');
+                        res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
+                    }
+                });
+        }
+    });
+};
+
+//Path: GET api/teams/{userId}
+module.exports.getTeamsByUserId = function getTeamsByUserId(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
+
+    logger.info('Getting teams for user with userId ' + Util.getPathParams(req)[2]);
+
+    //get playerAccounts of user
+    PlayerAccount.find({user: Util.getPathParams(req)[2]}, function (err, playerAccounts) {
+        if (err)
+            return next(err);
+        if (_.isNil(playerAccounts) || _.isEmpty(playerAccounts)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(playerAccounts || {}, null, 2);
+        }
+        else {
+            let criteriaId = _.map(playerAccounts, '_id');
+
+            //get teams where playerAccountIds are present
+            Team.find({
                 players: {$in: criteriaId}
             })
                 .populate("game")
