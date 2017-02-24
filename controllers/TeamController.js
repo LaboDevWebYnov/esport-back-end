@@ -478,3 +478,42 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
         }
     });
 };
+
+// Path: GET api/teams/{teamName}/getTeamsByName
+module.exports.getTeamsByName = function getTeamByName(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
+
+    logger.info('Getting the team with name:' + decodeURIComponent(Util.getPathParams(req)[2]));
+    // Code necessary to consume the Team API and respond
+
+    Team.find(
+        {name: decodeURIComponent(Util.getPathParams(req)[2])})
+        .populate("game")
+        .populate(
+            {
+                path: 'captain',
+                populate: {path: 'user'}
+            })
+        .populate(
+            {
+                path: 'players',
+                populate: {path: 'user'}
+            })
+        .exec(function (err, team) {
+                if (err)
+                    return next(err);
+
+                logger.debug(team);
+
+                if (_.isNull(team) || _.isEmpty(team)) {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).json(team || {}, null, 2);
+                }
+                else {
+                    res.set('Content-Type', 'application/json');
+                    res.status(200).end(JSON.stringify(team || {}, null, 2));
+                }
+            }
+        );
+};

@@ -2295,6 +2295,40 @@
         }
       }
     },
+    "/teams/{teamName}/getTeamsByName": {
+      "get": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "getTeamsByName",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Get the corresponding game based on the team name",
+        "description": "Gets `Team` object specified by its name.",
+        "parameters": [
+          {
+            "name": "teamName",
+            "in": "path",
+            "description": "Team's name to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved Team object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/teams/{teamId}/updateTeam": {
       "put": {
         "x-swagger-router-controller": "TeamController",

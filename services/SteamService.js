@@ -58,13 +58,15 @@ module.exports.getUserStatsForCSGO = function getUserStatsForCSGO(steamIdUser,ca
                     tab.push(stat);
                 }
             });
-            CSGOStatsContent[0] = {propertyName : "total_kills",value : tab[0].value};
-            CSGOStatsContent[1] = {propertyName : "kill_death_ratio",value : tab[0].value / tab[1].value};
-            CSGOStatsContent[2] = {propertyName : "total_time_played",value : tab[2].value};
-            CSGOStatsContent[3] = {propertyName : "total_mvps",value : tab[6].value};
-            CSGOStatsContent[4] = {propertyName : "ratio_win_loose",value : tab[7].value / tab[8].value};
-            CSGOStatsContent[5] = {propertyName : "kills_by_heads_shot",value : tab[3].value / tab[0].value};
-            CSGOStatsContent[6] = {propertyName : "accuracy",value : tab[4].value / tab[5].value};
+            CSGOStatsContent.push({propertyName : "total_kills",value : tab[0].value});
+            CSGOStatsContent.push({propertyName : "kill_death_ratio",value : tab[0].value / tab[1].value});
+            CSGOStatsContent.push({propertyName : "total_time_played",value : tab[2].value});
+            CSGOStatsContent.push({propertyName : "total_mvps",value : tab[6].value});
+            CSGOStatsContent.push({propertyName : "wins",value : tab[7].value});
+            CSGOStatsContent.push({propertyName : "losses",value : tab[8].value - tab[7].value});
+            CSGOStatsContent.push({propertyName : "win_ratio",value : tab[7].value / tab[8].value});
+            CSGOStatsContent.push({propertyName : "kills_by_heads_shot",value : tab[3].value / tab[0].value});
+            CSGOStatsContent.push({propertyName : "accuracy",value : tab[4].value / tab[5].value});
             callBack(null,response,CSGOStatsContent);
         }
         else {
