@@ -480,6 +480,44 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
     });
 };
 
+//PATH: PUT api/teams/{teamId}/removePlayer/{playerAccountId}
+module.exports.removePlayer = function removePlayer(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
+
+    logger.info('Removing playerAccount with id ' + Util.getPathParams(req)[4] + ' from team with teamId' + Util.getPathParams(req)[2]);
+
+    //todo remove the corresponding teamProperties containing the given playerAccountId
+    Team.findOneAndUpdate(
+        {_id: Util.getPathParams(req)[2]},
+        {$pull: {players: Util.getPathParams(req)[4]}},
+        {new: true}) //means we want the DB to return the updated document instead of the old one
+        .populate("game")
+        .populate(
+            {
+                path: 'captain',
+                populate: {path: 'user'}
+            })
+        .populate(
+            {
+                path: 'players',
+                populate: {path: 'user'}
+            })
+        .exec(function (err, updatedTeam) {
+            if (err)
+                return next(err);
+            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(updatedTeam || {}, null, 2);
+            }
+            else {
+                logger.debug("Updated team object: \n" + updatedTeam);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+            }
+        });
+};
+
 // Path: GET api/teams/{teamName}/getTeamsByName
 module.exports.getTeamsByName = function getTeamByName(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
@@ -518,18 +556,16 @@ module.exports.getTeamsByName = function getTeamByName(req, res, next) {
         );
 };
 
-//PATH: PUT api/teams/{teamId}/removePlayer/{playerAccountId}
-module.exports.removePlayer = function removePlayer(req, res, next) {
+// Path: GET api/teams/{teamName}/getTeamsByLikeName
+module.exports.getTeamsByLikeName = function getTeamByName(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
-    logger.info('Removing playerAccount with id ' + Util.getPathParams(req)[4] + ' from team with teamId' + Util.getPathParams(req)[2]);
+    logger.info('Getting the team with name:' + decodeURIComponent(Util.getPathParams(req)[2]));
+    // Code necessary to consume the Team API and respond
 
-    //todo remove the corresponding teamProperties containing the given playerAccountId
-    Team.findOneAndUpdate(
-        {_id: Util.getPathParams(req)[2]},
-        {$pull: {players: Util.getPathParams(req)[4]}},
-        {new: true}) //means we want the DB to return the updated document instead of the old one
+    Team.find(
+        {name: new RegExp('^.*' + decodeURIComponent(Util.getPathParams(req)[2]) + '.*$', "i")})
         .populate("game")
         .populate(
             {
@@ -541,17 +577,19 @@ module.exports.removePlayer = function removePlayer(req, res, next) {
                 path: 'players',
                 populate: {path: 'user'}
             })
-        .exec(function (err, updatedTeam) {
+        .exec(function (err, team) {
             if (err)
                 return next(err);
-            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+
+            logger.debug(team);
+
+            if (_.isNull(team) || _.isEmpty(team)) {
                 res.set('Content-Type', 'application/json');
-                res.status(404).json(updatedTeam || {}, null, 2);
+                res.status(404).json(team || {}, null, 2);
             }
             else {
-                logger.debug("Updated team object: \n" + updatedTeam);
                 res.set('Content-Type', 'application/json');
-                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                res.status(200).end(JSON.stringify(team || {}, null, 2));
             }
         });
 };

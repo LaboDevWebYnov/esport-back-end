@@ -2340,8 +2340,42 @@
         "tags": [
           "Team"
         ],
-        "summary": "Get the corresponding game based on the team name",
-        "description": "Gets `Team` object specified by its name.",
+        "summary": "Get the corresponding teams based by the team name",
+        "description": "Get array of `Team` objects specified by its name.",
+        "parameters": [
+          {
+            "name": "teamName",
+            "in": "path",
+            "description": "Team's name to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved Team object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamName}/getTeamsByLikeName": {
+      "get": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "getTeamsByLikeName",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Get the corresponding teams based by the team name",
+        "description": "Get array of `Team` objects specified by like name.",
         "parameters": [
           {
             "name": "teamName",
