@@ -8,6 +8,7 @@ var TeamProperty = new Schema({
     key: {type: String, required: true},
     value: {type: String, required: true},
     active: {type: Boolean, required: true, default: true},
+    playerAccount: {type: Schema.ObjectId, ref: 'PlayerAccount', required: false},
     team: {type: Schema.ObjectId, ref: 'Team', required: true},
     created_at: {type: Date, required: true, default: new Date()},
     updated_at: {type: Date, required: true, default: new Date()}

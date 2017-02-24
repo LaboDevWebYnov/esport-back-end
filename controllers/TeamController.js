@@ -38,7 +38,7 @@ module.exports.getTeams = function getTeams(req, res, next) {
             res.status(404).json(teams || {}, null, 2);
         }
         else {
-            //todo ajouter les roles pour chaque team
+            //todo ajouter les roles pour chaque team aka call teamPropertyService pour récup ces props
             res.set('Content-Type', 'application/json');
             res.end(JSON.stringify(teams || {}, null, 2));
         }
@@ -125,6 +125,7 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
                 res.status(404).json(team || {}, null, 2);
             }
             else {
+                //todo handle roles
                 //si il y a des players
                 if (team._doc.players.length) {
                     roleService.getTeamRoles(team._id, function (err, foundRoles) {
@@ -177,6 +178,7 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
                 res.status(404).json(team || {}, null, 2);
             }
             else {
+                //todo handle roles
                 //si il y a des players
                 if (team._doc.players.length) {
                     roleService.getTeamRoles(team._id, function (err, foundRoles) {
@@ -232,6 +234,7 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
                 res.status(404).json(updatedTeam || {}, null, 2);
             }
             else {
+                //todo handle roles
                 //si il y a des players
                 if (updatedTeam._doc.players.length) {
                     roleService.getTeamRoles(updatedTeam._id, function (err, foundRoles) {
@@ -284,6 +287,7 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
                 res.status(404).json(tab || {}, null, 2);
             }
             else {
+                //todo handle roles
                 logger.debug("Deactivated team object: \n" + updatedTeam);
                 res.set('Content-Type', 'application/json');
                 res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
@@ -321,7 +325,7 @@ module.exports.getTeamByUserIdByGameId = function getTeamByUserIdByGameId(req, r
                     res.status(404).json(foundTeams || {}, null, 2);
                 }
                 else {
-                    //todo get roles
+                    //todo handle roles
                     res.set('Content-Type', 'application/json');
                     res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
                 }
@@ -363,6 +367,7 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
 
                     let teamToReturn = {};
 
+                    //todo handle roles
                     async.series([
                         function (cb) {
                             //todo add role
