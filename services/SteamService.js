@@ -13,9 +13,7 @@ var mongoose = require('mongoose'),
 
 //CS:GO: todo add corresponding props
 const CSGOStats = ['total_kills', 'kill_death_ratio', 'total_time_played','total_mvps','ratio_win_loose', 'kills_by_heads_shot','accuracy'];
-let CSGOStatsContent = [];
 const CSGOUserProperties = ['country','name','pseudo'];
-let CSGOUserPropertiesContent = [];
 
 
 //Rocket League: todo add corresponding props
@@ -51,22 +49,18 @@ module.exports.getUserStatsForCSGO = function getUserStatsForCSGO(steamIdUser,ca
 
         if (!error && response.statusCode == 200) {
             let respObject = JSON.parse(body);
+            let CSGOStatsContent = [];
             let tab=[];
-            let tabVarName=["total_kills","total_time_played","total_mvps","total_deaths","total_kills_headshot","total_matches_won","total_matches_played","total_shots_fired","total_shots_hit"]
+            let tabVarName=["total_kills","total_time_played","total_mvps","total_deaths","total_kills_headshot","total_matches_won","total_matches_played","total_shots_fired","total_shots_hit","total_rounds_played"]
             _.forEach(respObject.playerstats.stats, function (stat) {
                 if(_.includes(tabVarName,stat.name)){
                     tab.push(stat);
                 }
             });
-            CSGOStatsContent.push({propertyName : "total_kills",value : tab[0].value});
-            CSGOStatsContent.push({propertyName : "kill_death_ratio",value : tab[0].value / tab[1].value});
-            CSGOStatsContent.push({propertyName : "total_time_played",value : tab[2].value});
-            CSGOStatsContent.push({propertyName : "total_mvps",value : tab[6].value});
-            CSGOStatsContent.push({propertyName : "wins",value : tab[7].value});
-            CSGOStatsContent.push({propertyName : "losses",value : tab[8].value - tab[7].value});
-            CSGOStatsContent.push({propertyName : "win_ratio",value : tab[7].value / tab[8].value});
-            CSGOStatsContent.push({propertyName : "kills_by_heads_shot",value : tab[3].value / tab[0].value});
-            CSGOStatsContent.push({propertyName : "accuracy",value : tab[4].value / tab[5].value});
+            for(let y=0;y in tab;y++){
+                CSGOStatsContent.push({propertyName : tab[y].name,value : tab[y].value});
+            }
+
             callBack(null,response,CSGOStatsContent);
         }
         else {

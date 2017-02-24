@@ -126,14 +126,17 @@ module.exports.getUserStatsForLol = function getUserStatsForCSGO(riotUserName,ca
                         value : [
                             {
                                 propertyName : "total_kills",
+                                propertyToDisplay : "Kills",
                                 value : kills
                             },
                             {
                                 propertyName : "total_deaths",
+                                propertyToDisplay : "Deaths",
                                 value : deaths
                             },
                             {
                                 propertyName : "total_assists",
+                                propertyToDisplay : "Assists",
                                 value : assists
                             },
                         ]
