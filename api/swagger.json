@@ -2333,6 +2333,236 @@
           }
         }
       }
+    },
+    "/teamProperties": {
+      "get": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "getAllTeamsProperties",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Get all TeamProperty from DB",
+        "description": "Get all TeamProperty from DB",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of TeamProperty",
+            "schema": {
+              "title": "ArrayOfTeamProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TeamProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teamProperties/{teamPropertyId}": {
+      "get": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "getTeamPropertyById",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Get TeamProperty based on the given teamPropertyId",
+        "description": "Get TeamProperty based on the given teamPropertyId",
+        "parameters": [
+          {
+            "name": "teamPropertyId",
+            "in": "path",
+            "description": "_id of the TeamProperty object to retrieve.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved TeamProperty object",
+            "schema": {
+              "$ref": "#/definitions/TeamProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "updateTeamPropertyById",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Update the value for the given TeamProperty with the given teamPropertyId",
+        "description": "Update the value for the given TeamProperty object specified by its teamPropertyId",
+        "parameters": [
+          {
+            "name": "teamPropertyId",
+            "in": "path",
+            "description": "_id of TeamProperty object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "teamPropertyObject",
+            "in": "body",
+            "description": "TeamProperty object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TeamPropertyUpdateObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved TeamProperty object",
+            "schema": {
+              "$ref": "#/definitions/TeamProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "deleteTeamPropertyById",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Delete the given TeamProperty with the given teamPropertyId",
+        "description": "Delete the given TeamProperty object specified by its teamPropertyId",
+        "parameters": [
+          {
+            "name": "teamPropertyId",
+            "in": "path",
+            "description": "_id of TeamProperty to remove.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Removed TeamProperty object",
+            "schema": {
+              "$ref": "#/definitions/TeamProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teamProperties/{teamId}/properties": {
+      "get": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "getTeamPropertyByTeamId",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Get all TeamProperty objects for the given team",
+        "description": "Get all TeamProperty objects for the given team",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "_id of the Team object to retrieve teamProperties for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved TeamProperty objects",
+            "schema": {
+              "title": "ArrayOfTeamProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TeamProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teamProperties/propertiesByKey/{key}": {
+      "get": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "getTeamsPropertiesByKey",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Get all TeamProperty with existing given key from all Teams ",
+        "description": "Gets all `TeamProperty` objects with existing given key from all Teams.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "key of TeamProperty to search occurrences for",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all TeamProperty with existing given key from all Teams",
+            "schema": {
+              "title": "ArrayOfTeamProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TeamProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -2581,6 +2811,42 @@
         }
       }
     },
+    "TeamProperty": {
+      "type": "object",
+      "properties": {
+        "playerAccount": {
+          "$ref": "#/definitions/PlayerAccount"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "team",
+        "key",
+        "value",
+        "active",
+        "created_at",
+        "updated_at"
+      ]
+    },
     "ChangePassword": {
       "type": "object",
       "properties": {
@@ -2626,6 +2892,14 @@
       }
     },
     "PlayerAccountPropertyUpdateObject": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "TeamPropertyUpdateObject": {
       "type": "object",
       "properties": {
         "value": {

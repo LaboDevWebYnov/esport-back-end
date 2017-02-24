@@ -448,7 +448,7 @@ module.exports.deletePlayerAccountProperty = function deletePlayerAccountPropert
  * @param next
  */
 module.exports.deletePlayerAccountPropertyById = function deletePlayerAccountPropertyById(req, res, next) {
-    logger.info('Deleting playerAccountProperty with id: ' + Util.getPathParams(req)[2] + ' and key ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' with value: ' + sanitizer.escape(req.body.value));
+    logger.info('Deleting playerAccountProperty with id: ' + Util.getPathParams(req)[2]);
 
     PlayerAccountProperty.findOneAndRemove(
         {

@@ -25,7 +25,7 @@ module.exports.getAllTeamsProperties = function getAllTeamsProperties(next) {
     TeamProperty.find({})
         .populate("playerAccount team")
         .exec(function (err, playerAccountProperties) {
-            if(err)
+            if (err)
                 return next(err, null);
             else {
                 next(null, playerAccountProperties)
@@ -33,13 +33,92 @@ module.exports.getAllTeamsProperties = function getAllTeamsProperties(next) {
         });
 };
 
+module.exports.getTeamPropertyById = function getTeamPropertyById(teamPropertyId, next) {
+    TeamProperty.findOne({_id: teamPropertyId})
+        .populate("playerAccount team")
+        .exec(function (err, teamProperty) {
+            if (err) {
+                return next(err, null);
+            }
+            else {
+                next(null, teamProperty);
+            }
+        });
+};
 
+module.exports.updateTeamPropertyById = function updateTeamPropertyById(teamPropertyId, next) {
+    TeamProperty.findOneAndUpdate(
+        {
+            _id: teamPropertyId
+        },
+        {
+            $set: {
+                value: sanitizer.escape(req.body.value)
+            }
+        },
+        {new: true})
+        .populate("playerAccount team")
+        .exec(function (err, updatedTeamProperty) {
+            if (err) {
+                return next(err, null);
+            }
+            else {
+                next(null, updatedTeamProperty);
+            }
+        });
+};
+
+module.exports.deleteTeamPropertyById = function deleteTeamPropertyById(teamPropertyId, next) {
+    TeamProperty.findOneAndRemove(
+        {
+            _id: teamPropertyId
+        },
+        {new: false})
+        .populate("playerAccount team")
+        .exec(function (err, removedTeamProperty) {
+            if (err) {
+                return next(err, null);
+            }
+            else {
+                next(null, removedTeamProperty);
+            }
+        });
+};
+
+module.exports.getTeamPropertyByTeamId = function getTeamPropertyByTeamId(teamId, next) {
+    TeamProperty.find({team: teamId})
+        .populate("playerAccount team")
+        .exec(function (err, teamProperties) {
+            if (err) {
+                return next(err, null);
+            }
+            else {
+                next(null, teamProperties);
+            }
+        });
+};
+
+module.exports.getTeamPropertyByKey = function getTeamPropertyByKey(key, next) {
+    TeamProperty.find({
+        key: key
+    })
+        .populate("playerAccount team")
+        .exec(function (err, teamsProperties) {
+            if (err) {
+                return next(err, null);
+            }
+            else {
+                next(null, teamsProperties);
+            }
+        });
+};
 //done findAll
 //todo findOnePropByKey
 //todo findOnePropByValue
-//todo findOnePropById
+//done findOnePropById
 //todo updatePropByKey
-//todo updatePropById
+//done updatePropById
 //todo deletePropByKey
-//todo deletePropById
+//done deletePropById
+//done findByTeamId
 
