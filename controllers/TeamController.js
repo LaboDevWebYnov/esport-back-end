@@ -437,6 +437,7 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
                         if (_.isNil(team.players) || _.isEmpty(team.players))
                             team.players = [];
 
+                        //todo check playerAccount isn't already part of playersList
                         //adding new player to team players list
                         team.players = team.players.push(foundPlayerAccount._id);
 
@@ -479,13 +480,50 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
     });
 };
 
+//PATH: PUT api/teams/{teamId}/removePlayer/{playerAccountId}
+module.exports.removePlayer = function removePlayer(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
+
+    logger.info('Removing playerAccount with id ' + Util.getPathParams(req)[4] + ' from team with teamId' + Util.getPathParams(req)[2]);
+
+    //todo remove the corresponding teamProperties containing the given playerAccountId
+    Team.findOneAndUpdate(
+        {_id: Util.getPathParams(req)[2]},
+        {$pull: {players: Util.getPathParams(req)[4]}},
+        {new: true}) //means we want the DB to return the updated document instead of the old one
+        .populate("game")
+        .populate(
+            {
+                path: 'captain',
+                populate: {path: 'user'}
+            })
+        .populate(
+            {
+                path: 'players',
+                populate: {path: 'user'}
+            })
+        .exec(function (err, updatedTeam) {
+            if (err)
+                return next(err);
+            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(updatedTeam || {}, null, 2);
+            }
+            else {
+                logger.debug("Updated team object: \n" + updatedTeam);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+            }
+        });
+};
+
 // Path: GET api/teams/{teamName}/getTeamsByName
 module.exports.getTeamsByName = function getTeamByName(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
 
     logger.info('Getting the team with name:' + decodeURIComponent(Util.getPathParams(req)[2]));
-    // Code necessary to consume the Team API and respond
 
     Team.find(
         {name: decodeURIComponent(Util.getPathParams(req)[2])})
@@ -540,19 +578,18 @@ module.exports.getTeamsByLikeName = function getTeamByName(req, res, next) {
                 populate: {path: 'user'}
             })
         .exec(function (err, team) {
-                if (err)
-                    return next(err);
+            if (err)
+                return next(err);
 
-                logger.debug(team);
+            logger.debug(team);
 
-                if (_.isNull(team) || _.isEmpty(team)) {
-                    res.set('Content-Type', 'application/json');
-                    res.status(404).json(team || {}, null, 2);
-                }
-                else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(team || {}, null, 2));
-                }
+            if (_.isNull(team) || _.isEmpty(team)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(team || {}, null, 2);
             }
-        );
+            else {
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(team || {}, null, 2));
+            }
+        });
 };

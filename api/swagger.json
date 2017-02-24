@@ -2144,6 +2144,44 @@
         }
       }
     },
+    "/teams/{teamId}/removePlayer/{playerAccountId}": {
+      "put": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "removePlayer",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Removes a player from a team",
+        "description": "Removes `PlayerAccount` object from the given team's players list",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of team object to update",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount object to remove from the team.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PlayerAccount has been successfully removed from the team"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/teams/{teamId}/getTeamById": {
       "get": {
         "x-swagger-router-controller": "TeamController",
