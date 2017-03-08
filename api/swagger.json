@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Project 1 API",
-    "description": "Send forward your gaming community using Project 1 API",
-    "version": "1.0.0"
+    "title": "Noname-gaming API",
+    "description": "Send forward your gaming community using Noname-gaming API",
+    "version": "0.2.0"
   },
   "produces": [
     "application/json"
@@ -36,6 +36,10 @@
     {
       "name": "Team",
       "description": "teams, captain, manage teams"
+    },
+    {
+      "name": "TeamProperty",
+      "description": "teams's properties"
     },
     {
       "name": "Registration",
@@ -2337,7 +2341,7 @@
     "/teamProperties": {
       "get": {
         "x-swagger-router-controller": "TeamPropertyController",
-        "operationId": "getAllTeamsProperties",
+        "operationId": "getTeamsProperties",
         "tags": [
           "TeamProperty"
         ],
@@ -2483,7 +2487,7 @@
     "/teamProperties/{teamId}/properties": {
       "get": {
         "x-swagger-router-controller": "TeamPropertyController",
-        "operationId": "getTeamPropertyByTeamId",
+        "operationId": "getTeamPropertiesByTeamId",
         "tags": [
           "TeamProperty"
         ],
@@ -2547,6 +2551,182 @@
         "responses": {
           "200": {
             "description": "An array of all TeamProperty with existing given key from all Teams",
+            "schema": {
+              "title": "ArrayOfTeamProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TeamProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teamProperties/propertiesByValue/{value}": {
+      "get": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "getTeamsPropertiesByValue",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Get all TeamProperty with existing given value from all Teams ",
+        "description": "Gets all `TeamProperty` objects with existing given value from all Teams.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "value",
+            "in": "path",
+            "description": "value of TeamProperty to search occurrences for",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all TeamProperty with existing given value from all Teams",
+            "schema": {
+              "title": "ArrayOfTeamProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TeamProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teamProperties/{teamId}/addProperty": {
+      "post": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "addTeamProperty",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Adds a TeamProperty",
+        "description": "Adds new `TeamProperty` object to the DB.",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team linked to the TeamProperty object to add.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "teamProperty",
+            "in": "body",
+            "description": "TeamProperty object to insert",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateTeamPropertyObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TeamProperty has been successfully added to the DB"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teamProperties/{teamId}/propertiesByKey/{key}": {
+      "get": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "getTeamPropertyByKey",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Get the TeamProperty where key corresponds to the given key for the given Team",
+        "description": "Get the TeamProperty (could be more than one if it's the case) where key corresponds to the given key for the given Team",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team linked to the TeamProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "key of TeamProperty to search for",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all TeamProperty that match the value for the given Team",
+            "schema": {
+              "title": "ArrayOfTeamProperty",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TeamProperty"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teamProperties/{teamId}/propertiesByValue/{value}": {
+      "get": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "getTeamPropertyByValue",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Get the TeamProperty where value corresponds to the given value for the given Team",
+        "description": "Get the TeamProperty (could be more than one if it's the case) where value corresponds to the given value for the given Team",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team linked to the TeamProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "in": "path",
+            "description": "value of PlayerAccountProperty to search for",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all TeamProperty that match the value for the given Team",
             "schema": {
               "title": "ArrayOfTeamProperty",
               "type": "array",
@@ -2890,6 +3070,28 @@
           "type": "string"
         }
       }
+    },
+    "CreateTeamPropertyObject": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "active": {
+          "type": "string"
+        },
+        "playerAccount": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value",
+        "active"
+      ]
     },
     "PlayerAccountPropertyUpdateObject": {
       "type": "object",

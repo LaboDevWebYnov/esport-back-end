@@ -131,10 +131,10 @@ module.exports.deleteTeamPropertyById = function deleteTeamPropertyById(req, res
  * @param res
  * @param next
  */
-module.exports.getTeamPropertyByTeamId = function getTeamPropertyByTeamId(req, res, next) {
+module.exports.getTeamPropertiesByTeamId = function getTeamPropertiesByTeamId(req, res, next) {
     logger.info('Getting the team properties for team with id: ' + Util.getPathParams(req)[2] + ' from db...');
 
-    teamPropertyService.getTeamPropertyByTeamId(Util.getPathParams(req)[2], function (err, foundTeamProperties) {
+    teamPropertyService.getTeamPropertiesByTeamId(Util.getPathParams(req)[2], function (err, foundTeamProperties) {
         if (err) {
             return next(err);
         }
@@ -161,7 +161,7 @@ module.exports.getTeamPropertyByTeamId = function getTeamPropertyByTeamId(req, r
 module.exports.getTeamsPropertiesByKey = function getTeamsPropertiesByKey(req, res, next) {
     logger.info('Getting all teams properties with key ' + decodeURIComponent(Util.getPathParams(req)[3]) + 'from db...');
 
-    teamPropertyService.getTeamPropertyByKey(decodeURIComponent(Util.getPathParams(req)[3]), function (err, foundTeamsProperties) {
+    teamPropertyService.getTeamPropertiesByKey(decodeURIComponent(Util.getPathParams(req)[3]), function (err, foundTeamsProperties) {
         if (err) {
             return next(err);
         }
@@ -176,17 +176,134 @@ module.exports.getTeamsPropertiesByKey = function getTeamsPropertiesByKey(req, r
     });
 };
 
+//Path GET api/teamProperties/{teamId}/properties/{value}
+/**
+ * @description Route permettant de récupérer la ou les propriété(s) existante(s) ayant pour valeur la valeur passée en paramètre
+ * pour le playerAccount identifié par son teamId passé en paramètre
+ * @param req:
+ *          - teamId
+ *          - value
+ * @param res
+ *      - array of TeamProperty
+ * @param next
+ *      - error if present
+ */
+module.exports.getTeamsPropertiesByValue = function getTeamsPropertiesByValue(req, res, next) {
+    logger.info('Getting all team properties with value ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' of teamId with playerAccountId: ' + Util.getPathParams(req)[2]);
+
+    teamPropertyService.getTeamPropertiesByValue(Util.getPathParams(req)[2], decodeURIComponent(Util.getPathParams(req)[4]), function (err, foundTeamsProperties) {
+        if (err) {
+            return next(err);
+        }
+        if (_.isNull(foundTeamsProperties) || _.isEmpty(foundTeamsProperties)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(foundTeamsProperties || {}, null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(foundTeamsProperties || {}, null, 2));
+        }
+    });
+};
+
+//Path: POST api/teamProperties/{teamId}/addProperty
+/**
+ * @description Route permettant d'ajouter une propriété à une team
+ * @param req:
+ *          - teamId
+ * @param res
+ * @param next
+ */
+module.exports.addTeamProperty = function addTeamProperty(req, res, next) {
+    logger.info('Adding new teamProperty to the given team with ID: ' + Util.getPathParams(req)[2]);
+
+    teamPropertyService.addTeamProperty(Util.getPathParams(req)[2], req, function (err, createdTeamProperty) {
+        if (err) {
+            return next(err);
+        }
+        if (_.isNil(createdTeamProperty) || _.isEmpty(createdTeamProperty)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(createdTeamProperty || {}, null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(createdTeamProperty || {}, null, 2));
+        }
+    });
+};
+
+//Path GET teamProperties/{teamId}/properties/{key}
+/**
+ * @description Route permettant de récupérer la ou les propriété(s) existante(s) ayant pour nom le nom passé en paramètre
+ * pour la team identifiée par son teamId passé en paramètre
+ * @param req:
+ *          - teamId
+ *          - key
+ * @param res
+ *      - teamProperty Object
+ * @param next
+ *      - error if present
+ */
+module.exports.getTeamPropertyByKey = function getTeamPropertyByKey(req, res, next) {
+    logger.info('Getting teamProperty with key ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' of team with teamId: ' + Util.getPathParams(req)[2]);
+
+    teamPropertyService.getTeamPropertyByKey(Util.getPathParams(req)[2], decodeURIComponent(Util.getPathParams(req)[4]), function (err, createdTeamProperty) {
+        if (err) {
+            return next(err);
+        }
+        if (_.isNil(createdTeamProperty) || _.isEmpty(createdTeamProperty)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(createdTeamProperty || {}, null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(createdTeamProperty || {}, null, 2));
+        }
+    });
+};
+
+//Path GET teamProperties/{teamId}/properties/{value}
+/**
+ * @description Route permettant de récupérer la ou les propriété(s) existante(s) ayant pour nom le nom passé en paramètre
+ * pour la team identifiée par son teamId passé en paramètre
+ * @param req:
+ *          - teamId
+ *          - value
+ * @param res
+ *      - teamProperty Object
+ * @param next
+ *      - error if present
+ */
+module.exports.getTeamPropertyByValue = function getTeamPropertyByValue(req, res, next) {
+    logger.info('Getting teamProperty with value ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' of team with teamId: ' + Util.getPathParams(req)[2]);
+
+    teamPropertyService.getTeamPropertyByValue(Util.getPathParams(req)[2], decodeURIComponent(Util.getPathParams(req)[4]), function (err, createdTeamProperty) {
+        if (err) {
+            return next(err);
+        }
+        if (_.isNil(createdTeamProperty) || _.isEmpty(createdTeamProperty)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(createdTeamProperty || {}, null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(createdTeamProperty || {}, null, 2));
+        }
+    });
+};
+
+
 //done GET teams/properties/ --properties of all teams
 //done GET teamProperties/{teamId}/properties/ --properties of a team
 //done GET teamProperties/{teamId}/properties/{key} --properties of a team by key
-//todo GET teamProperties/{teamId}/properties/{value} --properties of a team by value
-//todo POST teamProperties/{teamId}/addproperty/ + body --add property-ies to a team
+//done GET teamProperties/{teamId}/properties/{value} --properties of a team by value
+//done POST teamProperties/{teamId}/addproperty/ + body --add property-ies to a team
 //todo PUT teamProperties/{teamId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a team
 //todo DELETE teamProperties/{teamId}/removeProperty/{key} --remove property-ies from a team
 //todo Faire un liste de property par jeu
 //todo Get api/teamProperties/{gameId}/getProperties - > get all the properties for the given game. We should set a list of properties for each games
-//todo GET teamProperties/propertiesByValue/{value} --get all properties with the given  value of all teams
-//todo GET teamProperties/propertiesByKey/{key} --get all properties with the given key of all teams
+//done GET teamProperties/propertiesByValue/{value} --get all properties with the given  value of all teams
+//done GET teamProperties/propertiesByKey/{key} --get all properties with the given key of all teams
 //done GET api/teamProperty/{teamPropertyId} - get the given teamProperty based on its _id
 //done PUT api/teamProperty/{teamPropertyId} - update the given teamProperty based on its _id
 //done DELETE api/teamProperty/{teamPropertyId} - delete the given teamProperty based on its _id
