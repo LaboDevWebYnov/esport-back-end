@@ -84,7 +84,7 @@ module.exports.getTeamPropertyById = function getTeamPropertyById(req, res, next
 module.exports.updateTeamPropertyById = function updateTeamPropertyById(req, res, next) {
     logger.info('Updating teamProperty with id: ' + Util.getPathParams(req)[2]);
 
-    teamPropertyService.updateTeamPropertyById(Util.getPathParams(req)[2], function (err, updatedTeamProperty) {
+    teamPropertyService.updateTeamPropertyById(Util.getPathParams(req)[2], sanitizer.escape(req.body.value), function (err, updatedTeamProperty) {
         if (err) {
             return next(err);
         }
@@ -176,12 +176,11 @@ module.exports.getTeamsPropertiesByKey = function getTeamsPropertiesByKey(req, r
     });
 };
 
-//Path GET api/teamProperties/{teamId}/properties/{value}
+//Path GET api/teamProperties/propertiesByValue/{value}
 /**
- * @description Route permettant de récupérer la ou les propriété(s) existante(s) ayant pour valeur la valeur passée en paramètre
- * pour le playerAccount identifié par son teamId passé en paramètre
+ * @description Route permettant de récupérer toutes les propriétés ayant pour value la value passée en paramètre
+ * de tous les playerAccounts de la base
  * @param req:
- *          - teamId
  *          - value
  * @param res
  *      - array of TeamProperty
@@ -189,9 +188,9 @@ module.exports.getTeamsPropertiesByKey = function getTeamsPropertiesByKey(req, r
  *      - error if present
  */
 module.exports.getTeamsPropertiesByValue = function getTeamsPropertiesByValue(req, res, next) {
-    logger.info('Getting all team properties with value ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' of teamId with playerAccountId: ' + Util.getPathParams(req)[2]);
+    logger.info('Getting all team properties with value ' + decodeURIComponent(Util.getPathParams(req)[3]));
 
-    teamPropertyService.getTeamPropertiesByValue(Util.getPathParams(req)[2], decodeURIComponent(Util.getPathParams(req)[4]), function (err, foundTeamsProperties) {
+    teamPropertyService.getTeamsPropertiesByValue(decodeURIComponent(Util.getPathParams(req)[3]), function (err, foundTeamsProperties) {
         if (err) {
             return next(err);
         }
@@ -292,14 +291,68 @@ module.exports.getTeamPropertyByValue = function getTeamPropertyByValue(req, res
     });
 };
 
+//PAth: PUT teamProperties/{teamId}/updateProperty/{key}
+/**
+ * @description Route permettant de mettre à jour la propriété spécifiée par la key passée en paramètre de la team sépécifiée par son teamId
+ * @param req
+ *          - teamId
+ *          - key
+ *          - body: contient la nouvelle valeur à appliquer à la key passée en paramètre
+ * @param res
+ * @param next
+ */
+module.exports.updateTeamProperty = function updateTeamProperty(req, res, next) {
+    logger.info('Updating teamProperty with id: ' + Util.getPathParams(req)[2] + ' and key ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' with value: ' + sanitizer.escape(req.body.value));
+
+    teamPropertyService.updateTeamProperty(Util.getPathParams(req)[2], decodeURIComponent(Util.getPathParams(req)[4]), req, function (err, updatedTeamProperty) {
+        if (err) {
+            return next(err);
+        }
+        if (_.isNil(updatedTeamProperty) || _.isEmpty(updatedTeamProperty)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(updatedTeamProperty || {}, null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(updatedTeamProperty || {}, null, 2));
+        }
+    });
+};
+
+//Path: DELETE api/teamProperties/{teamId}/removeProperty/{key}
+/**
+ * @description Route permettant de supprimer une teamProperty spécifiée par sa key de la team spécifiée par son
+ * teamId
+ * @param req
+ * - key
+ * @param res
+ * @param next
+ */
+module.exports.deleteTeamProperty = function deleteTeamProperty(req, res, next) {
+    logger.info('Deleting teamProperty with id: ' + Util.getPathParams(req)[2] + ' and key ' + decodeURIComponent(Util.getPathParams(req)[4]));
+
+    teamPropertyService.deleteTeamProperty(Util.getPathParams(req)[2], decodeURIComponent(Util.getPathParams(req)[4]), function (err, removedTeamProperty) {
+        if (err) {
+            return next(err);
+        }
+        if (_.isNil(removedTeamProperty) || _.isEmpty(removedTeamProperty)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(removedTeamProperty || {}, null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(removedTeamProperty || {}, null, 2));
+        }
+    });
+};
 
 //done GET teams/properties/ --properties of all teams
 //done GET teamProperties/{teamId}/properties/ --properties of a team
 //done GET teamProperties/{teamId}/properties/{key} --properties of a team by key
 //done GET teamProperties/{teamId}/properties/{value} --properties of a team by value
 //done POST teamProperties/{teamId}/addproperty/ + body --add property-ies to a team
-//todo PUT teamProperties/{teamId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a team
-//todo DELETE teamProperties/{teamId}/removeProperty/{key} --remove property-ies from a team
+//done PUT teamProperties/{teamId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a team
+//done DELETE teamProperties/{teamId}/removeProperty/{key} --remove property-ies from a team
 //todo Faire un liste de property par jeu
 //todo Get api/teamProperties/{gameId}/getProperties - > get all the properties for the given game. We should set a list of properties for each games
 //done GET teamProperties/propertiesByValue/{value} --get all properties with the given  value of all teams

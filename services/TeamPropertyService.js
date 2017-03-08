@@ -46,14 +46,14 @@ module.exports.getTeamPropertyById = function getTeamPropertyById(teamPropertyId
         });
 };
 
-module.exports.updateTeamPropertyById = function updateTeamPropertyById(teamPropertyId, next) {
+module.exports.updateTeamPropertyById = function updateTeamPropertyById(teamPropertyId, value, next) {
     TeamProperty.findOneAndUpdate(
         {
             _id: teamPropertyId
         },
         {
             $set: {
-                value: sanitizer.escape(req.body.value)
+                value: value
             }
         },
         {new: true})
@@ -113,7 +113,7 @@ module.exports.getTeamPropertiesByKey = function getTeamPropertiesByKey(key, nex
         });
 };
 
-module.exports.getTeamPropertiesByValue = function getTeamPropertiesByValue(value, next) {
+module.exports.getTeamsPropertiesByValue = function getTeamsPropertiesByValue(value, next) {
     TeamProperty.find({
         value: value
     })
@@ -193,7 +193,7 @@ module.exports.getTeamPropertyByKey = function getTeamPropertyByKey(teamId, key,
         .populate("playerAccount team")
         .exec(function (err, teamProperty) {
             if (err) {
-                return next(err);
+                return next(err, null);
             }
             else {
                 return next(null, teamProperty);
@@ -209,10 +209,52 @@ module.exports.getTeamPropertyByValue = function getTeamPropertyByValue(teamId, 
         .populate("playerAccount team")
         .exec(function (err, teamProperty) {
             if (err) {
-                return next(err);
+                return next(err, null);
             }
             else {
                 return next(null, teamProperty);
+            }
+        });
+};
+
+
+module.exports.updateTeamProperty = function updateTeamProperty(teamId, key, req, next) {
+    TeamProperty.findOneAndUpdate(
+        {
+            team: teamId,
+            key: key
+        },
+        {
+            $set: {
+                value: sanitizer.escape(req.body.value)
+            }
+        },
+        {new: true})
+        .populate("playerAccount team")
+        .exec(function (err, updatedTeamProperty) {
+            if (err) {
+                return next(err, null);
+            }
+            else {
+                return next(null, updatedTeamProperty);
+            }
+        });
+};
+
+module.exports.deleteTeamProperty = function deleteTeamProperty(teamId, key, next) {
+    TeamProperty.findOneAndRemove(
+        {
+            team: teamId,
+            key: key
+        },
+        {new: false})
+        .populate("playerAccount team")
+        .exec(function (err, removedTeamProperty) {
+            if (err) {
+                return next(err, null);
+            }
+            else {
+                return next(null, removedTeamProperty);
             }
         });
 };
@@ -222,11 +264,11 @@ module.exports.getTeamPropertyByValue = function getTeamPropertyByValue(teamId, 
 //done findOnePropByValue
 //done findOnePropById
 //done addProperty
-//todo updatePropByKey
+//done updatePropByKey
 //done updatePropById
-//todo deletePropByKey
+//done deletePropByKey
 //done deletePropById
 //done findByTeamId
-//donegetAllByKey
+//done getAllByKey
 //done getAllByValue
 

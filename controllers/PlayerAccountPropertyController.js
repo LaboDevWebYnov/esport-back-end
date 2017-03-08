@@ -58,7 +58,7 @@ module.exports.getPlayerAccountsProperties = function getPlayerAccountsPropertie
  * @param next
  */
 module.exports.getPlayerAccountPropertyById = function getPlayerAccountPropertyById(req, res, next) {
-    logger.info('Getting the playerAccount property with given id: '+ Util.getPathParams(req)[3]+ ' from db...');
+    logger.info('Getting the playerAccount property with given id: ' + Util.getPathParams(req)[3] + ' from db...');
 
     PlayerAccountProperty.findOne({_id: Util.getPathParams(req)[2]})
         .populate("playerAccount")
@@ -416,7 +416,7 @@ module.exports.updatePlayerAccountPropertyById = function updatePlayerAccountPro
  * @param next
  */
 module.exports.deletePlayerAccountProperty = function deletePlayerAccountProperty(req, res, next) {
-    logger.info('Deleting playerAccountProperty with id: ' + Util.getPathParams(req)[2] + ' and key ' + decodeURIComponent(Util.getPathParams(req)[4]) + ' with value: ' + sanitizer.escape(req.body.value));
+    logger.info('Deleting playerAccountProperty with id: ' + Util.getPathParams(req)[2] + ' and key ' + decodeURIComponent(Util.getPathParams(req)[4]));
 
     PlayerAccountProperty.findOneAndRemove(
         {
@@ -483,4 +483,4 @@ module.exports.deletePlayerAccountPropertyById = function deletePlayerAccountPro
 //done PUT playerAccountProperties/{playerAccountId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a playerAccount
 //done DELETE playerAccountProperties/{playerAccountId}/removeProperty/{key} --remove property-ies from a playerAccount
 
-//todo Get api/playerAccountProperties/{gameId}/getProperties - > get all the properties for the given game. We should set a list of properties for each games
+//todo Get api/playerAccountProperties/{gameId}/getProperties -> get all the properties for the given game. We should set a list of properties for each games

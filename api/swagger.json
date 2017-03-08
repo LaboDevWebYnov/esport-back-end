@@ -2743,6 +2743,97 @@
           }
         }
       }
+    },
+    "/teamProperties/{teamId}/updateProperty/{key}": {
+      "put": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "updatePlayerAccountProperty",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Update the values for the given TeamProperty key of the given Team",
+        "description": "Update the value for the given TeamProperty object specified by its key for the given Team",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team linked to the TeamProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "key of TeamProperty to update value",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "teamPropertyObject",
+            "in": "body",
+            "description": "TeamProperty object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TeamPropertyUpdateObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated TeamProperty object",
+            "schema": {
+              "$ref": "#/definitions/TeamProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teamProperties/{teamId}/removeProperty/{key}": {
+      "delete": {
+        "x-swagger-router-controller": "PlayerAccountPropertyController",
+        "operationId": "deletePlayerAccountProperty",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Delete the values for the given PlayerAccountProperty key of the given Team",
+        "description": "Delete the value for the given PlayerAccountProperty object specified by its key for the given Team",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team linked to the TeamProperty objects to retrieve.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "description": "key of TeamProperty to remove",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Removed TeamProperty object",
+            "schema": {
+              "$ref": "#/definitions/TeamProperty"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
