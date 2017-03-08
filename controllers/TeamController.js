@@ -8,8 +8,7 @@ var Promise = require("bluebird"),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
-    Util = require('./utils/util.js'),
-    roleService = require('../services/RoleService');
+    Util = require('./utils/util.js');
 
 var PlayerAccountBD = require('../models/PlayerAccountDB'),
     gameDB = require('../models/GameDB'),
@@ -26,7 +25,7 @@ mongoose.Promise = Promise;
 //Path: GET api/teams
 module.exports.getTeams = function getTeams(req, res, next) {
     logger.info('Getting all teams from db...');
-    // Code necessary to consume the Game API and respond
+
     Team.find({})
         .populate("game")
         .populate(
@@ -48,7 +47,7 @@ module.exports.getTeams = function getTeams(req, res, next) {
                 res.status(404).json(teams || {}, null, 2);
             }
             else {
-                //todo ajouter les roles pour chaque team
+                //todo ajouter les roles pour chaque team aka call teamPropertyService pour récup ces props
                 res.set('Content-Type', 'application/json');
                 res.end(JSON.stringify(teams || {}, null, 2));
             }
@@ -79,6 +78,8 @@ module.exports.addTeam = function addTeam(req, res, next) {
                             res.status(404).json(gameFinded || {}, null, 2);
                         }
                         else {
+                            //todo handle captain's role in case there is a captain
+                            //todo verify captain playerAccountId exists
                             //définition d'une team
                             let team = new Team({
                                 name: sanitizer.escape(req.body.teamName),
@@ -104,7 +105,7 @@ module.exports.addTeam = function addTeam(req, res, next) {
                                     res.status(404).json(team || {}, null, 2);
                                 }
                                 else {
-                                    //todo handle populating on team creation + roles
+                                    //todo handle roles/properties
                                     //populating players, game and captain
                                     // Team.populate(team, {path: 'players'}, function (err, team) {
                                     //     if(err)
@@ -136,7 +137,6 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
     logger.debug('Path:' + req.path);
 
     logger.info('Getting the game with id:' + Util.getPathParams(req)[2]);
-    // Code necessary to consume the Team API and respond
 
     Team.findById(
         Util.getPathParams(req)[2])
@@ -161,30 +161,31 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
                     res.status(404).json(team || {}, null, 2);
                 }
                 else {
-                    if (team.players.length) {
-                        roleService.getTeamRoles(Util.getPathParams(req)[2], function (err, foundRoles) {
-                            if (err)
-                                return next(err);
-
-                            // if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
-                            //     res.set('Content-Type', 'application/json');
-                            //     res.status(404).json(foundRoles || {}, null, 2);
-                            // }
-                            else {
-                                _.forEach(team.players, function (player) {
-                                    player.role = _.find(foundRoles, function (role) {
-                                        return player._id == role._doc.playerAccount;
-                                    });
-                                });
-                                res.set('Content-Type', 'application/json');
-                                res.end(JSON.stringify(team || {}, null, 2));
-                            }
-                        });
-                    }
-                    else {
-                        res.set('Content-Type', 'application/json');
-                        res.end(JSON.stringify(team || {}, null, 2));
-                    }
+                    //todo handle roles/properties
+                    // if (team.players.length) {
+                    //     roleService.getTeamRoles(Util.getPathParams(req)[2], function (err, foundRoles) {
+                    //         if (err)
+                    //             return next(err);
+                    //
+                    //         // if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                    //         //     res.set('Content-Type', 'application/json');
+                    //         //     res.status(404).json(foundRoles || {}, null, 2);
+                    //         // }
+                    //         else {
+                    //             _.forEach(team.players, function (player) {
+                    //                 player.role = _.find(foundRoles, function (role) {
+                    //                     return player._id == role._doc.playerAccount;
+                    //                 });
+                    //             });
+                    //             res.set('Content-Type', 'application/json');
+                    //             res.end(JSON.stringify(team || {}, null, 2));
+                    //         }
+                    //     });
+                    // }
+                    // else {
+                    res.set('Content-Type', 'application/json');
+                    res.end(JSON.stringify(team || {}, null, 2));
+                    // }
                 }
             }
         );
@@ -212,21 +213,46 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
                 populate: {path: 'user'}
             })
         .exec(function (err, team) {
-                if (err)
-                    return next(err);
+            if (err)
+                return next(err);
 
-                logger.debug(team);
+            logger.debug(team);
 
-                if (_.isNull(team) || _.isEmpty(team)) {
-                    res.set('Content-Type', 'application/json');
-                    res.status(404).json(team || {}, null, 2);
-                }
-                else {
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(team || {}, null, 2));
-                }
+            if (_.isNull(team) || _.isEmpty(team)) {
+                res.set('Content-Type', 'application/json');
+                res.status(404).json(team || {}, null, 2);
             }
-        );
+            else {
+                //todo handle roles/properties
+                //si il y a des players
+                // if (team._doc.players.length) {
+                //     roleService.getTeamRoles(team._id, function (err, foundRoles) {
+                //         if (err)
+                //             return next(err);
+                //
+                //         if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                //             res.set('Content-Type', 'application/json');
+                //             res.status(404).json(foundRoles || {}, null, 2);
+                //         }
+                //         else {
+                //             //affectation des roles aux players
+                //             _.forEach(team.players, function (player) {
+                //                 player._doc.role = _.find(foundRoles, function (role) {
+                //                     return player._id == role._doc.playerAccount;
+                //                 });
+                //             });
+                //             res.set('Content-Type', 'application/json');
+                //             res.end(JSON.stringify(team || {}, null, 2));
+                //         }
+                //     });
+                // }
+                // else {
+                //pas de players, on renvoie directement
+                res.set('Content-Type', 'application/json');
+                res.end(JSON.stringify(team || {}, null, 2));
+                // }
+            }
+        });
 };
 
 // Path: PUT api/teams/{teamId}/updateTeam/
@@ -264,9 +290,37 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
                 res.status(404).json(updatedTeam || {}, null, 2);
             }
             else {
+                //todo handle roles
+                //si il y a des players
+                // if (updatedTeam._doc.players.length) {
+                //     roleService.getTeamRoles(updatedTeam._id, function (err, foundRoles) {
+                //         if (err)
+                //             return next(err);
+                //
+                //         if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                //             res.set('Content-Type', 'application/json');
+                //             res.status(404).json(foundRoles || {}, null, 2);
+                //         }
+                //         else {
+                //             //affectation des roles aux players
+                //             _.forEach(updatedTeam.players, function (player) {
+                //                 player._doc.role = _.find(foundRoles, function (role) {
+                //                     return player._id == role._doc.playerAccount;
+                //                 });
+                //             });
+                //             logger.debug("Updated team object: \n" + updatedTeam);
+                //             res.set('Content-Type', 'application/json');
+                //             res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                //         }
+                //     });
+                // }
+                // else {
+                //pas de players, on renvoie directement
                 logger.debug("Updated team object: \n" + updatedTeam);
+                //todo handle roles/properties
                 res.set('Content-Type', 'application/json');
                 res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                // }
             }
         });
 };
@@ -301,6 +355,7 @@ module.exports.deleteTeam = function deleteTeam(req, res, next) {
                 res.status(404).json(tab || {}, null, 2);
             }
             else {
+                //todo handle roles/properties
                 logger.debug("Deactivated team object: \n" + updatedTeam);
                 res.set('Content-Type', 'application/json');
                 res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
@@ -350,6 +405,7 @@ module.exports.getTeamsByUserIdByGameId = function getTeamsByUserIdByGameId(req,
                         res.status(404).json(foundTeams || {}, null, 2);
                     }
                     else {
+                        //todo handle roles/properties
                         res.set('Content-Type', 'application/json');
                         res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
                     }
@@ -399,6 +455,7 @@ module.exports.getTeamsByUserId = function getTeamsByUserId(req, res, next) {
                         res.status(404).json(foundTeams || {}, null, 2);
                     }
                     else {
+                        //todo handle roles/properties
                         res.set('Content-Type', 'application/json');
                         res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
                     }
@@ -437,43 +494,66 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
                         if (_.isNil(team.players) || _.isEmpty(team.players))
                             team.players = [];
 
-                        //todo check playerAccount isn't already part of playersList
-                        //adding new player to team players list
+                        //adding new player to team's players list
                         team.players = team.players.push(foundPlayerAccount._id);
 
-                        //updating team with updated players list
-                        Team.findOneAndUpdate(
-                            {_id: Util.getPathParams(req)[2]},
-                            {
-                                $set: {
-                                    players: team.players
-                                }
+                        let teamToReturn = {};
+
+                        //todo handle roles
+                        async.series([
+                            function (cb) {
+                                //todo add role
                             },
-                            {new: true}) //means we want the DB to return the updated document instead of the old one
-                            .populate("game")
-                            .populate(
-                                {
-                                    path: 'captain',
-                                    populate: {path: 'user'}
-                                })
-                            .populate(
-                                {
-                                    path: 'players',
-                                    populate: {path: 'user'}
-                                })
-                            .exec(function (err, updatedTeam) {
-                                if (err)
-                                    return next(err);
-                                if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
-                                    res.set('Content-Type', 'application/json');
-                                    res.status(404).json(updatedTeam || {}, null, 2);
-                                }
-                                else {
-                                    logger.debug("Updated team object: \n" + updatedTeam);
-                                    res.set('Content-Type', 'application/json');
-                                    res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
-                                }
-                            });
+                            function (cb) {
+                                //updating team with updated players list
+                                Team.findOneAndUpdate(
+                                    {_id: Util.getPathParams(req)[2]},
+                                    {
+                                        $set: {
+                                            players: team.players
+                                        }
+                                    },
+                                    {new: true}) //means we want the DB to return the updated document instead of the old one
+                                    .populate("game")
+                                    .populate(
+                                        {
+                                            path: 'captain',
+                                            populate: {path: 'user'}
+                                        })
+                                    .populate(
+                                        {
+                                            path: 'players',
+                                            populate: {path: 'user'}
+                                        })
+                                    .exec(function (err, updatedTeam) {
+                                        if (err)
+                                            cb(err, 'Mise à jour players list');
+                                        if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+                                            cb({
+                                                error: {
+                                                    code: 'E_TEAM_NOT_FOUND',
+                                                    message: 'Could not find team to update'
+                                                }
+                                            }, 'Mise à jour players list');
+                                        }
+                                        else {
+                                            teamToReturn = updatedTeam;
+                                            cb(null, 'Mise à jour players list');
+                                        }
+                                    });
+                            }
+                        ], function (err, results) {
+                            logger.debug('results: ' + results);
+                            if (err) {
+                                res.set('Content-Type', 'application/json');
+                                res.status(404).json(teamToReturn || {}, null, 2);
+                            }
+                            else {
+                                //todo handle roles/properties
+                                res.set('Content-Type', 'application/json');
+                                res.status(200).end(JSON.stringify(teamToReturn || {}, null, 2));
+                            }
+                        });
                     }
                 });
         }
@@ -511,6 +591,7 @@ module.exports.removePlayer = function removePlayer(req, res, next) {
                 res.status(404).json(updatedTeam || {}, null, 2);
             }
             else {
+                //todo handle roles/properties
                 logger.debug("Updated team object: \n" + updatedTeam);
                 res.set('Content-Type', 'application/json');
                 res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
@@ -538,19 +619,20 @@ module.exports.getTeamsByName = function getTeamByName(req, res, next) {
                 path: 'players',
                 populate: {path: 'user'}
             })
-        .exec(function (err, team) {
+        .exec(function (err, teams) {
                 if (err)
                     return next(err);
 
-                logger.debug(team);
+                logger.debug(teams);
 
-                if (_.isNull(team) || _.isEmpty(team)) {
+                if (_.isNull(teams) || _.isEmpty(teams)) {
                     res.set('Content-Type', 'application/json');
-                    res.status(404).json(team || {}, null, 2);
+                    res.status(404).json(teams || {}, null, 2);
                 }
                 else {
+                    //todo handle roles/properties
                     res.set('Content-Type', 'application/json');
-                    res.status(200).end(JSON.stringify(team || {}, null, 2));
+                    res.status(200).end(JSON.stringify(teams || {}, null, 2));
                 }
             }
         );
@@ -588,6 +670,7 @@ module.exports.getTeamsByLikeName = function getTeamByName(req, res, next) {
                 res.status(404).json(team || {}, null, 2);
             }
             else {
+                //todo handle roles/properties
                 res.set('Content-Type', 'application/json');
                 res.status(200).end(JSON.stringify(team || {}, null, 2));
             }
