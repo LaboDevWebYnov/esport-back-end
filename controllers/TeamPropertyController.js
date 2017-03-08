@@ -350,13 +350,17 @@ module.exports.deleteTeamProperty = function deleteTeamProperty(req, res, next) 
 //done GET teamProperties/{teamId}/properties/ --properties of a team
 //done GET teamProperties/{teamId}/properties/{key} --properties of a team by key
 //done GET teamProperties/{teamId}/properties/{value} --properties of a team by value
-//done POST teamProperties/{teamId}/addproperty/ + body --add property-ies to a team
-//done PUT teamProperties/{teamId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a team
-//done DELETE teamProperties/{teamId}/removeProperty/{key} --remove property-ies from a team
-//todo Faire un liste de property par jeu
-//todo Get api/teamProperties/{gameId}/getProperties - > get all the properties for the given game. We should set a list of properties for each games
+
 //done GET teamProperties/propertiesByValue/{value} --get all properties with the given  value of all teams
 //done GET teamProperties/propertiesByKey/{key} --get all properties with the given key of all teams
 //done GET api/teamProperty/{teamPropertyId} - get the given teamProperty based on its _id
+
+//done POST teamProperties/{teamId}/addproperty/ + body --add property-ies to a team
+
+//done PUT teamProperties/{teamId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a team
 //done PUT api/teamProperty/{teamPropertyId} - update the given teamProperty based on its _id
+
 //done DELETE api/teamProperty/{teamPropertyId} - delete the given teamProperty based on its _id
+//done DELETE teamProperties/{teamId}/removeProperty/{key} --remove property-ies from a team
+
+//todo Get api/teamProperties/{gameId}/getProperties - > get all the properties for the given game. We should set a list of properties for each games

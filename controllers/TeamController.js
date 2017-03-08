@@ -8,20 +8,17 @@ var Promise = require("bluebird"),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
-    Util = require('./utils/util.js'),
-    roleService = require('../services/RoleService');
+    Util = require('./utils/util.js');
 
 var PlayerAccountBD = require('../models/PlayerAccountDB'),
     gameDB = require('../models/GameDB'),
     teamDB = require('../models/TeamDB'),
     userDB = require('../models/UserDB'),
-    roleDB = require('../models/RoleDB'),
 
     PlayerAccount = mongoose.model('PlayerAccount'),
     Game = mongoose.model('Game'),
     Team = mongoose.model('Team'),
-    User = mongoose.model('User'),
-    Role = mongoose.model('Role');
+    User = mongoose.model('User');
 
 mongoose.Promise = Promise;
 
@@ -127,32 +124,32 @@ module.exports.getTeamById = function getTeamById(req, res, next) {
             else {
                 //todo handle roles
                 //si il y a des players
-                if (team._doc.players.length) {
-                    roleService.getTeamRoles(team._id, function (err, foundRoles) {
-                        if (err)
-                            return next(err);
-
-                        if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
-                            res.set('Content-Type', 'application/json');
-                            res.status(404).json(foundRoles || {}, null, 2);
-                        }
-                        else {
-                            //affectation des roles aux players
-                            _.forEach(team.players, function (player) {
-                                player._doc.role = _.find(foundRoles, function (role) {
-                                    return player._id == role._doc.playerAccount;
-                                });
-                            });
-                            res.set('Content-Type', 'application/json');
-                            res.end(JSON.stringify(team || {}, null, 2));
-                        }
-                    });
-                }
-                else {
+                // if (team._doc.players.length) {
+                //     roleService.getTeamRoles(team._id, function (err, foundRoles) {
+                //         if (err)
+                //             return next(err);
+                //
+                //         if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                //             res.set('Content-Type', 'application/json');
+                //             res.status(404).json(foundRoles || {}, null, 2);
+                //         }
+                //         else {
+                //             //affectation des roles aux players
+                //             _.forEach(team.players, function (player) {
+                //                 player._doc.role = _.find(foundRoles, function (role) {
+                //                     return player._id == role._doc.playerAccount;
+                //                 });
+                //             });
+                //             res.set('Content-Type', 'application/json');
+                //             res.end(JSON.stringify(team || {}, null, 2));
+                //         }
+                //     });
+                // }
+                // else {
                     //pas de players, on renvoie directement
                     res.set('Content-Type', 'application/json');
                     res.end(JSON.stringify(team || {}, null, 2));
-                }
+                // }
             }
         });
 };
@@ -180,32 +177,32 @@ module.exports.getTeamByName = function getTeamByName(req, res, next) {
             else {
                 //todo handle roles
                 //si il y a des players
-                if (team._doc.players.length) {
-                    roleService.getTeamRoles(team._id, function (err, foundRoles) {
-                        if (err)
-                            return next(err);
-
-                        if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
-                            res.set('Content-Type', 'application/json');
-                            res.status(404).json(foundRoles || {}, null, 2);
-                        }
-                        else {
-                            //affectation des roles aux players
-                            _.forEach(team.players, function (player) {
-                                player._doc.role = _.find(foundRoles, function (role) {
-                                    return player._id == role._doc.playerAccount;
-                                });
-                            });
-                            res.set('Content-Type', 'application/json');
-                            res.end(JSON.stringify(team || {}, null, 2));
-                        }
-                    });
-                }
-                else {
+                // if (team._doc.players.length) {
+                //     roleService.getTeamRoles(team._id, function (err, foundRoles) {
+                //         if (err)
+                //             return next(err);
+                //
+                //         if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                //             res.set('Content-Type', 'application/json');
+                //             res.status(404).json(foundRoles || {}, null, 2);
+                //         }
+                //         else {
+                //             //affectation des roles aux players
+                //             _.forEach(team.players, function (player) {
+                //                 player._doc.role = _.find(foundRoles, function (role) {
+                //                     return player._id == role._doc.playerAccount;
+                //                 });
+                //             });
+                //             res.set('Content-Type', 'application/json');
+                //             res.end(JSON.stringify(team || {}, null, 2));
+                //         }
+                //     });
+                // }
+                // else {
                     //pas de players, on renvoie directement
                     res.set('Content-Type', 'application/json');
                     res.end(JSON.stringify(team || {}, null, 2));
-                }
+                // }
             }
         }
     );
@@ -236,34 +233,34 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
             else {
                 //todo handle roles
                 //si il y a des players
-                if (updatedTeam._doc.players.length) {
-                    roleService.getTeamRoles(updatedTeam._id, function (err, foundRoles) {
-                        if (err)
-                            return next(err);
-
-                        if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
-                            res.set('Content-Type', 'application/json');
-                            res.status(404).json(foundRoles || {}, null, 2);
-                        }
-                        else {
-                            //affectation des roles aux players
-                            _.forEach(updatedTeam.players, function (player) {
-                                player._doc.role = _.find(foundRoles, function (role) {
-                                    return player._id == role._doc.playerAccount;
-                                });
-                            });
-                            logger.debug("Updated team object: \n" + updatedTeam);
-                            res.set('Content-Type', 'application/json');
-                            res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
-                        }
-                    });
-                }
-                else {
+                // if (updatedTeam._doc.players.length) {
+                //     roleService.getTeamRoles(updatedTeam._id, function (err, foundRoles) {
+                //         if (err)
+                //             return next(err);
+                //
+                //         if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                //             res.set('Content-Type', 'application/json');
+                //             res.status(404).json(foundRoles || {}, null, 2);
+                //         }
+                //         else {
+                //             //affectation des roles aux players
+                //             _.forEach(updatedTeam.players, function (player) {
+                //                 player._doc.role = _.find(foundRoles, function (role) {
+                //                     return player._id == role._doc.playerAccount;
+                //                 });
+                //             });
+                //             logger.debug("Updated team object: \n" + updatedTeam);
+                //             res.set('Content-Type', 'application/json');
+                //             res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                //         }
+                //     });
+                // }
+                // else {
                     //pas de players, on renvoie directement
                     logger.debug("Updated team object: \n" + updatedTeam);
                     res.set('Content-Type', 'application/json');
                     res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
-                }
+                // }
             }
         });
 };

@@ -272,3 +272,4 @@ module.exports.deleteTeamProperty = function deleteTeamProperty(teamId, key, nex
 //done getAllByKey
 //done getAllByValue
 
+//todo Faire un liste de teamProperty keys par jeu
