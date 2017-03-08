@@ -20,7 +20,7 @@ mongoose.Promise = Promise;
 module.exports.getGames = function getGames(req, res, next) {
     logger.info('Getting all games from db...');
     // Code necessary to consume the Game API and respond
-    Game.find({}, function (err, games) {
+    Game.find({active: true}, function (err, games) {
         if (err) {
             return next(err);
         }
