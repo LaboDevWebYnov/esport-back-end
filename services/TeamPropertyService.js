@@ -259,6 +259,73 @@ module.exports.deleteTeamProperty = function deleteTeamProperty(teamId, key, nex
         });
 };
 
+//CS:GO: todo add corresponding props
+//todo complete this
+const CSGOProps = ['rank', 'kill_death_ratio', 'total_time_played', 'total_mvps', 'ratio_win_loose', 'percentage_kills_by_heads_shot', 'accuracy', 'country', 'name', 'pseudo'];
+
+
+//LoL: todo add corresponding props
+const LOLProps = [];
+
+//Rocket League: todo add corresponding props
+const RLprops = [];
+
+//Dota 2: todo add corresponding props
+const DOTA2props = [];
+
+//OverWatch todo add corresponding props
+const OWprops = [];
+
+
+/**
+ * @description Given a gameId, we retrieve the corresponding keys for the teamProperty
+ * @param gameId
+ * @param next:
+ *      -error le cas échéant
+ *      -l'array de props sinon
+ */
+module.exports.findByGameId = function findByGameId(gameId, next) {
+    logger.info("Retrieving team properties for game with id: " + gameId);
+    Game.findOne({_id: gameId})
+        .exec(function (err, foundGame) {
+            if (err) {
+                return next(err, null);
+            }
+            if (_.isNil(foundGame) || _.isEmpty(foundGame)) {
+                return next({error: {code: 'E_GAME_NOT_FOUND', message: 'Game with given id not found'}});
+            }
+            else {
+                let gameName = _.toLower(foundGame._doc.name.replace(/\s/g, ""));
+                logger.debug("trying to link corresponding props for the game with name: " + gameName);
+                switch (gameName) {
+                    case 'counter-strike:globaloffensive':
+                        return next(null, CSGOProps);
+                        break;
+                    case 'leagueoflegends':
+                        return next(null, LOLProps);
+                        break;
+                    case 'rocketleague':
+                        return next(null, RLprops);
+                        break;
+                    case 'dota2':
+                        return next(null, DOTA2props);
+                        break;
+                    case 'overwatch':
+                        return next(null, OWprops);
+                        break;
+                    default:
+                        //logger.error("Could not find corresponding props for the game name: " + gameName);
+                        return next({
+                            error: {
+                                code: 'E_GAMEPROPS_NOT_FOUND',
+                                message: 'Corresponding game properties not found for the retrieved game: ' + gameName
+                            }
+                        })
+                }
+            }
+        });
+};
+
 //done findAll
 //done findOnePropByKey
 //done findOnePropByValue
