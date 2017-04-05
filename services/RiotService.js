@@ -11,8 +11,7 @@ var mongoose = require('mongoose'),
     keyApi = "RGAPI-c6bdd877-4a79-4042-b5e0-9d957ae442da",
     request = require('request');
 
-
-//LoL needed properties
+//LoL: todo add corresponding props
 const LOLProps = ["league", "league_point", "wins", "losses", "win_ratio", "kda_season"];
 
 function riotApiRequest(options, callBack) {
@@ -47,43 +46,27 @@ function getIdByUserName(pseudo, cb) {
 //https://euw.api.pvp.net/api/lol/euw/v2.5/league/by-summoner/57467635/entry?api_key=RGAPI-c6bdd877-4a79-4042-b5e0-9d957ae442da
 module.exports.getUserStatsForSeason = function getUserStatsForCSGO(riotUserPseudo, callBack) {
     getIdByUserName(riotUserPseudo, function (err, resp, riotUserId) {
-        if (!err && resp.statusCode == 200) {
+        if (!err && resp.statusCode === 200) {
             let options = {
                 url: riotApiUrl + 'v2.5/league/by-summoner/' + riotUserId + '/entry?api_key=' + keyApi
             };
             riotApiRequest(options, function (error, response, body) {
-
-                let LOLcontent = [];
-                if (!error && response.statusCode == 200) {
+                let LOLContent = {};
+                if (!error && response.statusCode === 200) {
                     let respObject = JSON.parse(body);
 
-                    LOLcontent.push({
-                        propertyName: LOLProps[0],
-                        value: respObject[riotUserId][0].tier + respObject[riotUserId][0].entries[0].division
-                    });
+                    LOLContent[LOLProps[0]] = respObject[riotUserId][0].tier + " " + respObject[riotUserId][0].entries[0].division;
 
-                    LOLcontent.push({
-                        propertyName: LOLProps[1],
-                        value: respObject[riotUserId][0].entries[0].leaguePoints
-                    });
+                    LOLContent[LOLProps[1]] = respObject[riotUserId][0].entries[0].leaguePoints;
 
-                    LOLcontent.push({
-                        propertyName: LOLProps[2],
-                        value: respObject[riotUserId][0].entries[0].wins
-                    });
+                    LOLContent[LOLProps[2]] = respObject[riotUserId][0].entries[0].wins;
 
-                    LOLcontent.push({
-                        propertyName: LOLProps[3],
-                        value: respObject[riotUserId][0].entries[0].losses
-                    });
+                    LOLContent[LOLProps[3]] = respObject[riotUserId][0].entries[0].losses;
 
-                    LOLcontent.push({
-                        propertyName: LOLProps[4],
-                        value: respObject[riotUserId][0].entries[0].wins / (respObject[riotUserId][0].entries[0].wins + respObject[riotUserId][0].entries[0].losses )
-                    });
+                    LOLContent[LOLProps[4]] = respObject[riotUserId][0].entries[0].wins / (respObject[riotUserId][0].entries[0].wins + respObject[riotUserId][0].entries[0].losses );
 
 
-                    callBack(null, response, LOLcontent);
+                    callBack(null, response, LOLContent);
                 }
                 else {
                     callBack(error, response, null);
@@ -106,39 +89,40 @@ module.exports.getUserStatsForLol = function getUserStatsForCSGO(riotUserName, c
                 url: riotApiUrl + 'v1.3/stats/by-summoner/' + riotUserId + '/ranked?season=' + season + '&api_key=' + keyApi
             };
             riotApiRequest(options, function (error, response, body) {
-                let LOLcontentKDA = [];
+                let LOLContentKDA = {};
                 if (!error && response.statusCode == 200) {
                     let respObject = JSON.parse(body);
 
-                    let kills = 0, deaths = 0, assists = 0;
+                    var kills = 0, deaths = 0, assists = 0,totalMinionsKills = 0,totalDoubleKills=0,totalTripleKills=0,totalQuadraKills=0,totalPentaKills=0;
 
-                    for (let y = 0; y in respObject.champions; y++) {
+                    for (var y = 0; y in respObject.champions; y++) {
+
                         kills = kills + respObject.champions[y].stats.totalChampionKills;
                         deaths = deaths + respObject.champions[y].stats.totalDeathsPerSession;
                         assists = assists + respObject.champions[y].stats.totalAssists;
+                        totalMinionsKills = totalMinionsKills + respObject.champions[y].stats.totalMinionKills;
+                        totalDoubleKills = totalDoubleKills + respObject.champions[y].stats.totalDoubleKills;
+                        totalTripleKills = totalTripleKills + respObject.champions[y].stats.totalTripleKills;
+                        totalQuadraKills = totalQuadraKills + respObject.champions[y].stats.totalQuadraKills;
+                        totalPentaKills = totalPentaKills + respObject.champions[y].stats.totalPentaKills;
                     }
+                    LOLContentKDA["total_kills"] = kills;
 
-                    LOLcontentKDA.push({
-                        propertyName: LOLProps[5],
-                        value: [
-                            {
-                                propertyName: "total_kills",
-                                propertyToDisplay: "Kills",
-                                value: kills
-                            },
-                            {
-                                propertyName: "total_deaths",
-                                propertyToDisplay: "Deaths",
-                                value: deaths
-                            },
-                            {
-                                propertyName: "total_assists",
-                                propertyToDisplay: "Assists",
-                                value: assists
-                            },
-                        ]
-                    });
-                    callBack(null, response, LOLcontentKDA);
+                    LOLContentKDA["total_deaths"] = deaths;
+
+                    LOLContentKDA["total_assists"] = assists;
+
+                    LOLContentKDA["total_minions_kills"] = totalMinionsKills;
+
+                    LOLContentKDA["total_double_kills"] = totalDoubleKills;
+
+                    LOLContentKDA["total_triple_kills"] = totalTripleKills;
+
+                    LOLContentKDA["total_quadra_kills"] = totalQuadraKills;
+
+                    LOLContentKDA["total_penta_kills"] = totalPentaKills;
+
+                    callBack(null, response, LOLContentKDA);
                 }
                 else {
                     callBack(error, response, null);
@@ -148,7 +132,8 @@ module.exports.getUserStatsForLol = function getUserStatsForCSGO(riotUserName, c
         else {
             callBack(err, resp, null);
         }
-    });
+    })
+    ;
 };
 
 

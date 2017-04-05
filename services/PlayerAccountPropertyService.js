@@ -161,22 +161,20 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
 };
 
 function getLOLProperties(summonersName, callback) {
-    let playerAccountPropertiesContent = [];
+    let playerAccountPropertiesContent = {};
     async.parallel([
             function (cb) {
                 riotService.getUserStatsForLol(summonersName, function (error, resp, body) {
-                    if (!error && !_.isNil(body)) {
-                        for (let y = 0; y in body; y++)
-                            playerAccountPropertiesContent.push(body[y]);
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['kda'] = (body);
                     }
                     cb(error, 'recuperation des stats de lol');
                 });
             },
             function (cb) {
                 riotService.getUserStatsForSeason(summonersName, function (error, resp, body) {
-                    if (!error && !_.isNil(body)) {
-                        for (let y = 0; y in body; y++)
-                            playerAccountPropertiesContent.push(body[y]);
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['infos'] = (body);
                     }
                     cb(error, 'recuperation des infos du user lol');
                 });
@@ -192,12 +190,12 @@ function getLOLProperties(summonersName, callback) {
         });
 }
 
-function getOWProperties(userName, callback) {
+function getOWProperties(UserName, callback) {
     let playerAccountPropertiesContent = [];
     async.parallel([
             function (cb) {
-                owService.getUserHeroesCompetitiveStats(userName, function (error, resp, body) {
-                    if (!error && !_.isNil(body)) {
+                owService.getUserHeroesCompetitiveStats(UserName, function (error, resp, body) {
+                    if (!error && !_.isNull(body)) {
                         for (let y = 0; y in body; y++)
                             playerAccountPropertiesContent.push(body[y]);
                     }
@@ -205,8 +203,8 @@ function getOWProperties(userName, callback) {
                 });
             },
             function (cb) {
-                owService.getUserProfileStats(userName, function (error, resp, body) {
-                    if (!error && !_.isNil(body)) {
+                owService.getUserProfileStats(UserName, function (error, resp, body) {
+                    if (!error && !_.isNull(body)) {
                         for (let y = 0; y in body; y++)
                             playerAccountPropertiesContent.push(body[y]);
                     }
@@ -225,22 +223,20 @@ function getOWProperties(userName, callback) {
 }
 
 function getCSGOProperties(steamId, callback) {
-    let playerAccountPropertiesContent = [];
+    let playerAccountPropertiesContent = {};
     async.parallel([
             function (cb) {
                 steamService.getUserStatsForCSGO(steamId, function (error, resp, body) {
-                    if (!error && !_.isNil(body)) {
-                        for (let y = 0; y in body; y++)
-                            playerAccountPropertiesContent.push(body[y]);
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['stats'] = (body);
                     }
                     cb(error, 'recuperation des stats de csgo');
                 });
             },
             function (cb) {
                 steamService.getUserInformation(steamId, function (error, resp, body) {
-                    if (!error && !_.isNil(body)) {
-                        for (let y = 0; y in body; y++)
-                            playerAccountPropertiesContent.push(body[y]);
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['userInfo'] = (body);
                     }
                     cb(error, 'recuperation des infos du user steam');
                 });

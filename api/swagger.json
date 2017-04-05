@@ -44,6 +44,14 @@
     {
       "name": "Registration",
       "description": "user registration steps management"
+    },
+    {
+      "name": "News",
+      "description": "news"
+    },
+    {
+      "name": "Streamings",
+      "description": "streaming management"
     }
   ],
   "basePath": "/api",
@@ -3016,6 +3024,121 @@
           }
         }
       }
+    },
+    "/news": {
+      "get": {
+        "x-swagger-router-controller": "NewsController",
+        "operationId": "getNews",
+        "tags": [
+          "News"
+        ],
+        "summary": "Get the TeamProperties for the given game",
+        "description": "Get the TeamProperties for the given game",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all news",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          }
+        }
+      }
+    },
+    "/streaming/getLiveStreaming": {
+      "get": {
+        "x-swagger-router-controller": "StreamingController",
+        "operationId": "getLiveStreaming",
+        "tags": [
+          "Streamings"
+        ],
+        "summary": "Get the corresponding streamings on live",
+        "description": "Get array of live `Stream` objects.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Retrieved streaming object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/streaming/{streamingName}/getStreamingByLikeName": {
+      "get": {
+        "x-swagger-router-controller": "StreamingController",
+        "operationId": "getStreamingByLikeName",
+        "tags": [
+          "Streamings"
+        ],
+        "summary": "Get the corresponding streamings based by the streaming name",
+        "description": "Get array of `Stream` objects specified by like name.",
+        "parameters": [
+          {
+            "name": "streamingName",
+            "in": "path",
+            "description": "streaming's name to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved streaming object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/streaming/{streamingName}/getStreamingByName": {
+      "get": {
+        "x-swagger-router-controller": "StreamingController",
+        "operationId": "getStreamingByName",
+        "tags": [
+          "Streamings"
+        ],
+        "summary": "Get the corresponding streamings based by the streaming name",
+        "description": "Get array of `Stream` objects specified by name.",
+        "parameters": [
+          {
+            "name": "streamingName",
+            "in": "path",
+            "description": "streaming's name to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved streaming object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -3215,6 +3338,49 @@
         "updated_at": {
           "type": "string",
           "format": "date"
+        }
+      }
+    },
+    "News": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "sortBy": {
+          "type": "string"
+        },
+        "articles": {
+          "type": "array",
+          "items":{
+            "$ref": "#/definitions/Article"
+          }
+        }
+      }
+    },
+    "Article": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "urlToImage": {
+          "type": "string"
+        },
+        "publishedAt": {
+          "type": "string"
         }
       }
     },
