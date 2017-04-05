@@ -99,8 +99,8 @@ module.exports.findByGameId = function findByGameId(gameId, next) {
         });
 };
 
-module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties(playerAccountId, next) {
-    let playerAccProps =[];
+module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(playerAccountId, next) {
+    let playerAccProps = [];
     PlayerAccount.findOne({_id: playerAccountId}, function (err, foundPlayerAccount) {
         let gameId = foundPlayerAccount._doc.game;
         logger.info("Retrieving properties for game with id: " + gameId);
@@ -117,16 +117,16 @@ module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties
                     logger.debug("trying to link corresponding props for the game with name: " + gameName);
                     switch (gameName) {
                         case 'counter-strike:globaloffensive':
-                            getCSGOProperties(foundPlayerAccount.login,function (err,csgoProperties) {
-                                if(!err){
+                            getCSGOProperties(foundPlayerAccount.login, function (err, csgoProperties) {
+                                if (!err) {
                                     playerAccProps.push(csgoProperties);
                                     return next(null, _.flatten(playerAccProps));
                                 }
                             });
                             break;
                         case 'leagueoflegends':
-                            getLOLProperties(foundPlayerAccount.login,function (err,lolProperties) {
-                                if(!err){
+                            getLOLProperties(foundPlayerAccount.login, function (err, lolProperties) {
+                                if (!err) {
                                     playerAccProps.push(lolProperties);
                                     return next(null, _.flatten(playerAccProps));
                                 }
@@ -139,8 +139,8 @@ module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties
                             return next(null, playerAccProps);
                             break;
                         case 'overwatch':
-                            getOWProperties(foundPlayerAccount.login,function (err,lolProperties) {
-                                if(!err){
+                            getOWProperties(foundPlayerAccount.login, function (err, lolProperties) {
+                                if (!err) {
                                     playerAccProps.push(lolProperties);
                                     return next(null, _.flatten(playerAccProps));
                                 }
@@ -160,98 +160,94 @@ module.exports.getPlayerAccountProperties =  function getPlayerAccountProperties
     })
 };
 
-function getLOLProperties(summonersName,callback) {
-    let playerAccountPropertiesContent = [];
+function getLOLProperties(summonersName, callback) {
+    let playerAccountPropertiesContent = {};
     async.parallel([
             function (cb) {
                 riotService.getUserStatsForLol(summonersName, function (error, resp, body) {
-                    if(!error && !_.isNull(body)){
-                        for(let y=0;y in body;y++)
-                            playerAccountPropertiesContent.push(body[y]);
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['kda'] = (body);
                     }
-                    cb(error,'recuperation des stats de lol');
+                    cb(error, 'recuperation des stats de lol');
                 });
             },
             function (cb) {
                 riotService.getUserStatsForSeason(summonersName, function (error, resp, body) {
-                    if(!error && !_.isNull(body)){
-                        for(let y=0;y in body;y++)
-                            playerAccountPropertiesContent.push(body[y]);
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['infos'] = (body);
                     }
-                    cb(error,'recuperation des infos du user lol');
+                    cb(error, 'recuperation des infos du user lol');
                 });
             }
         ],
         function (err, results) {
-            if(err){
-                callback(err,null);
+            if (err) {
+                callback(err, null);
             }
-            else{
-                callback(null,playerAccountPropertiesContent);
+            else {
+                callback(null, playerAccountPropertiesContent);
             }
         });
 }
 
-function getOWProperties(UserName,callback) {
+function getOWProperties(UserName, callback) {
     let playerAccountPropertiesContent = [];
     async.parallel([
             function (cb) {
                 owService.getUserHeroesCompetitiveStats(UserName, function (error, resp, body) {
-                    if(!error && !_.isNull(body)){
-                        for(let y=0;y in body;y++)
+                    if (!error && !_.isNull(body)) {
+                        for (let y = 0; y in body; y++)
                             playerAccountPropertiesContent.push(body[y]);
                     }
-                    cb(error,'recuperation des stats des heros de OW');
+                    cb(error, 'recuperation des stats des heros de OW');
                 });
             },
             function (cb) {
                 owService.getUserProfileStats(UserName, function (error, resp, body) {
-                    if(!error && !_.isNull(body)){
-                        for(let y=0;y in body;y++)
+                    if (!error && !_.isNull(body)) {
+                        for (let y = 0; y in body; y++)
                             playerAccountPropertiesContent.push(body[y]);
                     }
-                    cb(error,'recuperation des infos du user OW');
+                    cb(error, 'recuperation des infos du user OW');
                 });
             }
         ],
         function (err, results) {
-            if(err){
-                callback(err,null);
+            if (err) {
+                callback(err, null);
             }
-            else{
-                callback(null,playerAccountPropertiesContent);
+            else {
+                callback(null, playerAccountPropertiesContent);
             }
         });
 }
 
 function getCSGOProperties(steamId, callback) {
-    let playerAccountPropertiesContent = [];
+    let playerAccountPropertiesContent = {};
     async.parallel([
-        function (cb) {
-            steamService.getUserStatsForCSGO(steamId, function (error, resp, body) {
-                if(!error && !_.isNull(body)){
-                    for(let y=0;y in body;y++)
-                        playerAccountPropertiesContent.push(body[y]);
-                }
-                cb(error,'recuperation des stats de csgo');
-            });
-        },
-        function (cb) {
-            steamService.getUserInformation(steamId, function (error, resp, body) {
-                if(!error && !_.isNull(body)){
-                    for(let y=0;y in body;y++)
-                        playerAccountPropertiesContent.push(body[y]);
-                }
-                cb(error,'recuperation des infos du user steam');
-            });
-        }
-    ],
+            function (cb) {
+                steamService.getUserStatsForCSGO(steamId, function (error, resp, body) {
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['stats'] = (body);
+                    }
+                    cb(error, 'recuperation des stats de csgo');
+                });
+            },
+            function (cb) {
+                steamService.getUserInformation(steamId, function (error, resp, body) {
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['userInfo'] = (body);
+                    }
+                    cb(error, 'recuperation des infos du user steam');
+                });
+            }
+        ],
         function (err, results) {
-        if(err){
-            callback(err,null);
-        }
-        else{
-            callback(null,playerAccountPropertiesContent);
-        }
-    });
+            if (err) {
+                callback(err, null);
+            }
+            else {
+                callback(null, playerAccountPropertiesContent);
+            }
+        });
 }
