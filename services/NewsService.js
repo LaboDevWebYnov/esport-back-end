@@ -16,24 +16,25 @@ var mongoose = require('mongoose'),
 function newsApiRequest(options, callBack) {
     request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                callBack(null, response, body);
+                response["body"] = JSON.parse(response["body"]);
+                callBack(null, response["body"], body);
             }
             else {
-                callBack(error, response, null);
+                callBack(error, response["body"], null);
             }
         }
     );
 }
 
-function getNews() {
+module.exports.getNews = function (cb) {
     let options = {
-        url: newsApiUrl + '?source=techcrunch&' +'?api_key=' + keyApi
+        url: newsApiUrl + '?source=buzzfeed&' +'apiKey=' + keyApi
     };
     newsApiRequest(options, function (error, response, body) {
 
         if (!error && response.statusCode == 200) {
             let respObject = JSON.parse(body);
-            cb(null, response, respObject[pseudo.toLowerCase()].id);
+            cb(null, response, respObject);
         }
         else {
             cb(error, response, null);

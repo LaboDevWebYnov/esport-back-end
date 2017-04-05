@@ -44,6 +44,10 @@
     {
       "name": "Registration",
       "description": "user registration steps management"
+    },
+    {
+      "name": "News",
+      "description": "news"
     }
   ],
   "basePath": "/api",
@@ -3016,6 +3020,37 @@
           }
         }
       }
+    },
+    "/news": {
+      "get": {
+        "x-swagger-router-controller": "NewsController",
+        "operationId": "getNews",
+        "tags": [
+          "News"
+        ],
+        "summary": "Get the TeamProperties for the given game",
+        "description": "Get the TeamProperties for the given game",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all news",
+            "schema": {
+              "title": "ArrayOfNews",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -3215,6 +3250,26 @@
         "updated_at": {
           "type": "string",
           "format": "date"
+        }
+      }
+    },
+    "News": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "urlToImage": {
+          "type": "string"
         }
       }
     },
