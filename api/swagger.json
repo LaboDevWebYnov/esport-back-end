@@ -44,6 +44,10 @@
     {
       "name": "Registration",
       "description": "user registration steps management"
+    },
+    {
+      "name": "Streamings",
+      "description": "streaming management"
     }
   ],
   "basePath": "/api",
@@ -3006,6 +3010,100 @@
               "items": {
                 "type": "string"
               }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/streaming/getLiveStreaming": {
+      "get": {
+        "x-swagger-router-controller": "StreamingController",
+        "operationId": "getLiveStreaming",
+        "tags": [
+          "Streamings"
+        ],
+        "summary": "Get the corresponding streamings on live",
+        "description": "Get array of live `Stream` objects.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Retrieved streaming object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/streaming/{streamingName}/getStreamingByLikeName": {
+      "get": {
+        "x-swagger-router-controller": "StreamingController",
+        "operationId": "getStreamingByLikeName",
+        "tags": [
+          "Streamings"
+        ],
+        "summary": "Get the corresponding streamings based by the streaming name",
+        "description": "Get array of `Stream` objects specified by like name.",
+        "parameters": [
+          {
+            "name": "streamingName",
+            "in": "path",
+            "description": "streaming's name to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved streaming object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/streaming/{streamingName}/getStreamingByName": {
+      "get": {
+        "x-swagger-router-controller": "StreamingController",
+        "operationId": "getStreamingByName",
+        "tags": [
+          "Streamings"
+        ],
+        "summary": "Get the corresponding streamings based by the streaming name",
+        "description": "Get array of `Stream` objects specified by name.",
+        "parameters": [
+          {
+            "name": "streamingName",
+            "in": "path",
+            "description": "streaming's name to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved streaming object",
+            "schema": {
+              "$ref": "#/definitions/Team"
             }
           },
           "default": {
