@@ -3032,8 +3032,50 @@
         "tags": [
           "News"
         ],
-        "summary": "Get the TeamProperties for the given game",
-        "description": "Get the TeamProperties for the given game",
+        "summary": "Get the News",
+        "description": "Get the News",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all news",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          }
+        }
+      }
+    },
+    "/newsPolygon": {
+      "get": {
+        "x-swagger-router-controller": "NewsController",
+        "operationId": "getNewsPolygon",
+        "tags": [
+          "News"
+        ],
+        "summary": "Get the News From Polygon",
+        "description": "Get the News From Polygon",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all news",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          }
+        }
+      }
+    },
+    "/newsIgn": {
+      "get": {
+        "x-swagger-router-controller": "NewsController",
+        "operationId": "getNewsIgn",
+        "tags": [
+          "News"
+        ],
+        "summary": "Get the News From Ign",
+        "description": "Get the News From Ign",
         "parameters": [
         ],
         "responses": {
