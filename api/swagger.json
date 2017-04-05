@@ -3040,11 +3040,7 @@
           "200": {
             "description": "An array of all news",
             "schema": {
-              "title": "ArrayOfNews",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/definitions/News"
             }
           }
         }
@@ -3348,6 +3344,26 @@
     "News": {
       "type": "object",
       "properties": {
+        "status": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "sortBy": {
+          "type": "string"
+        },
+        "articles": {
+          "type": "array",
+          "items":{
+            "$ref": "#/definitions/Article"
+          }
+        }
+      }
+    },
+    "Article": {
+      "type": "object",
+      "properties": {
         "author": {
           "type": "string"
         },
@@ -3361,6 +3377,9 @@
           "type": "string"
         },
         "urlToImage": {
+          "type": "string"
+        },
+        "publishedAt": {
           "type": "string"
         }
       }
