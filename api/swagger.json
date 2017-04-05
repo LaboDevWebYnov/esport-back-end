@@ -2978,6 +2978,44 @@
           }
         }
       }
+    },
+    "/teamProperties/{gameId}/getByGameId": {
+      "get": {
+        "x-swagger-router-controller": "TeamPropertyController",
+        "operationId": "getTeamPropertiesByGameId",
+        "tags": [
+          "TeamProperty"
+        ],
+        "summary": "Get the TeamProperties for the given game",
+        "description": "Get the TeamProperties for the given game",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of Game to retrieve corresponding TeamProperty keys.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all TeamProperty keys of the given game",
+            "schema": {
+              "title": "ArrayOfTeamPropertyKeys",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

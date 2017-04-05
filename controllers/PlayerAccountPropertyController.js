@@ -483,4 +483,4 @@ module.exports.deletePlayerAccountPropertyById = function deletePlayerAccountPro
 //done PUT playerAccountProperties/{playerAccountId}/updateproperty/ + body --updates given property-ies key(s)'s value(s) of a playerAccount
 //done DELETE playerAccountProperties/{playerAccountId}/removeProperty/{key} --remove property-ies from a playerAccount
 
-//todo Get api/playerAccountProperties/{gameId}/getProperties -> get all the properties for the given game. We should set a list of properties for each games
+//done Get api/playerAccountProperties/{gameId}/getProperties -> get all the properties for the given game. We should set a list of properties for each games

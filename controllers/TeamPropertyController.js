@@ -291,6 +291,31 @@ module.exports.getTeamPropertyByValue = function getTeamPropertyByValue(req, res
     });
 };
 
+//Path GET api/teamProperties/{gameId}
+/**
+ * @description Route permettant de récupérer les properties des teams liées à jeu donné
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.getTeamPropertiesByGameId = function getTeamPropertiesByGameId(req, res, next) {
+    logger.info('Getting teamProperties related to game with id ' + Util.getPathParams(req)[2]);
+
+    teamPropertyService.findByGameId(Util.getPathParams(req)[2], function (err, teamPropertiesList) {
+        if (err) {
+            return next(err);
+        }
+        if (_.isNull(teamPropertiesList) || _.isEmpty(teamPropertiesList)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(teamPropertiesList || [], null, 2);
+        }
+        else {
+            res.set('Content-Type', 'application/json');
+            res.end(JSON.stringify(teamPropertiesList || [], null, 2));
+        }
+    });
+};
+
 //PAth: PUT teamProperties/{teamId}/updateProperty/{key}
 /**
  * @description Route permettant de mettre à jour la propriété spécifiée par la key passée en paramètre de la team sépécifiée par son teamId

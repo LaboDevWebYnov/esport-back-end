@@ -11,7 +11,6 @@ var mongoose = require('mongoose'),
     keyApi = "RGAPI-c6bdd877-4a79-4042-b5e0-9d957ae442da",
     request = require('request');
 
-
 //LoL: todo add corresponding props
 const LOLProps = ["league", "league_point", "wins", "losses", "win_ratio", "kda_season"];
 
@@ -52,7 +51,6 @@ module.exports.getUserStatsForSeason = function getUserStatsForCSGO(riotUserPseu
                 url: riotApiUrl + 'v2.5/league/by-summoner/' + riotUserId + '/entry?api_key=' + keyApi
             };
             riotApiRequest(options, function (error, response, body) {
-
                 let LOLContent = {};
                 if (!error && response.statusCode == 200) {
                     let respObject = JSON.parse(body);
@@ -98,6 +96,7 @@ module.exports.getUserStatsForLol = function getUserStatsForCSGO(riotUserName, c
                     var kills = 0, deaths = 0, assists = 0,totalMinionsKills = 0,totalDoubleKills=0,totalTripleKills=0,totalQuadraKills=0,totalPentaKills=0;
 
                     for (var y = 0; y in respObject.champions; y++) {
+
                         kills = kills + respObject.champions[y].stats.totalChampionKills;
                         deaths = deaths + respObject.champions[y].stats.totalDeathsPerSession;
                         assists = assists + respObject.champions[y].stats.totalAssists;
@@ -107,7 +106,6 @@ module.exports.getUserStatsForLol = function getUserStatsForCSGO(riotUserName, c
                         totalQuadraKills = totalQuadraKills + respObject.champions[y].stats.totalQuadraKills;
                         totalPentaKills = totalPentaKills + respObject.champions[y].stats.totalPentaKills;
                     }
-
                     LOLContentKDA["total_kills"] = kills;
 
                     LOLContentKDA["total_deaths"] = deaths;

@@ -64,11 +64,11 @@ module.exports.findByGameId = function findByGameId(gameId, next) {
             if (err) {
                 return next(err, null);
             }
-            if (_.isNull(foundGame) || _.isEmpty(foundGame)) {
+            if (_.isNil(foundGame) || _.isEmpty(foundGame)) {
                 return next({error: {code: 'E_GAME_NOT_FOUND', message: 'Game with given id not found'}});
             }
             else {
-                var gameName = _.toLower(foundGame._doc.name.replace(/\s/g, ""));
+                let gameName = _.toLower(foundGame._doc.name.replace(/\s/g, ""));
                 logger.debug("trying to link corresponding props for the game with name: " + gameName);
                 switch (gameName) {
                     case 'counter-strike:globaloffensive':
@@ -109,7 +109,7 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
                 if (err) {
                     return next(err, null);
                 }
-                if (_.isNull(foundGame) || _.isEmpty(foundGame)) {
+                if (_.isNil(foundGame) || _.isEmpty(foundGame)) {
                     return next({error: {code: 'E_GAME_NOT_FOUND', message: 'Game with given id not found'}});
                 }
                 else {
