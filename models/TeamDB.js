@@ -13,7 +13,8 @@ var Team = new Schema({
     invitedPlayers: {type: [{type: Schema.ObjectId, ref: 'PlayerAccount'}], required: false},
     postulatedPlayers: {type: [{type: Schema.ObjectId, ref: 'PlayerAccount'}], required: false},
     active: {type: Boolean, required: true},
-    country: {type:String, required: false},
+    country: {type: String, required: false},
+    logo: {type: Buffer, required: false},
     game: {type: Schema.ObjectId, ref: 'Game', required: true},
     created_at: {type: Date, required: true, default: new Date()},
     updated_at: {type: Date, required: true, default: new Date()}

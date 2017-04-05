@@ -2442,7 +2442,48 @@
         ],
         "responses": {
           "200": {
-            "description": "Updated Game object",
+            "description": "Updated Team object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/updateCaptain/{playerAccountId}": {
+      "put": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "updateCaptain",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Update the corresponding team's captain",
+        "description": "Update `Team` object's captain specified by its ID.",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount object to set as team captain.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated Team object",
             "schema": {
               "$ref": "#/definitions/Team"
             }
