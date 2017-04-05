@@ -26,9 +26,9 @@ function newsApiRequest(options, callBack) {
     );
 }
 
-module.exports.getNews = function (cb) {
+module.exports.getNewsIgn = function (cb) {
     let options = {
-        url: newsApiUrl + '?source=buzzfeed&' +'apiKey=' + keyApi
+        url: newsApiUrl + '?source=ign&' +'apiKey=' + keyApi
     };
     newsApiRequest(options, function (error, response, body) {
 
@@ -40,4 +40,20 @@ module.exports.getNews = function (cb) {
             cb(error, response, null);
         }
     });
-}
+};
+
+module.exports.getNewsPolygon = function (cb) {
+    let options = {
+        url: newsApiUrl + '?source=polygon&' +'apiKey=' + keyApi
+    };
+    newsApiRequest(options, function (error, response, body) {
+
+        if (!error && response.statusCode == 200) {
+            let respObject = JSON.parse(body);
+            cb(null, response, respObject);
+        }
+        else {
+            cb(error, response, null);
+        }
+    });
+};
