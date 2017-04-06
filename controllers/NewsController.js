@@ -1,86 +1,89 @@
 var Promise = require("bluebird"),
-    logger = require('log4js').getLogger('controller.playerAccount'),
+    logger = require('log4js').getLogger('controller.news'),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
+    async = require('async'),
     Util = require('./utils/util.js'),
     newsService = require('../services/NewsService');
 
 mongoose.Promise = Promise;
 
-
 module.exports.getNews = function getPlayerAccountList(req, res, next) {
-    let news= {};
-    newsService.getNewsIgn(function (err, newIgn) {
-        if (err) {
-            res.set('Content-Type', 'application/json');
-            res.status(404).json(newIgn || {}, null, 2);
-        }
-
-        logger.debug(newIgn);
-        if (!_.isNull(newIgn) || !_.isEmpty(newIgn)) {
-            news['ign'] = newIgn;
+    logger.info('Getting All News from News API...');
+    let news = {};
+    async.parallel([
+        function (cb) {
             newsService.getNewsPolygon(function (err, newPolygon) {
                 if (err) {
-                    res.set('Content-Type', 'application/json');
-                    res.status(404).json(newPolygon || {}, null, 2);
-                }
-
-                logger.debug(newPolygon);
-                if (!_.isNull(newPolygon) || !_.isEmpty(newPolygon)) {
-                    news['polygon'] = newPolygon;
-                    res.set('Content-Type', 'application/json');
-                    res.status(200).json(news || {}, null, 2);
+                    cb(err, 'retrieve polygon news');
                 }
                 else {
-                    next(err);
+                    logger.debug(newPolygon);
+                    news['polygon'] = newPolygon;
+                    cb(null, 'retrieve polygon news');
+                }
+            });
+        },
+        function (cb) {
+            newsService.getNewsIgn(function (err, newIgn) {
+                if (err) {
+                    cb(err, 'retrieve ign news');
+                }
+                else {
+                    logger.debug(newIgn);
+                    news['ign'] = newIgn;
+                    cb(null, 'retrieve ign news');
                 }
             });
         }
+    ], function (err, results) {
+        logger.debug(results);
+        if (_.isNull(err) || _.isEmpty(err)) {
+            return next(err);
+        }
         else {
-            next(err);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(news || {}, null, 2);
         }
     });
 };
 
 module.exports.getNewsIgn = function getPlayerAccountList(req, res, next) {
-    logger.info('Getting News from News API...');
+    logger.info('Getting Ign News from News API...');
 
     newsService.getNewsIgn(function (err, news) {
         if (err) {
+            return next(err);
+        }
+        else if (_.isNull(news) || _.isEmpty(news)) {
             res.set('Content-Type', 'application/json');
             res.status(404).json(news || {}, null, 2);
         }
-
-        logger.debug(news);
-        if (!_.isNull(news) || !_.isEmpty(news)) {
+        else {
+            logger.debug(news);
             res.set('Content-Type', 'application/json');
             res.status(200).json(news || {}, null, 2);
-        }
-        else {
-            next(err);
         }
     });
 };
 
-
 module.exports.getNewsPolygon = function getPlayerAccountList(req, res, next) {
-    logger.info('Getting News from News API...');
+    logger.info('Getting Polygon News from News API...');
 
     newsService.getNewsPolygon(function (err, news) {
         if (err) {
+            return next(err);
+        }
+
+        if (_.isNull(news) || _.isEmpty(news)) {
             res.set('Content-Type', 'application/json');
             res.status(404).json(news || {}, null, 2);
         }
-
-        logger.debug(news);
-        if (!_.isNull(news) || !_.isEmpty(news)) {
+        else {
+            logger.debug(news);
             res.set('Content-Type', 'application/json');
             res.status(200).json(news || {}, null, 2);
         }
-        else {
-            next(err);
-        }
     });
-
 };
