@@ -5,6 +5,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Game = new Schema({
+    id: {type: String, required: true},
+    shortname: {type: String, required: true},
+    fullname: {type: String, required: true},
     name: {type: String, required: true},
     releaseDate: {type: Date, required: true},
     multiPlayer: {type: Boolean, required: true},
