@@ -1,7 +1,7 @@
 {
   "server": {
     "mongo": {
-      "connectionString": "mongodb://localhost/projet1labo",
+      "connectionString": "mongodb://root:root@ds059694.mongolab.com:59694/projet1labo",
       "options": {
         "server": {
           "poolSize": 10
@@ -21,7 +21,7 @@
     },
     "instance": {
       "name": "mobile-server-instance1",
-      "host": "195.154.7.74",
+      "host": "http://integration.noname-gaming.fr",
       "port": 3100,
       "log4js": {
         "appenders": [
@@ -50,13 +50,20 @@
     "features": {
       "email": {
         "smtp":{
+          "mailOpts": {
+            "protocol": "http",
+            "host": "http://integration.noname-gaming.fr",
+            "port": "4200"
+          },
           "sender":"labodevtest@gmail.com",
+          "sendgridapikey": "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",
           "mailgun":{
-            "apiKey": "key-7d3e1a0c62fc2084098e00ff32f0c06d",
-            "domain": "sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org"
+            "apiKey": "key-ecfb943b9b9d9233cc67d73ba22c7498",
+            "domain": "sandboxac05877c9fb5494eabcee21e7eaafd61.mailgun.org"
           }
         },
-        "sendOnUserAdd": true
+        "sendOnUserAdd": false,
+        "sendOnUserRegistration": true
       }
     }
   }

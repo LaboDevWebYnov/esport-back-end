@@ -46,6 +46,10 @@
       "description": "user registration steps management"
     },
     {
+      "name": "News",
+      "description": "news"
+    },
+    {
       "name": "Streamings",
       "description": "streaming management"
     }
@@ -2438,7 +2442,48 @@
         ],
         "responses": {
           "200": {
-            "description": "Updated Game object",
+            "description": "Updated Team object",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/teams/{teamId}/updateCaptain/{playerAccountId}": {
+      "put": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "updateCaptain",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Update the corresponding team's captain",
+        "description": "Update `Team` object's captain specified by its ID.",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "teamId of Team object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "playerAccountId",
+            "in": "path",
+            "description": "playerAccountId of PlayerAccount object to set as team captain.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated Team object",
             "schema": {
               "$ref": "#/definitions/Team"
             }
@@ -3021,6 +3066,69 @@
         }
       }
     },
+    "/news": {
+      "get": {
+        "x-swagger-router-controller": "NewsController",
+        "operationId": "getNews",
+        "tags": [
+          "News"
+        ],
+        "summary": "Get the News",
+        "description": "Get the News",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all news",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          }
+        }
+      }
+    },
+    "/newsPolygon": {
+      "get": {
+        "x-swagger-router-controller": "NewsController",
+        "operationId": "getNewsPolygon",
+        "tags": [
+          "News"
+        ],
+        "summary": "Get the News From Polygon",
+        "description": "Get the News From Polygon",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all news",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          }
+        }
+      }
+    },
+    "/newsIgn": {
+      "get": {
+        "x-swagger-router-controller": "NewsController",
+        "operationId": "getNewsIgn",
+        "tags": [
+          "News"
+        ],
+        "summary": "Get the News From Ign",
+        "description": "Get the News From Ign",
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all news",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          }
+        }
+      }
+    },
     "/streaming/getLiveStreaming": {
       "get": {
         "x-swagger-router-controller": "StreamingController",
@@ -3313,6 +3421,49 @@
         "updated_at": {
           "type": "string",
           "format": "date"
+        }
+      }
+    },
+    "News": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "sortBy": {
+          "type": "string"
+        },
+        "articles": {
+          "type": "array",
+          "items":{
+            "$ref": "#/definitions/Article"
+          }
+        }
+      }
+    },
+    "Article": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "urlToImage": {
+          "type": "string"
+        },
+        "publishedAt": {
+          "type": "string"
         }
       }
     },

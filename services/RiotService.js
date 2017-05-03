@@ -46,13 +46,13 @@ function getIdByUserName(pseudo, cb) {
 //https://euw.api.pvp.net/api/lol/euw/v2.5/league/by-summoner/57467635/entry?api_key=RGAPI-c6bdd877-4a79-4042-b5e0-9d957ae442da
 module.exports.getUserStatsForSeason = function getUserStatsForCSGO(riotUserPseudo, callBack) {
     getIdByUserName(riotUserPseudo, function (err, resp, riotUserId) {
-        if (!err && resp.statusCode == 200) {
+        if (!err && resp.statusCode === 200) {
             let options = {
                 url: riotApiUrl + 'v2.5/league/by-summoner/' + riotUserId + '/entry?api_key=' + keyApi
             };
             riotApiRequest(options, function (error, response, body) {
                 let LOLContent = {};
-                if (!error && response.statusCode == 200) {
+                if (!error && response.statusCode === 200) {
                     let respObject = JSON.parse(body);
 
                     LOLContent[LOLProps[0]] = respObject[riotUserId][0].tier + " " + respObject[riotUserId][0].entries[0].division;

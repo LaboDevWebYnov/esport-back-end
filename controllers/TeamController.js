@@ -8,6 +8,7 @@ var Promise = require("bluebird"),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
+    async = require('async'),
     Util = require('./utils/util.js');
 
 var PlayerAccountBD = require('../models/PlayerAccountDB'),
@@ -325,6 +326,84 @@ module.exports.updateTeam = function updateTeam(req, res, next) {
         });
 };
 
+// Path: PUT api/teams/{teamId}/updateCaptain/{playerAccountId}
+module.exports.updateCaptain = function updateCaptain(req, res, next) {
+    PlayerAccount.findOne({_id: Util.getPathParams(req)[4]}, function (err, user) {
+        if(err)
+            return next(err);
+
+        if (_.isNil(user) || _.isEmpty(user)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(user || {}, null, 2);
+        }
+        else {
+            Team.findOneAndUpdate(
+                {_id: Util.getPathParams(req)[2]},
+                {
+                    $set: {
+                        captain: user,
+                        updated_at: Date.now()
+                    }
+                },
+                //means we want the DB to return the updated document instead of the old one
+                {new: true})
+                .populate("game")
+                .populate(
+                    {
+                        path: 'captain',
+                        populate: {path: 'user'}
+                    })
+                .populate(
+                    {
+                        path: 'players',
+                        populate: {path: 'user'}
+                    })
+                .exec(function (err, updatedTeam) {
+                    if (err)
+                        return next(err);
+
+                    if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(404).json(updatedTeam || {}, null, 2);
+                    }
+                    else {
+                        //todo handle roles
+                        //si il y a des players
+                        // if (updatedTeam._doc.players.length) {
+                        //     roleService.getTeamRoles(updatedTeam._id, function (err, foundRoles) {
+                        //         if (err)
+                        //             return next(err);
+                        //
+                        //         if (_.isNull(foundRoles) || _.isEmpty(foundRoles)) {
+                        //             res.set('Content-Type', 'application/json');
+                        //             res.status(404).json(foundRoles || {}, null, 2);
+                        //         }
+                        //         else {
+                        //             //affectation des roles aux players
+                        //             _.forEach(updatedTeam.players, function (player) {
+                        //                 player._doc.role = _.find(foundRoles, function (role) {
+                        //                     return player._id == role._doc.playerAccount;
+                        //                 });
+                        //             });
+                        //             logger.debug("Updated team object: \n" + updatedTeam);
+                        //             res.set('Content-Type', 'application/json');
+                        //             res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                        //         }
+                        //     });
+                        // }
+                        // else {
+                        //pas de players, on renvoie directement
+                        logger.debug("Updated team object: \n" + updatedTeam);
+                        //todo handle roles/properties
+                        res.set('Content-Type', 'application/json');
+                        res.status(200).end(JSON.stringify(updatedTeam || {}, null, 2));
+                        // }
+                    }
+                });
+        }
+    });
+};
+
 // Path: PUT api/teams/deleteTeam/{teamId}
 module.exports.deleteTeam = function deleteTeam(req, res, next) {
 
@@ -494,66 +573,78 @@ module.exports.addPlayer = function addPlayer(req, res, next) {
                         if (_.isNil(team.players) || _.isEmpty(team.players))
                             team.players = [];
 
-                        //adding new player to team's players list
-                        team.players = team.players.push(foundPlayerAccount._id);
+                        //check playerId isn't in the list yet
+                        //in case player already present in team, abord
+                        if (_.some(team._doc.players, function (o) {
+                                return _.isEqual(o._doc._id, foundPlayerAccount._id)
+                            })) {
+                            logger.info("PlayerAccount with id: " + foundPlayerAccount._id + "is already present in the team");
+                            res.set('Content-Type', 'application/json');
+                            res.status(400).json({error: {code: 'E_PLAYER_ALREADY_IN_TEAM', message: 'Player is already present in the team'}} || {}, null, 2);
+                        }
+                        else {
+                            //adding new player to team's players list
+                            team.players = team.players.push(foundPlayerAccount._id);
 
-                        let teamToReturn = {};
+                            let teamToReturn = {};
 
-                        //todo handle roles
-                        async.series([
-                            function (cb) {
-                                //todo add role
-                            },
-                            function (cb) {
-                                //updating team with updated players list
-                                Team.findOneAndUpdate(
-                                    {_id: Util.getPathParams(req)[2]},
-                                    {
-                                        $set: {
-                                            players: team.players
-                                        }
-                                    },
-                                    {new: true}) //means we want the DB to return the updated document instead of the old one
-                                    .populate("game")
-                                    .populate(
+                            //todo handle roles
+                            async.series([
+                                function (cb) {
+                                    //todo add role
+                                    cb();
+                                },
+                                function (cb) {
+                                    //updating team with updated players list
+                                    Team.findOneAndUpdate(
+                                        {_id: Util.getPathParams(req)[2]},
                                         {
-                                            path: 'captain',
-                                            populate: {path: 'user'}
-                                        })
-                                    .populate(
-                                        {
-                                            path: 'players',
-                                            populate: {path: 'user'}
-                                        })
-                                    .exec(function (err, updatedTeam) {
-                                        if (err)
-                                            cb(err, 'Mise à jour players list');
-                                        if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
-                                            cb({
-                                                error: {
-                                                    code: 'E_TEAM_NOT_FOUND',
-                                                    message: 'Could not find team to update'
-                                                }
-                                            }, 'Mise à jour players list');
-                                        }
-                                        else {
-                                            teamToReturn = updatedTeam;
-                                            cb(null, 'Mise à jour players list');
-                                        }
-                                    });
-                            }
-                        ], function (err, results) {
-                            logger.debug('results: ' + results);
-                            if (err) {
-                                res.set('Content-Type', 'application/json');
-                                res.status(404).json(teamToReturn || {}, null, 2);
-                            }
-                            else {
-                                //todo handle roles/properties
-                                res.set('Content-Type', 'application/json');
-                                res.status(200).end(JSON.stringify(teamToReturn || {}, null, 2));
-                            }
-                        });
+                                            $set: {
+                                                players: team.players
+                                            }
+                                        },
+                                        {new: true}) //means we want the DB to return the updated document instead of the old one
+                                        .populate("game")
+                                        .populate(
+                                            {
+                                                path: 'captain',
+                                                populate: {path: 'user'}
+                                            })
+                                        .populate(
+                                            {
+                                                path: 'players',
+                                                populate: {path: 'user'}
+                                            })
+                                        .exec(function (err, updatedTeam) {
+                                            if (err)
+                                                cb(err, 'Mise à jour players list');
+                                            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+                                                cb({
+                                                    error: {
+                                                        code: 'E_TEAM_NOT_FOUND',
+                                                        message: 'Could not find team to update'
+                                                    }
+                                                }, 'Mise à jour players list');
+                                            }
+                                            else {
+                                                teamToReturn = updatedTeam;
+                                                cb(null, 'Mise à jour players list');
+                                            }
+                                        });
+                                }
+                            ], function (err, results) {
+                                logger.debug('results: ' + results);
+                                if (err) {
+                                    res.set('Content-Type', 'application/json');
+                                    res.status(404).json(teamToReturn || {}, null, 2);
+                                }
+                                else {
+                                    //todo handle roles/properties
+                                    res.set('Content-Type', 'application/json');
+                                    res.status(200).end(JSON.stringify(teamToReturn || {}, null, 2));
+                                }
+                            });
+                        }
                     }
                 });
         }
