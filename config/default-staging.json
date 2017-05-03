@@ -21,7 +21,7 @@
     },
     "instance": {
       "name": "mobile-server-instance1",
-      "host": "http://integration.noname-gaming.fr",
+      "host": "integration.noname-gaming.fr",
       "port": 3100,
       "log4js": {
         "appenders": [
@@ -52,8 +52,8 @@
         "smtp":{
           "mailOpts": {
             "protocol": "http",
-            "host": "http://integration.noname-gaming.fr",
-            "port": "4200"
+            "host": "integration.noname-gaming.fr",
+            "port": 4200
           },
           "sender":"labodevtest@gmail.com",
           "sendgridapikey": "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",
