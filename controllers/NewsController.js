@@ -39,7 +39,8 @@ module.exports.getNews = function getPlayerAccountList(req, res, next) {
         }
     ], function (err, results) {
         logger.debug(results);
-        if (_.isNull(err) || _.isEmpty(err)) {
+        if (!_.isNull(err) || !_.isEmpty(err)) {
+            logger.debug(err);
             return next(err);
         }
         else {
