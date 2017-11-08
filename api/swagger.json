@@ -55,7 +55,7 @@
     },
     {
       "name": "Toornament",
-      "description": "toornament management"
+      "description": "tournament management"
     }
   ],
   "basePath": "/api",
@@ -3226,9 +3226,9 @@
           }
         }
       }
-    },"/toornament": {
+    },"/tournament": {
       "get": {
-        "x-swagger-router-controller": "GameController",
+        "x-swagger-router-controller": "ToornamentController",
         "operationId": "getToornament",
         "tags": [
           "Toornament"
@@ -3251,6 +3251,122 @@
             "schema": {
               "title": "ArrayOfGames",
               "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournament/addTournament":{
+      "post": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "postToornament",
+        "tags": [
+          "Toornament"
+        ],
+        "summary": "Create a toornament",
+        "description": "Post `toornament` objects.",
+        "parameters": [
+          {
+            "name": "discipline",
+            "in": "query",
+            "description": "name of the game",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "name of the tournament (maximum 30 characeters)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of a tournament. Represents the expected number of participants it'll be able to manage.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "participant_type",
+            "in": "query",
+            "description": "Type of participants who plays in the tournament (team, single).",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "description": "complete name of this tournament. (max 80 characters)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "organisation",
+            "in": "query",
+            "description": "Tournament organizer.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "website",
+            "in": "query",
+            "description": "url of the website",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of toornament",
+            "schema": {
+              "title": "ArrayOfGames",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournament/{id}": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "GetToornamentById",
+        "tags": [
+          "Toornament"
+        ],
+        "summary": "Get one tournament",
+        "description": "Get one toornament by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "An unique identifier of the tournament to retrieve.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
               "items": {
                 "$ref": "#/definitions/Game"
               }
