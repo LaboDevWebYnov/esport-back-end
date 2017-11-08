@@ -52,6 +52,10 @@
     {
       "name": "Streamings",
       "description": "streaming management"
+    },
+    {
+      "name": "Toornament",
+      "description": "toornament management"
     }
   ],
   "basePath": "/api",
@@ -3212,6 +3216,44 @@
             "description": "Retrieved streaming object",
             "schema": {
               "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/toornament": {
+      "get": {
+        "x-swagger-router-controller": "GameController",
+        "operationId": "getToornament",
+        "tags": [
+          "Toornament"
+        ],
+        "summary": "Gets all toornament",
+        "description": "Gets `toornament` objects.\nOptional query param of **size** determines\nsize of returned array\n",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of array",
+            "required": false,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of toornament",
+            "schema": {
+              "title": "ArrayOfGames",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
             }
           },
           "default": {
