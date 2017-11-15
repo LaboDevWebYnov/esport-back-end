@@ -367,6 +367,7 @@ module.exports.getPlayerAccountsByUserAndGame = function getPlayerAccountsByUser
 };
 
 //Path:  GET api/playerAccounts/game/{gameId}
+
 module.exports.getPlayerAccountsByGame = function getPlayerAccountsByGame(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
@@ -375,6 +376,7 @@ module.exports.getPlayerAccountsByGame = function getPlayerAccountsByGame(req, r
     PlayerAccount.find(
         {
             game: Util.getPathParams(req)[3]
+
         }
     )
         .populate("game")
