@@ -365,3 +365,56 @@ module.exports.getPlayerAccountsByUserAndGame = function getPlayerAccountsByUser
             }
         );
 };
+
+//Path:  GET api/playerAccounts/game/{gameId}
+module.exports.getPlayerAccountsByGameId = function getPlayerAccountsByGameId(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
+    logger.info('Getting the playerAccounts for game with game id: ' + Util.getPathParams(req)[4]);
+
+    PlayerAccount.find(
+        {
+
+            game: Util.getPathParams(req)[4]
+        }
+    )
+        .populate("game")
+        .exec(function (err, playerAccountList) {
+                if (err)
+                    return next(err);
+
+                logger.debug(playerAccountList);
+                if (_.isNull(playerAccountList) || _.isEmpty(playerAccountList)) {
+                    res.set('Content-Type', 'application/json');
+                    res.status(404).json(playerAccountList || {}, null, 2);
+                }
+                else {
+                    async.filter(playerAccountList,function (playerAccount,cb) {
+                        playerAccountPropertyService.getPlayerAccountProperties(playerAccount._id,function (err,playerAccountProperties) {
+                            if (err)
+                                cb(err);
+
+                            logger.debug(playerAccountProperties);
+                            if (_.isNull(playerAccountProperties) || _.isEmpty(playerAccountProperties)) {
+                                cb(null);
+                                // res.set('Content-Type', 'application/json');
+                                // res.status(404).json(playerAccountProperties || {}, null, 2);
+                            }
+                            else {
+                                playerAccount._doc.properties = playerAccountProperties;
+                                cb(null);
+                            }
+                        });
+                    },function (err,results) {
+                        if(err){
+                            return next(err);
+                        }
+                        else{
+                            res.set('Content-Type', 'application/json');
+                            res.status(200).end(JSON.stringify(playerAccountList || {}, null, 2));
+                        }
+                    } )
+                }
+            }
+        );
+};
