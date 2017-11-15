@@ -3264,6 +3264,31 @@
           }
         }
       }
+    },"/toornament/oauth/v2/token": {
+      "post": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getAuthToken",
+        "tags": [
+          "Toornament"
+        ],
+        "summary": "Get the access token for toornament.",
+        "description": "Get the access token for toornament.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return token",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },"/getTournaments": {
       "get": {
         "x-swagger-router-controller": "ToornamentController",
@@ -3490,7 +3515,7 @@
     },"/me/tournaments": {
       "get": {
         "x-swagger-router-controller": "ToornamentController",
-        "operationId": "GetMyToornaments",
+        "operationId": "getMyTournaments",
         "tags": [
           "Toornament"
         ],

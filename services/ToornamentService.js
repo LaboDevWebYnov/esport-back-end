@@ -1,15 +1,17 @@
 var mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
-    toornamentApiUrl = "https://api.toornament.com/v1/",
+    toornamentApiUrl = "https://api.toornament.com/",
     keyApi = "ATEr83fFz4LIc6rIvyArx-rZ32kRaG_15SQSwFbtdRg",
     request = require('request');
+    clientSecret = '1hu0ts6jyv8googo0kks0wog44w00gok84soc48g4cgc0848o8';
+    clientId = '9ce161687677adaf69d21a192nktf5mifmskkg0804cskwggko8skwwc8goso8o4ggg4s4gc4c';
 
 
-function ToornamentApiRequest(options,callBack) {
+function toornamentApiRequest(options,callBack) {
     request(options, function (error, response, body) {
 
-        logger.info(response.statusCode);
+        logger.info(error);
 
         if (!error && response.statusCode == 200) {
                 callBack(null,response,body);
@@ -21,17 +23,32 @@ function ToornamentApiRequest(options,callBack) {
     );
 }
 
-// TOURNAMENT
-
-// https://api.toornament.com/v1/tournaments
-module.exports.getTournaments = function getTournaments(params, callBack){
-
-    let options = {
-        url: toornamentApiUrl + 'tournaments' +  '?api_key=' + keyApi
-    };
+function generateGetUrlFromParams(params){
+    let options;
+    if(params['access_token']){
+        options = {
+            url: toornamentApiUrl + 'v1/tournaments?=',
+            method: 'GET',
+            headers: {
+                'X-Api-Key': keyApi,
+                Authorization: accessToken
+            }
+        };
+    }else{
+        options = {
+            url: toornamentApiUrl + 'v1/tournaments?=',
+            method: 'GET',
+            headers: {
+                'X-Api-Key': keyApi
+            }
+        };
+    }
 
     if(params['discipline']){
         options.url += '&discipline=' + params['discipline'];
+    }
+    if(params['archived']){
+        options.url += '&archived=' + params['archived'];
     }
     if(params['status']){
         options.url += '&status=' + params['status'];
@@ -63,11 +80,51 @@ module.exports.getTournaments = function getTournaments(params, callBack){
     if(params['name']){
         options.url += '&name=' + params['name'];
     }
+    if(params['page']){
+        options.url += '&page=' + params['page'];
+    }
 
-    logger.info('url', options.url);
+    logger.info(options);
 
+    return options;
+}
 
-    ToornamentApiRequest(options,function (error,response,body) {
+// OAUTH2
+
+// https://api.toornament.com/oauth/v2/token
+module.exports.oauth2 = function Oauth2(callBack){
+
+    let options = {
+        url: toornamentApiUrl + 'oauth/v2/token',
+        method: 'POST',
+        form: {
+            grant_type: 'client_credentials',
+            client_id: clientId,
+            client_secret: clientSecret
+        }
+    };
+
+    toornamentApiRequest(options,function (error,response,body) {
+
+        let respObject = JSON.parse(body);
+        if (!error && respObject.statusCode != 404) {
+
+            callBack(null,response,null);
+        }
+        else {
+            callBack(error,response,null);
+        }
+    });
+};
+
+// TOURNAMENT
+
+// https://api.toornament.com/v1/tournaments
+module.exports.getTournaments = function getTournaments(params, callBack){
+
+    let options = generateGetUrlFromParams(params);
+
+    toornamentApiRequest(options,function (error,response,body) {
 
         let respObject = JSON.parse(body);
         if (!error && respObject.statusCode != 404) {
@@ -88,11 +145,11 @@ module.exports.addTournament = function postTournament(callBack){
 // https://api.toornament.com/v1/tournaments/{id}
 module.exports.getOneTournamentById = function getOneTournamentById(id, callBack){
     let options = {
-        url: toornamentApiUrl + 'tournaments/' + id +  '?api_key=' + keyApi
+        url: toornamentApiUrl + 'v1/tournaments/' + id +  '?api_key=' + keyApi
     };
     logger.info(options.url);
 
-    ToornamentApiRequest(options,function (error,response,body) {
+    toornamentApiRequest(options,function (error,response,body) {
 
         let respObject = JSON.parse(body);
         if (!error && respObject.statusCode != 404) {
@@ -106,13 +163,13 @@ module.exports.getOneTournamentById = function getOneTournamentById(id, callBack
 };
 
 // https://api.toornament.com/v1/me/tournaments
-module.exports.getMyTournaments = function getOneTournamentById(id, callBack){
-    let options = {
-        url: toornamentApiUrl + 'me/tournaments/' + '?api_key=' + keyApi
-    };
-    logger.info(options.url);
+module.exports.getMyTournaments = function getMyTournaments(params, callBack){
 
-    ToornamentApiRequest(options,function (error,response,body) {
+    let options = generateGetUrlFromParams(params);
+    logger.info(options);
+
+
+    toornamentApiRequest(options,function (error,response,body) {
 
         let respObject = JSON.parse(body);
         if (!error && respObject.statusCode != 404) {
