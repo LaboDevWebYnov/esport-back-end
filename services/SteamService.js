@@ -13,7 +13,7 @@ var mongoose = require('mongoose'),
 
 //CS:GO: todo add corresponding props
 const CSGOStats = ['total_kills', 'kill_death_ratio', 'total_time_played','total_mvps','ratio_win_loose', 'kills_by_heads_shot','accuracy'];
-const CSGOUserProperties = ['country','name','pseudo'];
+const CSGOUserProperties = ['country','name','pseudo','avatar'];
 
 
 //Rocket League: todo add corresponding props
@@ -51,7 +51,7 @@ module.exports.getUserStatsForCSGO = function getUserStatsForCSGO(steamIdUser,ca
             let respObject = JSON.parse(body);
             let CSGOStatsContent = {};
             let tab=[];
-            let tabVarName=["total_kills","total_time_played","total_mvps","total_deaths","total_kills_headshot","total_matches_won","total_matches_played","total_shots_fired","total_shots_hit","total_rounds_played"]
+            let tabVarName=["avatar","total_kills","total_time_played","total_mvps","total_deaths","total_kills_headshot","total_matches_won","total_matches_played","total_shots_fired","total_shots_hit","total_rounds_played"]
             _.forEach(respObject.playerstats.stats, function (stat) {
                 if(_.includes(tabVarName,stat.name)){
                     tab.push(stat);
@@ -84,6 +84,7 @@ module.exports.getUserInformation = function getUserInformation(steamIdUser,call
                 returnedArray["country"] = player.loccountrycode;
                 returnedArray["name"] = player.realname;
                 returnedArray["pseudo"] = player.personaname;
+                returnedArray["avatar"] =player.avatar;
             });
             callBack(null,response,returnedArray);
         }
