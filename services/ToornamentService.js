@@ -83,6 +83,24 @@ function generateGetUrlFromParams(params){
     if(params['page']){
         options.url += '&page=' + params['page'];
     }
+    if(params['has_result']){
+        options.url += '&has_result=' + params['has_result'];
+    }
+    if(params['stage_number']){
+        options.url += '&stage_number=' + params['stage_number'];
+    }
+    if(params['group_number']){
+        options.url += '&group_number=' + params['group_number'];
+    }
+    if(params['round_number']){
+        options.url += '&round_number=' + params['round_number'];
+    }
+    if(params['participant_id']){
+        options.url += '&participant_id=' + params['participant_id'];
+    }
+    if(params['with_games']){
+        options.url += '&with_games=' + params['with_games'];
+    }
 
     logger.info(options);
 

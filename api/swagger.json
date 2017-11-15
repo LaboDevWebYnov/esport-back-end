@@ -56,6 +56,10 @@
     {
       "name": "Toornament",
       "description": "tournament management"
+    },
+    {
+      "name": "Matches",
+      "description": "matches management"
     }
   ],
   "basePath": "/api",
@@ -3613,6 +3617,98 @@
             "schema": {
               "title": "ArrayOfMyTournament",
               "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournaments/{id}/matches": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getMatches",
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Get one tournament",
+        "description": "Get one toornament by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "An unique identifier of the tournament to retrieve.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "has_result",
+            "in": "query",
+            "description": "When set to '1', returns only matches with a result. When set to '0', returns only matches without a result. \nAllowed values: 1, 0. \nDefault: 0",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "stage_number",
+            "in": "query",
+            "description": "Returns matches in the given stage number. If the stage does not exist, it'll return no matches.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "group_number",
+            "in": "query",
+            "description": "Returns matches in the given group number. If the group does not exist, it'll return no matches.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "round_number",
+            "in": "query",
+            "description": "Returns matches in the given round number. If the round does not exist, it'll return no matches.",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorts the collection in a particular order. 'structure' sorts the matches based on the stage, group and round numbers; 'schedule' sorts the matches based on the date from earlier to later; 'latest' sorts the matches based on the date from later to earlier. \nAllowed values: structure, schedule, latest. \nDefault: structure",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "participant_id",
+            "in": "query",
+            "description": "Returns matches that involves the given participant's id.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "with_games",
+            "in": "query",
+            "description": "When set to '1', it will include a summary of each game of the match. \nAllowed values: 1, 0. \nDefault: 0",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page requested of the list.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
               "items": {
                 "$ref": "#/definitions/Game"
               }

@@ -234,4 +234,67 @@ module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
 
 // MATCHES
 
+module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
 
+    var hasResult;
+    var stageNumber;
+    var groupNumber;
+    var roundNumber;
+    var sort;
+    var participantId;
+    var withGames;
+    var page;
+
+    var params = [];
+
+    if(req.query.has_result){
+        hasResult = req.query.has_result;
+        params['has_result'] = hasResult;
+    }
+    if(req.query.stage_number){
+        stageNumber = req.query.stage_number;
+        params['stage_number'] = stageNumber;
+    }
+    if(req.query.group_number){
+        groupNumber = req.query.group_number;
+        params['group_number'] = groupNumber;
+    }
+    if(req.query.round_number){
+        roundNumber = req.query.round_number;
+        params['round_number'] = roundNumber;
+    }
+    if(req.query.sort){
+        sort = req.query.sort;
+        params['sort'] = sort;
+    }
+    if(req.query.participant_id){
+        participantId = req.query.participant_id;
+        params['participant_id'] = participantId;
+    }
+    if(req.query.with_games){
+        withGames = req.query.with_games;
+        params['with_games'] = withGames;
+    }
+    if(req.query.page){
+        page = req.query.page;
+        params['page'] = page;
+    }
+
+    logger.info(params);
+
+    toornamentService.getMyTournaments(params, function(err, tournament){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(tournament || {}, null, 2);
+        }
+        else {
+            logger.debug(tournament);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(tournament || {}, null, 2);
+        }
+    });
+};
