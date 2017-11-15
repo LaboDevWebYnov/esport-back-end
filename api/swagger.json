@@ -55,7 +55,7 @@
     },
     {
       "name": "Toornament",
-      "description": "toornament management"
+      "description": "tournament management"
     }
   ],
   "basePath": "/api",
@@ -1328,6 +1328,44 @@
             "required": true,
             "type": "string"
           },
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of the Game object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of PlayerAccount",
+            "schema": {
+              "title": "ArrayOfPlayerAccount",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PlayerAccount"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/playerAccounts/game/{gameId}": {
+      "get": {
+        "x-swagger-router-controller": "PlayerAccountController",
+        "operationId": "getPlayerAccountsByGame",
+        "tags": [
+          "PlayerAccount"
+        ],
+        "summary": "Get the playerAccounts related to the given game",
+        "description": "Gets `PlayerAccount` objects related to the given game.",
+        "parameters": [
           {
             "name": "gameId",
             "in": "path",
@@ -3226,23 +3264,92 @@
           }
         }
       }
-    },"/toornament": {
+    },"/getTournaments": {
       "get": {
-        "x-swagger-router-controller": "GameController",
-        "operationId": "getToornament",
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getTournaments",
         "tags": [
           "Toornament"
         ],
-        "summary": "Gets all toornament",
-        "description": "Gets `toornament` objects.\nOptional query param of **size** determines\nsize of returned array\n",
+        "summary": "Gets all tournament",
+        "description": "Gets `tournament` objects.\nyou can filter with params\n",
         "parameters": [
           {
-            "name": "size",
+            "name": "discipline",
             "in": "query",
-            "description": "Size of array",
+            "description": "Returns tournaments using the given discipline.",
             "required": false,
-            "type": "number",
-            "format": "double"
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Returns tournaments with the given status. 'setup' implies it has not started yet; 'running' means it has at least one match result; 'completed' indicates all matches have a result.Allowed values: setup, running, completed",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "featured",
+            "in": "query",
+            "description": "When set to '1', returns featured tournaments in the collection. When set to '0', it returns tournaments without featured. Featured tournaments are tagged by Toornament as major tournaments for a given discipline. \nAllowed values: 0, 1",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "online",
+            "in": "query",
+            "description": "When set to '1', returns tournaments that are played online. When set to '0', returns tournaments that are not played online or that have not set this information. Omit this parameter to return tournaments regardless of their online state. \nAllowed values: 0, 1",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "Returns tournaments with the given country. This parameter only accepts ISO 3166-1 alpha-2 country codes. Reminder: this standard is case-sensitive, i.e. a 'uk' value is not valid.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "after_start",
+            "in": "query",
+            "description": "Returns tournaments which start at or after the given date. This parameter only uses ISO 8601 dates containing only the date section.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "before_start",
+            "in": "query",
+            "description": "Returns tournaments which start at or before the given date. This parameter only uses ISO 8601 dates containing only the date section.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "after_end",
+            "in": "query",
+            "description": "Returns tournaments which end at or after the given date. This parameter only uses ISO 8601 dates containing only the date section.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "before_end",
+            "in": "query",
+            "description": "Returns tournaments which end at or before the given date. This parameter only uses ISO 8601 dates containing only the date section.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorts the collection in a particular order. 'date_asc' sorts the tournaments from older to newer; 'date_desc' sorts the tournaments from newer to older. \nAllowed values: date_asc, date_desc \nDefault: date_desc",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Returns tournaments with name and full name most relevance.",
+            "required": false,
+            "type": "string"
           }
         ],
         "responses": {
@@ -3250,6 +3357,236 @@
             "description": "An array of toornament",
             "schema": {
               "title": "ArrayOfGames",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournament/addTournament":{
+      "post": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "addTournament",
+        "tags": [
+          "Toornament"
+        ],
+        "summary": "Create a toornament. Authentication require",
+        "description": "Post `toornament` objects.",
+        "parameters": [
+          {
+            "name": "discipline",
+            "in": "query",
+            "description": "name of the game",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "name of the tournament (maximum 30 characeters)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Size of a tournament. Represents the expected number of participants it'll be able to manage.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "participant_type",
+            "in": "query",
+            "description": "Type of participants who plays in the tournament (team, single).",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "description": "complete name of this tournament. (max 80 characters)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "organisation",
+            "in": "query",
+            "description": "Tournament organizer.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "website",
+            "in": "query",
+            "description": "url of the website",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of toornament",
+            "schema": {
+              "title": "ArrayOfGames",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournament/{id}": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getOneTournamentById",
+        "tags": [
+          "Toornament"
+        ],
+        "summary": "Get one tournament",
+        "description": "Get one toornament by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "An unique identifier of the tournament to retrieve.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/me/tournaments": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "GetMyToornaments",
+        "tags": [
+          "Toornament"
+        ],
+        "summary": "Get my tournaments. Authentication require",
+        "description": "Get my toornaments.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Returns tournaments with name and full name most relevance.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "discipline",
+            "in": "query",
+            "description": "Returns tournaments using the given discipline.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Returns tournaments with the given status. 'setup' implies it has not started yet; 'running' means it has at least one match result; 'completed' indicates all matches have a result. Allowed values: setup, running, completed",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "description": "Whether the tournament is archived or not. Allowed values: 0, 1",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "online",
+            "in": "query",
+            "description": "When set to '1', returns tournaments that are played online. When set to '0', returns tournaments that are not played online or that have not set this information. Omit this parameter to return tournaments regardless of their online state.",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "Returns tournaments with the given country. This parameter only accepts ISO 3166-1 alpha-2 country codes. Reminder: this standard is case-sensitive, i.e. a 'uk' value is not valid.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "after_start",
+            "in": "query",
+            "description": "Returns tournaments which start at or after the given date. This parameter only uses ISO 8601 dates containing only the date section.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "beafore_start",
+            "in": "query",
+            "description": "Returns tournaments which start at or before the given date. This parameter only uses ISO 8601 dates containing only the date section.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "after_end",
+            "in": "query",
+            "description": "Returns tournaments which end at or after the given date. This parameter only uses ISO 8601 dates containing only the date section.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "beafore_end",
+            "in": "query",
+            "description": "Returns tournaments which end at or before the given date. This parameter only uses ISO 8601 dates containing only the date section.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorts the collection in a particular order. 'date_asc' sorts the tournaments from older to newer; 'date_desc' sorts the tournaments from newer to older. Allowed values: date_asc, date_desc. Default: date_desc",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Returns the tournaments of the given page number. Default: 1",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of toornament",
+            "schema": {
+              "title": "ArrayOfMyTournament",
               "type": "array",
               "items": {
                 "$ref": "#/definitions/Game"
