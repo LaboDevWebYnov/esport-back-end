@@ -372,7 +372,6 @@ module.exports.getPlayerAccountsByGame = function getPlayerAccountsByGame(req, r
     logger.debug('BaseUrl:' + req.originalUrl);
     logger.debug('Path:' + req.path);
     logger.info('Getting the playerAccounts for game with game id: ' + Util.getPathParams(req)[3]);
-    console.log(req);
     PlayerAccount.find(
         {
             game: Util.getPathParams(req)[3]

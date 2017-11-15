@@ -2315,6 +2315,44 @@
         }
       }
     },
+    "/teams/games/{gameId}": {
+      "get": {
+        "x-swagger-router-controller": "TeamController",
+        "operationId": "getTeamsByGameId",
+        "tags": [
+          "Team"
+        ],
+        "summary": "Get the specified teams for the given game",
+        "description": "Gets `Team` objects for the given game.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "gameId of Game object to search for.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of retrieved Team objects",
+            "schema": {
+              "title": "ArrayOfTeams",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Team"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/teams/{userId}": {
       "get": {
         "x-swagger-router-controller": "TeamController",

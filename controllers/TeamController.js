@@ -493,6 +493,33 @@ module.exports.getTeamsByUserIdByGameId = function getTeamsByUserIdByGameId(req,
     });
 };
 
+//Path: GET api/teams/games/{gameId}
+module.exports.getTeamsByGameId = function getTeamsByGameId(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
+
+    logger.info('Getting teams for game with gameId:' + Util.getPathParams(req)[3]);
+
+         //get teams where gameId and playerAccountIds are present
+            Team.find({
+                game: Util.getPathParams(req)[3]
+            })
+                .populate("game")
+                .exec(function (err, foundTeams) {
+                    if (err)
+                        return next(err);
+                    if (_.isNil(foundTeams) || _.isEmpty(foundTeams)) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(404).json(foundTeams || {}, null, 2);
+                    }
+                    else {
+                        //todo handle roles/properties
+                        res.set('Content-Type', 'application/json');
+                        res.status(200).end(JSON.stringify(foundTeams || {}, null, 2));
+                    }
+                });
+};
+
 //Path: GET api/teams/{userId}
 module.exports.getTeamsByUserId = function getTeamsByUserId(req, res, next) {
     logger.debug('BaseUrl:' + req.originalUrl);
