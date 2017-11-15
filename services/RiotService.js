@@ -6,9 +6,9 @@ var mongoose = require('mongoose'),
     logger = require('log4js').getLogger('service.riot'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
-    riotApiUrl = "https://euw.api.pvp.net/api/lol/euw/",
+    riotApiUrl = "https://euw1.api.riotgames.com/lol",
     season = "SEASON2017",
-    keyApi = "RGAPI-c6bdd877-4a79-4042-b5e0-9d957ae442da",
+    keyApi = "RGAPI-3d89a8b3-df08-4d34-93b5-a4b490583d24",
     request = require('request');
 
 //LoL: todo add corresponding props
@@ -28,14 +28,16 @@ function riotApiRequest(options, callBack) {
 
 //https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/Nef69?api_key=RGAPI-c6bdd877-4a79-4042-b5e0-9d957ae442da
 function getIdByUserName(pseudo, cb) {
+    console.log("batard");
     let options = {
-        url: riotApiUrl + 'v1.4/summoner/by-name/' + pseudo + '?api_key=' + keyApi
+        url: riotApiUrl + '/summoner/v3/summoners/by-name/' + pseudo + '?api_key=' + keyApi
     };
     riotApiRequest(options, function (error, response, body) {
 
         if (!error && response.statusCode == 200) {
             let respObject = JSON.parse(body);
-            cb(null, response, respObject[pseudo.toLowerCase()].id);
+            cb(null, response, respObject.id);
+
         }
         else {
             cb(error, response, null);
@@ -45,16 +47,35 @@ function getIdByUserName(pseudo, cb) {
 
 //https://euw.api.pvp.net/api/lol/euw/v2.5/league/by-summoner/57467635/entry?api_key=RGAPI-c6bdd877-4a79-4042-b5e0-9d957ae442da
 module.exports.getUserStatsForSeason = function getUserStatsForCSGO(riotUserPseudo, callBack) {
+    console.log("je suis gay");
     getIdByUserName(riotUserPseudo, function (err, resp, riotUserId) {
+
         if (!err && resp.statusCode === 200) {
             let options = {
-                url: riotApiUrl + 'v2.5/league/by-summoner/' + riotUserId + '/entry?api_key=' + keyApi
+                url: riotApiUrl + '/league/v3/positions/by-summoner/' + riotUserId + '?api_key=' + keyApi
             };
             riotApiRequest(options, function (error, response, body) {
                 let LOLContent = {};
+
+                console.log("jusqu'ici sa va");
                 if (!error && response.statusCode === 200) {
                     let respObject = JSON.parse(body);
+                    console.log("respobject" + respObject[0].tier);
+                    LOLContent[LOLProps[0]] = respObject[0].tier + " " + respObject[0].rank;
 
+                    LOLContent[LOLProps[1]] = respObject[0].leaguePoints;
+
+                    LOLContent[LOLProps[2]] = respObject[0].wins;
+
+                    LOLContent[LOLProps[3]] = respObject[0].losses;
+
+                    LOLContent[LOLProps[4]] = respObject[0].wins / (respObject[0].wins + respObject[0].losses );
+
+
+                    callBack(null, response, LOLContent);
+                }/*if (!error && response.statusCode === 200) {
+                    let respObject = JSON.parse(body);
+                    console.log("respobject" + respObject[riotUserId][0].tier);
                     LOLContent[LOLProps[0]] = respObject[riotUserId][0].tier + " " + respObject[riotUserId][0].entries[0].division;
 
                     LOLContent[LOLProps[1]] = respObject[riotUserId][0].entries[0].leaguePoints;
@@ -67,7 +88,7 @@ module.exports.getUserStatsForSeason = function getUserStatsForCSGO(riotUserPseu
 
 
                     callBack(null, response, LOLContent);
-                }
+                }*/
                 else {
                     callBack(error, response, null);
                 }
@@ -86,7 +107,7 @@ module.exports.getUserStatsForLol = function getUserStatsForCSGO(riotUserName, c
 
         if (!err && resp.statusCode == 200) {
             let options = {
-                url: riotApiUrl + 'v1.3/stats/by-summoner/' + riotUserId + '/ranked?season=' + season + '&api_key=' + keyApi
+                url: riotApiUrl + 'v3/stats/by-summoner/' + riotUserId + '/ranked?season=' + season + '&api_key=' + keyApi
             };
             riotApiRequest(options, function (error, response, body) {
                 let LOLContentKDA = {};
