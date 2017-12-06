@@ -27,80 +27,84 @@ function generateGetUrlFromParams(route, params){
     let options;
     if(params['access_token']){
         options = {
-            url: toornamentApiUrl + route + '?=',
+            url: toornamentApiUrl + route,
             method: 'GET',
             headers: {
                 'X-Api-Key': keyApi,
-                Authorization: 'Bearer ' + params['access_token']
+                Authorization: params['access_token']
             }
         };
     }else{
         options = {
-            url: toornamentApiUrl + route + '?=',
+            url: toornamentApiUrl + route,
             method: 'GET',
             headers: {
                 'X-Api-Key': keyApi
             }
         };
     }
+    if(params.length > 0){
+        options.url += '?=';
 
-    if(params['discipline']){
-        options.url += '&discipline=' + params['discipline'];
+        if(params['discipline']){
+            options.url += '&discipline=' + params['discipline'];
+        }
+        if(params['archived']){
+            options.url += '&archived=' + params['archived'];
+        }
+        if(params['status']){
+            options.url += '&status=' + params['status'];
+        }
+        if(params['featured']){
+            options.url += '&featured=' + params['featured'];
+        }
+        if(params['online']){
+            options.url += '&online=' + params['online'];
+        }
+        if(params['country']){
+            options.url += '&country=' + params['country'];
+        }
+        if(params['after_start']){
+            options.url += '&after_start=' + params['after_start'];
+        }
+        if(params['before_start']){
+            options.url += '&before_start=' + params['before_start'];
+        }
+        if(params['after_end']){
+            options.url += '&after_end=' + params['after_end'];
+        }
+        if(params['before_end']){
+            options.url += '&before_end=' + params['before_end'];
+        }
+        if(params['sort']){
+            options.url += '&sort=' + params['sort'];
+        }
+        if(params['name']){
+            options.url += '&name=' + params['name'];
+        }
+        if(params['page']){
+            options.url += '&page=' + params['page'];
+        }
+        if(params['has_result']){
+            options.url += '&has_result=' + params['has_result'];
+        }
+        if(params['stage_number']){
+            options.url += '&stage_number=' + params['stage_number'];
+        }
+        if(params['group_number']){
+            options.url += '&group_number=' + params['group_number'];
+        }
+        if(params['round_number']){
+            options.url += '&round_number=' + params['round_number'];
+        }
+        if(params['participant_id']){
+            options.url += '&participant_id=' + params['participant_id'];
+        }
+        if(params['with_games']){
+            options.url += '&with_games=' + params['with_games'];
+        }
     }
-    if(params['archived']){
-        options.url += '&archived=' + params['archived'];
-    }
-    if(params['status']){
-        options.url += '&status=' + params['status'];
-    }
-    if(params['featured']){
-        options.url += '&featured=' + params['featured'];
-    }
-    if(params['online']){
-        options.url += '&online=' + params['online'];
-    }
-    if(params['country']){
-        options.url += '&country=' + params['country'];
-    }
-    if(params['after_start']){
-        options.url += '&after_start=' + params['after_start'];
-    }
-    if(params['before_start']){
-        options.url += '&before_start=' + params['before_start'];
-    }
-    if(params['after_end']){
-        options.url += '&after_end=' + params['after_end'];
-    }
-    if(params['before_end']){
-        options.url += '&before_end=' + params['before_end'];
-    }
-    if(params['sort']){
-        options.url += '&sort=' + params['sort'];
-    }
-    if(params['name']){
-        options.url += '&name=' + params['name'];
-    }
-    if(params['page']){
-        options.url += '&page=' + params['page'];
-    }
-    if(params['has_result']){
-        options.url += '&has_result=' + params['has_result'];
-    }
-    if(params['stage_number']){
-        options.url += '&stage_number=' + params['stage_number'];
-    }
-    if(params['group_number']){
-        options.url += '&group_number=' + params['group_number'];
-    }
-    if(params['round_number']){
-        options.url += '&round_number=' + params['round_number'];
-    }
-    if(params['participant_id']){
-        options.url += '&participant_id=' + params['participant_id'];
-    }
-    if(params['with_games']){
-        options.url += '&with_games=' + params['with_games'];
-    }
+
 
     logger.info(options);
 
@@ -225,6 +229,48 @@ module.exports.getMatchesByTournament = function getMatchesByTournament(id, para
 module.exports.getMatchesByDiscipline = function getMyTournaments(id, params, callBack){
 
     let options = generateGetUrlFromParams( "v1/disciplines/" + id + "/matches", params);
+    logger.info(options);
+
+
+    toornamentApiRequest(options,function (error,response,body) {
+
+        let respObject = JSON.parse(body);
+        if (!error && respObject.statusCode != 404) {
+
+            callBack(null,response,null);
+        }
+        else {
+            callBack(error,response,null);
+        }
+    });
+};
+
+// https://api.toornament.com/v1/tournaments/{tournament_id}/matches/{id}/result
+module.exports.getMatcheByIdAndTournament = function getMatcheByIdAndTournament(idTournament, idMatche, params, callBack){
+
+    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatche + '/result', params);
+
+    logger.info(options);
+
+
+    toornamentApiRequest(options,function (error,response,body) {
+
+        let respObject = JSON.parse(body);
+        if (!error && respObject.statusCode != 404) {
+
+            callBack(null,response,null);
+        }
+        else {
+            callBack(error,response,null);
+        }
+    });
+};
+
+// https://api.toornament.com/v1/tournaments/{tournament_id}/matches
+module.exports.getMatcheResultByIdAndTournament = function getMatcheResultByIdAndTournament(idTournament, idMatche, params, callBack){
+
+    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatche, params);
+
     logger.info(options);
 
 

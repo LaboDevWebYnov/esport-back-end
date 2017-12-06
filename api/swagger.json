@@ -3438,7 +3438,7 @@
           }
         }
       }
-    },"/tournament/addTournament":{
+    },"/tournaments/addTournament":{
       "post": {
         "x-swagger-router-controller": "ToornamentController",
         "operationId": "addTournament",
@@ -3517,7 +3517,7 @@
           }
         }
       }
-    },"/tournament/{id}": {
+    },"/tournaments/{id}": {
       "get": {
         "x-swagger-router-controller": "ToornamentController",
         "operationId": "getOneTournamentById",
@@ -3838,6 +3838,92 @@
             "description": "An object of matches",
             "schema": {
               "title": "ObjectMatches",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournaments/{tournament_id}/matches/{matche_id}": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getMatcheByIdAndTournament",
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Get one tournament",
+        "description": "Get one toornament by id.",
+        "parameters": [
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "description": "The id of the match's tournament.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "matche_id",
+            "in": "path",
+            "description": "The id of the requested match.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournaments/{tournament_id}/matches/{matche_id}/result": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getMatcheResultByIdAndTournament",
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Get one tournament",
+        "description": "Get one toornament by id.",
+        "parameters": [
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "description": "The id of the match's tournament.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "matche_id",
+            "in": "path",
+            "description": "The id of the requested match.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
               "type": "object",
               "items": {
                 "$ref": "#/definitions/Game"
