@@ -318,23 +318,23 @@ module.exports.getMatchesByDiscipline = function getMyTournaments(req, res, next
     var params = [];
 
     if(req.query.after_date){
-        hasResult = req.query.after_date;
+        afterDate = req.query.after_date;
         params['after_date'] = afterDate;
     }
     if(req.query.before_date){
-        hasResult = req.query.before_date;
+        beforeDate = req.query.before_date;
         params['before_date'] = beforeDate;
     }
     if(req.query.tournament_ids){
-        hasResult = req.query.tournament_ids;
+        tournamentIds = req.query.tournament_ids;
         params['tournament_ids'] = tournamentIds;
     }
     if(req.query.featured){
-        hasResult = req.query.featured;
+        featured = req.query.featured;
         params['featured'] = featured;
     }
     if(req.query.discipline_id){
-        hasResult = req.query.discipline_id;
+        disciplineId = req.query.discipline_id;
         params['discipline_id'] = disciplineId;
     }
     if(req.query.has_result){
@@ -363,6 +363,49 @@ module.exports.getMatchesByDiscipline = function getMyTournaments(req, res, next
     logger.info(params);
 
     toornamentService.getMatchesByDiscipline(id, params, function(err, tournament){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(tournament || {}, null, 2);
+        }
+        else {
+            logger.debug(tournament);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(tournament || {}, null, 2);
+        }
+    });
+};
+
+module.exports.getMatcheByIdAndTournament = function getMatcheByIdAndTournament(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
+
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
+    var idMatche = decodeURIComponent(Util.getPathParams(req)[4]);
+    toornamentService.getMatcheByIdAndTournament(idTournament, idMatche, [] ,function(err, tournament){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(tournament || {}, null, 2);
+        }
+        else {
+            logger.debug(tournament);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(tournament || {}, null, 2);
+        }
+    });
+};
+
+
+module.exports.getMatcheResultByIdAndTournament = function getMatcheResultByIdAndTournament(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
+
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
+    var idMatche = decodeURIComponent(Util.getPathParams(req)[4]);
+    toornamentService.getMatcheResultByIdAndTournament(idTournament, idMatche, [] ,function(err, tournament){
         if (err) {
             return next(err);
         }
