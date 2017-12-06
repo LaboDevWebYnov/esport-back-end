@@ -12,7 +12,7 @@ var mongoose = require('mongoose'),
     request = require('request');
 
 //CS:GO: todo add corresponding props
-const CSGOStats = ['total_kills', 'kill_death_ratio', 'total_time_played','total_mvps','ratio_win_loose', 'kills_by_heads_shot','accuracy'];
+const CSGOStats = ['total_kills', 'kill_death_ratio', 'total_time_played','total_mvps','ratio_win_loose', 'kills_by_heads_shot','accuracy','last_match_t_wins','last_match_ct_wins'];
 const CSGOUserProperties = ['country','name','pseudo','avatar'];
 
 
@@ -51,7 +51,7 @@ module.exports.getUserStatsForCSGO = function getUserStatsForCSGO(steamIdUser,ca
             let respObject = JSON.parse(body);
             let CSGOStatsContent = {};
             let tab=[];
-            let tabVarName=["avatar","total_kills","total_time_played","total_mvps","total_deaths","total_kills_headshot","total_matches_won","total_matches_played","total_shots_fired","total_shots_hit","total_rounds_played"]
+            let tabVarName=["avatar","total_kills","total_time_played","total_mvps","total_deaths","total_kills_headshot","total_matches_won","total_matches_played","total_shots_fired","total_shots_hit","total_rounds_played","last_match_t_wins"]
             _.forEach(respObject.playerstats.stats, function (stat) {
                 if(_.includes(tabVarName,stat.name)){
                     tab.push(stat);
