@@ -60,6 +60,9 @@
     {
       "name": "Matches",
       "description": "matches management"
+    },{
+      "name": "Games",
+      "description": "games management"
     }
   ],
   "basePath": "/api",
@@ -3859,8 +3862,8 @@
         "tags": [
           "Matches"
         ],
-        "summary": "Get one tournament",
-        "description": "Get one toornament by id.",
+        "summary": "Get match of tournament by Id",
+        "description": "Get match of tournament by Id.",
         "parameters": [
           {
             "name": "tournament_id",
@@ -3902,8 +3905,8 @@
         "tags": [
           "Matches"
         ],
-        "summary": "Get one tournament",
-        "description": "Get one toornament by id.",
+        "summary": "Get matche result",
+        "description": "Get matche result.",
         "parameters": [
           {
             "name": "tournament_id",
@@ -3917,6 +3920,159 @@
             "description": "The id of the requested match.",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournaments/{tournament_id}/matches/{match_id}/games": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getGamesByMatchAndTournament",
+        "tags": [
+          "Games"
+        ],
+        "summary": "Get games of a matche in a tournament",
+        "description": "Get games of a matche in a tournament.",
+        "parameters": [
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "description": "The id of the match's tournament.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "match_id",
+            "in": "path",
+            "description": "The id of the requested match.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournaments/{tournament_id}/matches/{match_id}/games/{game_id}": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getGamesByIdAndMatchAndTournament",
+        "tags": [
+          "Games"
+        ],
+        "summary": "Get games of a matche in a tournament",
+        "description": "Get games of a matche in a tournament.",
+        "parameters": [
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "description": "The id of the match's tournament.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "match_id",
+            "in": "path",
+            "description": "The id of the requested match.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "game_id",
+            "in": "path",
+            "description": "The id of the requested game.",
+            "required": true,
+            "type": "integer"
+          },{
+            "name": "with_stats",
+            "in": "query",
+            "description": "When set to '1', it will include a summary of stats of the game. Allowed values: 1, 0. Default: 1",
+            "required": true,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/tournaments/{tournament_id}/matches/{match_id}/games/{game_id}/result": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getGamesResultByIdAndMatchAndTournament",
+        "tags": [
+          "Games"
+        ],
+        "summary": "Get game result of a matche in a tournament",
+        "description": "Get game result of a matche in a tournament.",
+        "parameters": [
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "description": "The id of the match's tournament.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "match_id",
+            "in": "path",
+            "description": "The id of the requested match.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "game_id",
+            "in": "path",
+            "description": "The id of the requested game.",
+            "required": true,
+            "type": "integer"
+          },{
+            "name": "with_stats",
+            "in": "query",
+            "description": "When set to '1', it will include a summary of stats of the game. Allowed values: 1, 0. Default: 1",
+            "required": true,
+            "type": "boolean"
           }
         ],
         "responses": {

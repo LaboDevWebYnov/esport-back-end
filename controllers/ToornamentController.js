@@ -12,6 +12,81 @@ var Promise = require("bluebird"),
 
 mongoose.Promise = Promise;
 
+function generateParamTab(req){
+    var params = [];
+
+    if(req.query.discipline){
+        params['discipline'] = req.query.discipline;
+    }
+    if(req.query.status){
+        params['status'] = req.query.status;
+    }
+    if(req.query.featured){
+        params['featured'] = req.query.featured;
+    }
+    if(req.query.online){
+        params['online'] = req.query.online;
+    }
+    if(req.query.country){
+        params['country'] =  req.query.country;
+    }
+    if(req.query.after_start){
+        params['after_start'] = req.query.after_start;
+    }
+    if(req.query.before_start){
+        params['before_start'] = req.query.before_start;
+    }
+    if(req.query.after_end){
+        params['after_end'] = req.query.after_end;
+    }
+    if(req.query.before_end){
+        params['before_end'] = req.query.before_end;
+    }
+    if(req.query.sort){
+        params['sort'] = req.query.sort;
+    }
+    if(req.query.name){
+        params['name'] = req.query.name;
+    }
+    if(req.query.archived){
+        params['archived'] = req.query.archived;
+    }
+    if(req.query.page){
+        params['page'] = req.query.page;
+    }
+    if(req.headers.authorization){
+        params['access_token'] = req.headers.authorization;
+    }
+    if(req.query.has_result){
+        params['has_result'] = req.query.has_result;
+    }
+    if(req.query.stage_number){
+        params['stage_number'] = req.query.stage_number;
+    }
+    if(req.query.group_number){
+        params['group_number'] = req.query.group_number;
+    }
+    if(req.query.round_number){
+        params['round_number'] = req.query.round_number;
+    }
+    if(req.query.participant_id){
+        params['participant_id'] = req.query.participant_id;
+    }
+    if(req.query.with_games){
+        params['with_games'] = req.query.with_games;
+    }
+    if(req.query.tournament_ids){
+        params['tournament_ids'] = req.query.tournament_ids;
+    }
+    if(req.query.featured){
+        params['featured'] = req.query.featured;
+    }
+    if(req.query.with_stat){
+        params['page'] = req.query.with_stat;
+    }
+
+    return params;
+}
 
 // OAUTH
 module.exports.getAuthToken = function getAuthToken(req, res, next) {
@@ -40,67 +115,7 @@ module.exports.getAuthToken = function getAuthToken(req, res, next) {
 module.exports.getTournaments = function getTournaments(req, res, next) {
     logger.info('Getting All Tournaments from Toornament API...');
 
-
-    var discipline;
-    var status;
-    var featured;
-    var online;
-    var country;
-    var afterStart;
-    var beforeStart;
-    var afterEnd;
-    var beforeEnd;
-    var sort;
-    var name;
-
-    var params = [];
-
-
-    if(req.query.discipline){
-        discipline = req.query.discipline;
-        params['discipline'] = discipline;
-    }
-    if(req.query.status){
-        status = req.query.status;
-        params['status'] = status;
-    }
-    if(req.query.featured){
-        featured = req.query.featured;
-        params['featured'] = featured;
-    }
-    if(req.query.online){
-        online = req.query.online;
-        params['online'] = online;
-    }
-    if(req.query.country){
-        country = req.query.country;
-        params['country'] = country;
-    }
-    if(req.query.after_start){
-        afterStart = req.query.after_start;
-        params[after_start] = afterStart;
-    }
-    if(req.query.before_start){
-        beforeStart = req.query.before_start;
-        params['before_start'] = beforeStart;
-    }
-    if(req.query.after_end){
-        afterEnd = req.query.after_end;
-        params['after_end'] = afterEnd;
-    }
-    if(req.query.before_end){
-        beforeEnd = req.query.before_end;
-        params['before_end'] = beforeEnd;
-    }
-    if(req.query.sort){
-        sort = req.query.sort;
-        params['sort'] = sort;
-    }
-    if(req.query.name){
-        name = req.query.name;
-        params['name'] = name;
-    }
-
+    var params = generateParamTab(req);
 
     toornamentService.getTournaments(params,function(err, tournaments){
         if (err) {
@@ -116,8 +131,6 @@ module.exports.getTournaments = function getTournaments(req, res, next) {
             res.status(200).json(tournaments || {}, null, 2);
         }
     });
-
-
 };
 
 module.exports.getOneTournamentById = function getOneTournamentById(req, res, next) {
@@ -143,75 +156,7 @@ module.exports.getOneTournamentById = function getOneTournamentById(req, res, ne
 module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
     logger.info('Getting a Tournament by id from Toornament API...');
 
-    var accessToken;
-
-    var name;
-    var discipline;
-    var status;
-    var archived;
-    var online;
-    var country;
-    var afterStart;
-    var beforeStart;
-    var afterEnd;
-    var beforeEnd;
-    var sort;
-    var page;
-
-    var params = [];
-
-    if(req.query.name){
-        name = req.query.name;
-        params['name'] = name;
-    }
-    if(req.query.discipline){
-        discipline = req.query.discipline;
-        params['discipline'] = discipline;
-    }
-    if(req.query.status){
-        status = req.query.status;
-        params['status'] = status;
-    }
-    if(req.query.archived){
-        archived = req.query.archived;
-        params['archived'] = archived;
-    }
-    if(req.query.online){
-        online = req.query.online;
-        params['online'] = online;
-    }
-    if(req.query.country){
-        country = req.query.country;
-        params['country'] = country;
-    }
-    if(req.query.after_start){
-        afterStart = req.query.after_start;
-        params[after_start] = afterStart;
-    }
-    if(req.query.before_start){
-        beforeStart = req.query.before_start;
-        params['before_start'] = beforeStart;
-    }
-    if(req.query.after_end){
-        afterEnd = req.query.after_end;
-        params['after_end'] = afterEnd;
-    }
-    if(req.query.before_end){
-        beforeEnd = req.query.before_end;
-        params['before_end'] = beforeEnd;
-    }
-    if(req.query.sort){
-        sort = req.query.sort;
-        params['sort'] = sort;
-    }
-    if(req.query.page){
-        page = req.query.page;
-        params['page'] = page;
-    }
-    if(req.headers.authorization){
-        accessToken = req.headers.authorization;
-        params['access_token'] = accessToken;
-    }
+    var params = generateParamTab(req);
 
     logger.info("params", params);
 
@@ -236,66 +181,24 @@ module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
 module.exports.getMatchesByTournament = function getMatchesByTournament(req, res, next) {
     logger.info('Getting matches by tournament id from Toornament API...');
 
-    var hasResult;
-    var stageNumber;
-    var groupNumber;
-    var roundNumber;
-    var sort;
-    var participantId;
-    var withGames;
-    var page;
-
-    var params = [];
-
-    if(req.query.has_result){
-        hasResult = req.query.has_result;
-        params['has_result'] = hasResult;
-    }
-    if(req.query.stage_number){
-        stageNumber = req.query.stage_number;
-        params['stage_number'] = stageNumber;
-    }
-    if(req.query.group_number){
-        groupNumber = req.query.group_number;
-        params['group_number'] = groupNumber;
-    }
-    if(req.query.round_number){
-        roundNumber = req.query.round_number;
-        params['round_number'] = roundNumber;
-    }
-    if(req.query.sort){
-        sort = req.query.sort;
-        params['sort'] = sort;
-    }
-    if(req.query.participant_id){
-        participantId = req.query.participant_id;
-        params['participant_id'] = participantId;
-    }
-    if(req.query.with_games){
-        withGames = req.query.with_games;
-        params['with_games'] = withGames;
-    }
-    if(req.query.page){
-        page = req.query.page;
-        params['page'] = page;
-    }
+    var params = generateParamTab(req);
 
     var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
 
     logger.info("params", params);
 
-    toornamentService.getMatchesByTournament(idTournament, params, function(err, tournament){
+    toornamentService.getMatchesByTournament(idTournament, params, function(err, matches){
         if (err) {
             return next(err);
         }
-        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+        else if (_.isNull(matches) || _.isEmpty(matches)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(tournament || {}, null, 2);
+            res.status(404).json(matches || {}, null, 2);
         }
         else {
-            logger.debug(tournament);
+            logger.debug(matches);
             res.set('Content-Type', 'application/json');
-            res.status(200).json(tournament || {}, null, 2);
+            res.status(200).json(matches || {}, null, 2);
         }
     });
 };
@@ -304,76 +207,24 @@ module.exports.getMatchesByTournament = function getMatchesByTournament(req, res
 module.exports.getMatchesByDiscipline = function getMatchesByDiscipline(req, res, next) {
     logger.info('Getting a Tournament by id from Toornament API...');
 
-    var disciplineId;
-    var featured;
-    var hasResult;
-    var sort;
-    var participantId;
-    var tournamentIds;
-    var withGames;
-    var beforeDate;
-    var afterDate;
-    var page;
-
-    var params = [];
-
-    if(req.query.after_date){
-        afterDate = req.query.after_date;
-        params['after_date'] = afterDate;
-    }
-    if(req.query.before_date){
-        beforeDate = req.query.before_date;
-        params['before_date'] = beforeDate;
-    }
-    if(req.query.tournament_ids){
-        tournamentIds = req.query.tournament_ids;
-        params['tournament_ids'] = tournamentIds;
-    }
-    if(req.query.featured){
-        featured = req.query.featured;
-        params['featured'] = featured;
-    }
-    if(req.query.discipline_id){
-        disciplineId = req.query.discipline_id;
-        params['discipline_id'] = disciplineId;
-    }
-    if(req.query.has_result){
-        hasResult = req.query.has_result;
-        params['has_result'] = hasResult;
-    }
-    if(req.query.sort){
-        sort = req.query.sort;
-        params['sort'] = sort;
-    }
-    if(req.query.participant_id){
-        participantId = req.query.participant_id;
-        params['participant_id'] = participantId;
-    }
-    if(req.query.with_games){
-        withGames = req.query.with_games;
-        params['with_games'] = withGames;
-    }
-    if(req.query.page){
-        page = req.query.page;
-        params['page'] = page;
-    }
+    var params = generateParamTab(req);
 
     var id = decodeURIComponent(Util.getPathParams(req)[3]);
 
     logger.info(params);
 
-    toornamentService.getMatchesByDiscipline(id, params, function(err, tournament){
+    toornamentService.getMatchesByDiscipline(id, params, function(err, matches){
         if (err) {
             return next(err);
         }
-        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+        else if (_.isNull(matches) || _.isEmpty(matches)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(tournament || {}, null, 2);
+            res.status(404).json(matches || {}, null, 2);
         }
         else {
-            logger.debug(tournament);
+            logger.debug(matches);
             res.set('Content-Type', 'application/json');
-            res.status(200).json(tournament || {}, null, 2);
+            res.status(200).json(matches || {}, null, 2);
         }
     });
 };
@@ -383,18 +234,18 @@ module.exports.getMatcheByIdAndTournament = function getMatcheByIdAndTournament(
 
     var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
     var idMatche = decodeURIComponent(Util.getPathParams(req)[4]);
-    toornamentService.getMatcheByIdAndTournament(idTournament, idMatche, [] ,function(err, tournament){
+    toornamentService.getMatcheByIdAndTournament(idTournament, idMatche, [] ,function(err, matches){
         if (err) {
             return next(err);
         }
-        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+        else if (_.isNull(matches) || _.isEmpty(matches)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(tournament || {}, null, 2);
+            res.status(404).json(matches || {}, null, 2);
         }
         else {
             logger.debug(tournament);
             res.set('Content-Type', 'application/json');
-            res.status(200).json(tournament || {}, null, 2);
+            res.status(200).json(matches || {}, null, 2);
         }
     });
 };
@@ -405,18 +256,89 @@ module.exports.getMatcheResultByIdAndTournament = function getMatcheResultByIdAn
 
     var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
     var idMatche = decodeURIComponent(Util.getPathParams(req)[4]);
-    toornamentService.getMatcheResultByIdAndTournament(idTournament, idMatche, [] ,function(err, tournament){
+    toornamentService.getMatcheResultByIdAndTournament(idTournament, idMatche, [] ,function(err, matches){
         if (err) {
             return next(err);
         }
-        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+        else if (_.isNull(matches) || _.isEmpty(matches)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(tournament || {}, null, 2);
+            res.status(404).json(matches || {}, null, 2);
         }
         else {
-            logger.debug(tournament);
+            logger.debug(matches);
             res.set('Content-Type', 'application/json');
-            res.status(200).json(tournament || {}, null, 2);
+            res.status(200).json(matches || {}, null, 2);
+        }
+    });
+};
+
+module.exports.getGamesByMatchAndTournament = function getGamesByMatchAndTournament(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
+
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
+    var idMatch = decodeURIComponent(Util.getPathParams(req)[4]);
+    toornamentService.getGamesByMatchAndTournament(idTournament, idMatch, [] ,function(err, games){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(games) || _.isEmpty(games)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(games || {}, null, 2);
+        }
+        else {
+            logger.debug(games);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(games || {}, null, 2);
+        }
+    });
+};
+
+module.exports.getGamesByIdAndMatchAndTournament = function getGamesByIdAndMatchAndTournament(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
+
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
+    var idMatch = decodeURIComponent(Util.getPathParams(req)[4]);
+    var idGame = decodeURIComponent(Util.getPathParams(req)[6]);
+
+    var params = generateParamTab(req);
+
+    toornamentService.getGamesByIdAndMatchAndTournament(idTournament, idMatch, idGame, params ,function(err, games){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(games) || _.isEmpty(games)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(games || {}, null, 2);
+        }
+        else {
+            logger.debug(games);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(games || {}, null, 2);
+        }
+    });
+};
+
+module.exports.getGamesResultByIdAndMatchAndTournament = function getGamesResultByIdAndMatchAndTournament(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
+
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
+    var idMatch = decodeURIComponent(Util.getPathParams(req)[4]);
+    var idGame = decodeURIComponent(Util.getPathParams(req)[6]);
+
+    var params = generateParamTab(req);
+
+    toornamentService.getGamesResultByIdAndMatchAndTournament(idTournament, idMatch, idGame, params ,function(err, games){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(games) || _.isEmpty(games)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(games || {}, null, 2);
+        }
+        else {
+            logger.debug(games);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(games || {}, null, 2);
         }
     });
 };
