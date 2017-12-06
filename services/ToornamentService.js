@@ -11,7 +11,7 @@ var mongoose = require('mongoose'),
 function toornamentApiRequest(options,callBack) {
     request(options, function (error, response, body) {
 
-        logger.info(error);
+        logger.info(response.statusCode);
 
         if (!error && response.statusCode == 200) {
                 callBack(null,response,body);
@@ -224,7 +224,7 @@ module.exports.getMatchesByTournament = function getMatchesByTournament(id, para
 // https://api.toornament.com/v1/disciplines/{discipline_id}/matches
 module.exports.getMatchesByDiscipline = function getMyTournaments(id, params, callBack){
 
-    let options = generateGetUrlFromParams(params);
+    let options = generateGetUrlFromParams( "v1/disciplines/" + id + "/matches", params);
     logger.info(options);
 
 

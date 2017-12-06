@@ -301,7 +301,7 @@ module.exports.getMatchesByTournament = function getMatchesByTournament(req, res
 };
 
 
-module.exports.getMatchesByDiscipline = function getMyTournaments(req, res, next) {
+module.exports.getMatchesByDiscipline = function getMatchesByDiscipline(req, res, next) {
     logger.info('Getting a Tournament by id from Toornament API...');
 
     var disciplineId;
@@ -318,23 +318,23 @@ module.exports.getMatchesByDiscipline = function getMyTournaments(req, res, next
     var params = [];
 
     if(req.query.after_date){
-        hasResult = req.query.after_date;
+        afterDate = req.query.after_date;
         params['after_date'] = afterDate;
     }
     if(req.query.before_date){
-        hasResult = req.query.before_date;
+        beforeDate = req.query.before_date;
         params['before_date'] = beforeDate;
     }
     if(req.query.tournament_ids){
-        hasResult = req.query.tournament_ids;
+        tournamentIds = req.query.tournament_ids;
         params['tournament_ids'] = tournamentIds;
     }
     if(req.query.featured){
-        hasResult = req.query.featured;
+        featured = req.query.featured;
         params['featured'] = featured;
     }
     if(req.query.discipline_id){
-        hasResult = req.query.discipline_id;
+        disciplineId = req.query.discipline_id;
         params['discipline_id'] = disciplineId;
     }
     if(req.query.has_result){
@@ -358,7 +358,7 @@ module.exports.getMatchesByDiscipline = function getMyTournaments(req, res, next
         params['page'] = page;
     }
 
-    var id = decodeURIComponent(Util.getPathParams(req[3]))
+    var id = decodeURIComponent(Util.getPathParams(req)[3]);
 
     logger.info(params);
 
