@@ -199,3 +199,23 @@ module.exports.getMyTournaments = function getMyTournaments(params, callBack){
         }
     });
 };
+
+// https://api.toornament.com/v1/disciplines/{discipline_id}/matches
+module.exports.getMatchesByDiscipline = function getMyTournaments(id, params, callBack){
+
+    let options = generateGetUrlFromParams(params);
+    logger.info(options);
+
+
+    toornamentApiRequest(options,function (error,response,body) {
+
+        let respObject = JSON.parse(body);
+        if (!error && respObject.statusCode != 404) {
+
+            callBack(null,response,null);
+        }
+        else {
+            callBack(error,response,null);
+        }
+    });
+};

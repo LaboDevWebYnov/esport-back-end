@@ -298,3 +298,82 @@ module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
         }
     });
 };
+
+
+module.exports.getMatchesByDiscipline = function getMyTournaments(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
+
+    var disciplineId;
+    var featured;
+    var hasResult;
+    var sort;
+    var participantId;
+    var tournamentIds;
+    var withGames;
+    var beforeDate;
+    var afterDate;
+    var page;
+
+    var params = [];
+
+    if(req.query.after_date){
+        hasResult = req.query.after_date;
+        params['after_date'] = afterDate;
+    }
+    if(req.query.before_date){
+        hasResult = req.query.before_date;
+        params['before_date'] = beforeDate;
+    }
+    if(req.query.tournament_ids){
+        hasResult = req.query.tournament_ids;
+        params['tournament_ids'] = tournamentIds;
+    }
+    if(req.query.featured){
+        hasResult = req.query.featured;
+        params['featured'] = featured;
+    }
+    if(req.query.discipline_id){
+        hasResult = req.query.discipline_id;
+        params['discipline_id'] = disciplineId;
+    }
+    if(req.query.has_result){
+        hasResult = req.query.has_result;
+        params['has_result'] = hasResult;
+    }
+    if(req.query.sort){
+        sort = req.query.sort;
+        params['sort'] = sort;
+    }
+    if(req.query.participant_id){
+        participantId = req.query.participant_id;
+        params['participant_id'] = participantId;
+    }
+    if(req.query.with_games){
+        withGames = req.query.with_games;
+        params['with_games'] = withGames;
+    }
+    if(req.query.page){
+        page = req.query.page;
+        params['page'] = page;
+    }
+
+    var id = decodeURIComponent(Util.getPathParams(req[3]))
+
+    logger.info(params);
+
+    toornamentService.getMatchesByDiscipline(id, params, function(err, tournament){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(tournament || {}, null, 2);
+        }
+        else {
+            logger.debug(tournament);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(tournament || {}, null, 2);
+        }
+    });
+};
+

@@ -3760,6 +3760,98 @@
           }
         }
       }
+    },
+    "/tournaments/discipline/{discipline_id}/matches": {
+      "get": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "getMatchesByDiscipline",
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Get matches",
+        "description": "Get matches by discipline id.",
+        "parameters": [
+          {
+            "name": "discipline_id",
+            "in": "path",
+            "description": "The string id of the discipline.",
+            "required": true,
+            "type": "string"
+          },{
+            "name": "featured",
+            "in": "query",
+            "description": "When set to '1', returns matches from featured tournaments in the collection. When set to \"0\", it returns matches from tournaments without featured. Featured tournaments are tagged by Toornament as major tournaments for a given discipline.",
+            "required": false,
+            "type": "boolean"
+          },{
+            "name": "has_result",
+            "in": "query",
+            "description": "When set to '1', returns only matches with a result. When set to '0', returns only matches without a result. Allowed values: 1, 0",
+            "required": false,
+            "type": "boolean"
+          },{
+            "name": "sort",
+            "in": "query",
+            "description": "Sorts the collection in a particular order. 'date_asc' sort matches from oldest to newest and 'date_desc' sort matches from newest to oldest. Allowed values: date_asc, date_desc Default: date_asc",
+            "required": false,
+            "type": "string"
+          },{
+            "name": "participant_id",
+            "in": "query",
+            "description": "Returns matches that involves the given participant's id.",
+            "required": false,
+            "type": "string"
+          },{
+            "name": "tournament_ids",
+            "in": "query",
+            "description": "Returns matches from the filtered tournaments.",
+            "required": false,
+            "type": "string"
+          },{
+            "name": "with_games",
+            "in": "query",
+            "description": "When set to '1', it will include a summary of each game of the match. Allowed values: 1, 0 Default: 0",
+            "required": false,
+            "type": "boolean"
+          },{
+            "name": "before_date",
+            "in": "query",
+            "description": "Filter all matches scheduled before this date.",
+            "required": false,
+            "type": "string"
+          },{
+            "name": "after_date",
+            "in": "query",
+            "description": "Filter all matches scheduled after this date.",
+            "required": false,
+            "type": "string"
+          },{
+            "name": "page",
+            "in": "query",
+            "description": "Page requested of the list.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of matches",
+            "schema": {
+              "title": "ObjectMatches",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
