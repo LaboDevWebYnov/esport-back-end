@@ -23,20 +23,20 @@ function toornamentApiRequest(options,callBack) {
     );
 }
 
-function generateGetUrlFromParams(params){
+function generateGetUrlFromParams(route, params){
     let options;
     if(params['access_token']){
         options = {
-            url: toornamentApiUrl + 'v1/tournaments?=',
+            url: toornamentApiUrl + route + '?=',
             method: 'GET',
             headers: {
                 'X-Api-Key': keyApi,
-                Authorization: accessToken
+                Authorization: 'Bearer ' + params['access_token']
             }
         };
     }else{
         options = {
-            url: toornamentApiUrl + 'v1/tournaments?=',
+            url: toornamentApiUrl + route + '?=',
             method: 'GET',
             headers: {
                 'X-Api-Key': keyApi
@@ -140,7 +140,7 @@ module.exports.oauth2 = function Oauth2(callBack){
 // https://api.toornament.com/v1/tournaments
 module.exports.getTournaments = function getTournaments(params, callBack){
 
-    let options = generateGetUrlFromParams(params);
+    let options = generateGetUrlFromParams('v1/tournaments', params);
 
     toornamentApiRequest(options,function (error,response,body) {
 
@@ -162,9 +162,9 @@ module.exports.addTournament = function postTournament(callBack){
 
 // https://api.toornament.com/v1/tournaments/{id}
 module.exports.getOneTournamentById = function getOneTournamentById(id, callBack){
-    let options = {
-        url: toornamentApiUrl + 'v1/tournaments/' + id +  '?api_key=' + keyApi
-    };
+
+    let options = generateGetUrlFromParams('v1/tournaments/' + id, []);
+
     logger.info(options.url);
 
     toornamentApiRequest(options,function (error,response,body) {
@@ -183,7 +183,28 @@ module.exports.getOneTournamentById = function getOneTournamentById(id, callBack
 // https://api.toornament.com/v1/me/tournaments
 module.exports.getMyTournaments = function getMyTournaments(params, callBack){
 
-    let options = generateGetUrlFromParams(params);
+    let options = generateGetUrlFromParams('v1/me/tournaments', params);
+    logger.info(options);
+
+
+    toornamentApiRequest(options,function (error,response,body) {
+
+        let respObject = JSON.parse(body);
+        if (!error && respObject.statusCode != 404) {
+
+            callBack(null,response,null);
+        }
+        else {
+            callBack(error,response,null);
+        }
+    });
+};
+
+// https://api.toornament.com/v1/tournaments/{tournament_id}/matches
+module.exports.getMatchesByTournament = function getMatchesByTournament(id, params, callBack){
+
+    let options = generateGetUrlFromParams('v1/tournaments/' + id +'/matches', params);
+
     logger.info(options);
 
 

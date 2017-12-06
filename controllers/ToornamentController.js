@@ -124,7 +124,6 @@ module.exports.getOneTournamentById = function getOneTournamentById(req, res, ne
     logger.info('Getting a Tournament by id from Toornament API...');
 
     var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
-
     toornamentService.getOneTournamentById(idTournament ,function(err, tournament){
         if (err) {
             return next(err);
@@ -209,12 +208,12 @@ module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
         page = req.query.page;
         params['page'] = page;
     }
-    if(req.headers.Authorization){
-        accessToken = req.headers.Authorization;
+    if(req.headers.authorization){
+        accessToken = req.headers.authorization;
         params['access_token'] = accessToken;
     }
 
-    logger.info(params);
+    logger.info("params", params);
 
     toornamentService.getMyTournaments(params, function(err, tournament){
         if (err) {
@@ -234,8 +233,8 @@ module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
 
 // MATCHES
 
-module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
-    logger.info('Getting a Tournament by id from Toornament API...');
+module.exports.getMatchesByTournament = function getMatchesByTournament(req, res, next) {
+    logger.info('Getting matches by tournament id from Toornament API...');
 
     var hasResult;
     var stageNumber;
@@ -281,9 +280,11 @@ module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
         params['page'] = page;
     }
 
-    logger.info(params);
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
 
-    toornamentService.getMyTournaments(params, function(err, tournament){
+    logger.info("params", params);
+
+    toornamentService.getMatchesByTournament(idTournament, params, function(err, tournament){
         if (err) {
             return next(err);
         }

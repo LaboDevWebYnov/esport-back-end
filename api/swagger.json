@@ -751,9 +751,9 @@
             "in": "path",
             "description": "userId of User object to update.",
             "required": true,
-            "type": "string"
-          },
-          {
+              "type": "string"
+            },
+            {
             "name": "address",
             "in": "body",
             "description": "Address object to add to the User object",
@@ -3671,12 +3671,12 @@
     },"/tournaments/{id}/matches": {
       "get": {
         "x-swagger-router-controller": "ToornamentController",
-        "operationId": "getMatches",
+        "operationId": "getMatchesByTournament",
         "tags": [
           "Matches"
         ],
         "summary": "Get one tournament",
-        "description": "Get one toornament by id.",
+        "description": "Get mactches by toornament's id.",
         "parameters": [
           {
             "name": "id",
