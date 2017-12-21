@@ -6,8 +6,8 @@ var mongoose = require('mongoose'),
     logger = require('log4js').getLogger('service.riot'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
-    newsApiUrl = " https://newsapi.org/v1/articles",
-    keyApi = "5b975610a84f4f2aa4a07150c2b58b73",
+    newsApiUrl = " https://newsapi.org/v2/top-headlines",
+    keyApi = "907e46e794a048c3935820df72f8797c",
     request = require('request');
 
 //LoL: todo add corresponding props
@@ -28,7 +28,7 @@ function newsApiRequest(options, callBack) {
 
 module.exports.getNewsIgn = function (cb) {
     let options = {
-        url: newsApiUrl + '?source=ign&' +'apiKey=' + keyApi
+        url: newsApiUrl + '?sources=ign&' +'apiKey=' + keyApi
     };
     newsApiRequest(options, function (error, response, body) {
 
@@ -44,7 +44,7 @@ module.exports.getNewsIgn = function (cb) {
 
 module.exports.getNewsPolygon = function (cb) {
     let options = {
-        url: newsApiUrl + '?source=polygon&' +'apiKey=' + keyApi
+        url: newsApiUrl + '?sources=polygon&' +'apiKey=' + keyApi
     };
     newsApiRequest(options, function (error, response, body) {
 
