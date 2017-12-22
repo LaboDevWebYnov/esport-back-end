@@ -4,8 +4,8 @@ var mongoose = require('mongoose'),
     _ = require('lodash'),
     rlApi = "https://api.rocketleaguestats.com/v1/player",
     keyApi = "G5L0Z48K07XRXVFQW8408M8FIOALGP0O",
-    request = require('request'),
-    steamIdUser = '76561198033338223';
+    request = require('request');
+    //steamIdUser = '76561198033338223';
 
 //Rocket League: todo add corresponding props
 const RLProps = ["uniqueId", "displayName", "avatar"];
@@ -24,6 +24,7 @@ function rlApiRequest(options,callBack) {
 }
 
 module.exports.getUserRL = function getUserInformation(steamIdUser,callBack) {
+    console.log('SteamID : ' + steamIdUser);
     let returnedArray = {};
     let options = {
         url: rlApi + '?unique_id=' + steamIdUser + '&apikey=' + keyApi + '&platform_id=1'
