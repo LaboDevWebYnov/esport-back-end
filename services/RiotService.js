@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
     _ = require('lodash'),
     riotApiUrl = "https://euw1.api.riotgames.com/lol",
     season = "SEASON2017",
-    keyApi = "RGAPI-45d41fb2-0183-4f01-942d-d097e023e008",
+    keyApi = "RGAPI-5c3f43f6-e84e-4b36-b7f4-9c25c927354b",
     request = require('request');
 
 //LoL: todo add corresponding props

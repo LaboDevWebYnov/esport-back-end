@@ -3,24 +3,27 @@
  */
 
 var mongoose = require('mongoose'),
-    logger = require('log4js').getLogger('service.riot'),
+    logger = require('log4js').getLogger('service.news'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
     newsApiUrl = " https://newsapi.org/v2/top-headlines",
     keyApi = "907e46e794a048c3935820df72f8797c",
     request = require('request');
 
-//LoL: todo add corresponding props
 
 
 function newsApiRequest(options, callBack) {
     request(options, function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                response["body"] = JSON.parse(response["body"]);
-                callBack(null, response["body"], body);
+
+            if (!error && JSON.parse(response.statusCode) === 200) {
+
+                response = response;
+
+
+                callBack(null, response, body);
             }
             else {
-                callBack(error, response["body"], null);
+                callBack(error, response, null);
             }
         }
     );
@@ -32,9 +35,9 @@ module.exports.getNewsIgn = function (cb) {
     };
     newsApiRequest(options, function (error, response, body) {
 
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             let respObject = JSON.parse(body);
-            cb(null, response, respObject);
+            cb(null, JSON.parse(response["body"]), respObject);
         }
         else {
             cb(error, response, null);
@@ -48,9 +51,10 @@ module.exports.getNewsPolygon = function (cb) {
     };
     newsApiRequest(options, function (error, response, body) {
 
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             let respObject = JSON.parse(body);
-            cb(null, response, respObject);
+            logger.info('it works polygon');
+            cb(null, JSON.parse(response["body"]), respObject);
         }
         else {
             cb(error, response, null);
