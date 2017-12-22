@@ -31,7 +31,10 @@ function newsApiRequest(options, callBack) {
 
 module.exports.getNewsIgn = function (cb) {
     let options = {
-        url: newsApiUrl + '?sources=ign&' +'apiKey=' + keyApi
+        url: newsApiUrl + '?sources=ign,polygon&' +'apiKey=' + keyApi,
+        headers: {
+            'Connection': 'keep-alive'
+        }
     };
     newsApiRequest(options, function (error, response, body) {
 
