@@ -32,6 +32,7 @@ module.exports.getUsers = function getUsers(req, res, next) {
     // Code necessary to consume the User API and respond
     User.find({})
         .populate('address')
+        .populate('friends')
         .exec(function (err, users) {
             if (err)
                 return next(err);
@@ -125,6 +126,7 @@ module.exports.getUserById = function getUserById(req, res, next) {
 
     User.findById(Util.getPathParams(req)[2])
         .populate('address')
+        .populate('friends')
         .exec(function (err, user) {
             if (err)
                 return next(err);
