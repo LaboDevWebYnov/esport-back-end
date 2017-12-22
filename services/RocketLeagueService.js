@@ -1,4 +1,7 @@
 /**
+ * Created by Brunet Sylvain on 21/12/2017.
+ */
+/**
  * Created by probe on 23/02/2017.
  */
 
@@ -74,21 +77,21 @@ module.exports.getUserStatsForSeason = function getUserStatsForCSGO(riotUserPseu
 
                     callBack(null, response, LOLContent);
                 }/*if (!error && response.statusCode === 200) {
-                    let respObject = JSON.parse(body);
-                    console.log("respobject" + respObject[riotUserId][0].tier);
-                    LOLContent[LOLProps[0]] = respObject[riotUserId][0].tier + " " + respObject[riotUserId][0].entries[0].division;
+                 let respObject = JSON.parse(body);
+                 console.log("respobject" + respObject[riotUserId][0].tier);
+                 LOLContent[LOLProps[0]] = respObject[riotUserId][0].tier + " " + respObject[riotUserId][0].entries[0].division;
 
-                    LOLContent[LOLProps[1]] = respObject[riotUserId][0].entries[0].leaguePoints;
+                 LOLContent[LOLProps[1]] = respObject[riotUserId][0].entries[0].leaguePoints;
 
-                    LOLContent[LOLProps[2]] = respObject[riotUserId][0].entries[0].wins;
+                 LOLContent[LOLProps[2]] = respObject[riotUserId][0].entries[0].wins;
 
-                    LOLContent[LOLProps[3]] = respObject[riotUserId][0].entries[0].losses;
+                 LOLContent[LOLProps[3]] = respObject[riotUserId][0].entries[0].losses;
 
-                    LOLContent[LOLProps[4]] = respObject[riotUserId][0].entries[0].wins / (respObject[riotUserId][0].entries[0].wins + respObject[riotUserId][0].entries[0].losses );
+                 LOLContent[LOLProps[4]] = respObject[riotUserId][0].entries[0].wins / (respObject[riotUserId][0].entries[0].wins + respObject[riotUserId][0].entries[0].losses );
 
 
-                    callBack(null, response, LOLContent);
-                }*/
+                 callBack(null, response, LOLContent);
+                 }*/
                 else {
                     callBack(error, response, null);
                 }

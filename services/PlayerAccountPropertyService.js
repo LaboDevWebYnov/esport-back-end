@@ -42,7 +42,7 @@ const CSGOProps = ['total_kills', 'kill_death_ratio', 'total_time_played', 'tota
 const LOLProps = [];
 
 //Rocket League: todo add corresponding props
-const RLprops = [];
+const RLprops = ["uniqueId", "displayName", "avatar"];
 
 //Dota 2: todo add corresponding props
 const DOTA2props = [];
@@ -133,8 +133,12 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
                             });
                             break;
                         case 'rocketleague':
-                            return next(null, playerAccProps);
-                            break;
+                            getLOLProperties(foundPlayerAccount.login, function (err, lolProperties) {
+                                if (!err) {
+                                    playerAccProps.push(lolProperties);
+                                    return next(null, _.flatten(playerAccProps));
+                                }
+                            });
                         case 'dota2':
                             return next(null, playerAccProps);
                             break;
