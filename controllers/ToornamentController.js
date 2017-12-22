@@ -15,74 +15,78 @@ mongoose.Promise = Promise;
 function generateParamTab(req){
     var params = [];
 
-    if(req.query.discipline){
-        params['discipline'] = req.query.discipline;
-    }
-    if(req.query.status){
-        params['status'] = req.query.status;
-    }
-    if(req.query.featured){
-        params['featured'] = req.query.featured;
-    }
-    if(req.query.online){
-        params['online'] = req.query.online;
-    }
-    if(req.query.country){
-        params['country'] =  req.query.country;
-    }
-    if(req.query.after_start){
-        params['after_start'] = req.query.after_start;
-    }
-    if(req.query.before_start){
-        params['before_start'] = req.query.before_start;
-    }
-    if(req.query.after_end){
-        params['after_end'] = req.query.after_end;
-    }
-    if(req.query.before_end){
-        params['before_end'] = req.query.before_end;
-    }
-    if(req.query.sort){
-        params['sort'] = req.query.sort;
-    }
-    if(req.query.name){
-        params['name'] = req.query.name;
-    }
-    if(req.query.archived){
-        params['archived'] = req.query.archived;
-    }
-    if(req.query.page){
-        params['page'] = req.query.page;
-    }
-    if(req.headers.authorization){
-        params['access_token'] = req.headers.authorization;
-    }
-    if(req.query.has_result){
-        params['has_result'] = req.query.has_result;
-    }
-    if(req.query.stage_number){
-        params['stage_number'] = req.query.stage_number;
-    }
-    if(req.query.group_number){
-        params['group_number'] = req.query.group_number;
-    }
-    if(req.query.round_number){
-        params['round_number'] = req.query.round_number;
-    }
-    if(req.query.participant_id){
-        params['participant_id'] = req.query.participant_id;
-    }
-    if(req.query.with_games){
-        params['with_games'] = req.query.with_games;
-    }
-    if(req.query.tournament_ids){
-        params['tournament_ids'] = req.query.tournament_ids;
-    }
-    if(req.query.featured){
-        params['featured'] = req.query.featured;
-    }
-    if(req.query.with_stat){
-        params['page'] = req.query.with_stat;
+    if(req.method === "POST"){
+        params = req.query.params;
+    }else{
+        if(req.query.discipline){
+            params['discipline'] = req.query.discipline;
+        }
+        if(req.query.status){
+            params['status'] = req.query.status;
+        }
+        if(req.query.featured){
+            params['featured'] = req.query.featured;
+        }
+        if(req.query.online){
+            params['online'] = req.query.online;
+        }
+        if(req.query.country){
+            params['country'] =  req.query.country;
+        }
+        if(req.query.after_start){
+            params['after_start'] = req.query.after_start;
+        }
+        if(req.query.before_start){
+            params['before_start'] = req.query.before_start;
+        }
+        if(req.query.after_end){
+            params['after_end'] = req.query.after_end;
+        }
+        if(req.query.before_end){
+            params['before_end'] = req.query.before_end;
+        }
+        if(req.query.sort){
+            params['sort'] = req.query.sort;
+        }
+        if(req.query.name){
+            params['name'] = req.query.name;
+        }
+        if(req.query.archived){
+            params['archived'] = req.query.archived;
+        }
+        if(req.query.page){
+            params['page'] = req.query.page;
+        }
+        if(req.headers.authorization){
+            params['access_token'] = req.headers.authorization;
+        }
+        if(req.query.has_result){
+            params['has_result'] = req.query.has_result;
+        }
+        if(req.query.stage_number){
+            params['stage_number'] = req.query.stage_number;
+        }
+        if(req.query.group_number){
+            params['group_number'] = req.query.group_number;
+        }
+        if(req.query.round_number){
+            params['round_number'] = req.query.round_number;
+        }
+        if(req.query.participant_id){
+            params['participant_id'] = req.query.participant_id;
+        }
+        if(req.query.with_games){
+            params['with_games'] = req.query.with_games;
+        }
+        if(req.query.tournament_ids){
+            params['tournament_ids'] = req.query.tournament_ids;
+        }
+        if(req.query.featured){
+            params['featured'] = req.query.featured;
+        }
+        if(req.query.with_stat){
+            params['page'] = req.query.with_stat;
+        }
     }
 
     return params;
@@ -129,6 +133,37 @@ module.exports.getTournaments = function getTournaments(req, res, next) {
             logger.debug(tournaments);
             res.set('Content-Type', 'application/json');
             res.status(200).json(tournaments || {}, null, 2);
+        }
+    });
+};
+
+module.exports.addTournament = function getAuthToken(req, res, next) {
+    logger.info("Getting a token for authenticated toornament's request");
+
+    // var params = generateParamTab(req);
+
+    var params = [];
+
+    params['discipline'] = req.query.discipline;
+    params['name'] = req.query.name;
+    params['size'] = req.query.size;
+    params['participant_type'] = req.query.participant_type;
+    params['acces_token'] = req.headers.authorization;
+
+    logger.info("params", params);
+
+    toornamentService.addTournament(params, function(err, token){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(token) || _.isEmpty(token)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(token || {}, null, 2);
+        }
+        else {
+            logger.debug(token);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(token || {}, null, 2);
         }
     });
 };
