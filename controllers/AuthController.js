@@ -18,10 +18,14 @@ mongoose.Promise = Promise;
 
 // Path : POST /users/auth
 module.exports.authenticate = function authenticate(req, res, next) {
-    logger.info('Authenticating user with login: ' + req.body.login);
 
-    var login = req.body.login;
-    var password = req.body.password;
+    //logger.info(req.body);
+    var body = JSON.parse(req.body.body);
+
+    logger.info('Authenticating user with login: ' + body.login);
+
+    var login = body.login;
+    var password = body.password;
 
     User.getAuthenticated(login, password,
         function (err, user) {
