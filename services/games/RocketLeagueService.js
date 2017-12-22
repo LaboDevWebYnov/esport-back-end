@@ -31,19 +31,6 @@ module.exports.getUserRL = function getUserStatsRL(callBack) {
 
         if (!error && response.statusCode == 200) {
             let respObject = JSON.parse(body);
-            let tab=[];
-            let tabVarName=
-                ["uniqueId", "displayName", "avatar"]
-            _.forEach(respObject.playerstats.stats, function (stat) {
-                if(_.includes(tabVarName,stat.name)){
-                    tab.push(stat);
-                }
-            });
-            for(let y=0;y in tab;y++){
-                CSGOStatsContent[tab[y].name] = tab[y].value;
-            }
-
-            callBack(null,response,CSGOStatsContent);
         }
         else {
             callBack(error,response,null);

@@ -120,6 +120,5 @@ module.exports.getUserInformation = function getUserInformation(steamIdUser,call
         else {
             callBack(error,response,null);
         }
-
     });
 };

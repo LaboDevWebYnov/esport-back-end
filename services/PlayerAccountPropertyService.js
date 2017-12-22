@@ -21,6 +21,7 @@ var Promise = require("bluebird"),
     steamService = require('../services/SteamService'),
     riotService = require('../services/RiotService'),
     owService = require('../services/BlizzardService'),
+    rlService = require('../services/games/RocketLeagueService'),
     Game = mongoose.model('Game');
 
 mongoose.Promise = Promise;
@@ -133,7 +134,10 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
                             });
                             break;
                         case 'rocketleague':
-                            return next(null, playerAccProps);
+                            getRLPropeties(foundPlayerAccount.login, function () {
+
+                                return next(null, playerAccProps);
+                            });
                             break;
                         case 'dota2':
                             return next(null, playerAccProps);
@@ -234,11 +238,32 @@ function getCSGOProperties(steamId, callback) {
                 });
             },
             function (cb) {
-                steamService.getUserInformation(steamId, function (error, resp, body) {
+                steamService.getUserInformation(function (error, resp, body) {
                     if (!error && !_.isNull(body)) {
                         playerAccountPropertiesContent['userInfo'] = (body);
                     }
                     cb(error, 'recuperation des infos du user steam');
+                });
+            }
+        ],
+        function (err, results) {
+            if (err) {
+                callback(err, null);
+            }
+            else {
+                callback(null, playerAccountPropertiesContent);
+            }
+        });
+}
+function getRLPropeties(steamId, callback) {
+    let playerAccountPropertiesContent = {};
+    async.parallel([
+            function (cb) {
+                rlService.getUserRL(steamId, function (error, resp, body) {
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['stats'] = (body);
+                    }
+                    cb(error, 'recuperation des stats de csgo');
                 });
             }
         ],
