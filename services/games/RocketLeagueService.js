@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    logger = require('log4js').getLogger('service.riot'),
+    logger = require('log4js').getLogger('service.rocket'),
     sanitizer = require('sanitizer'),
     _ = require('lodash'),
     rlApi = "https://api.rocketleaguestats.com/v1/player",
@@ -10,28 +10,50 @@ var mongoose = require('mongoose'),
 //Rocket League: todo add corresponding props
 const RLProps = ["uniqueId", "displayName", "avatar"];
 
-function rlApiRequest(options, callBack) {
+
+function rlApiRequest(options,callBack) {
     request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                callBack(null, response, body);
+                callBack(null,response,body);
             }
             else {
-                callBack(error, response, null);
+                callBack(error,response,null);
             }
         }
     );
 }
 
-
-module.exports.getUserRL = function getUserStatsRL(callBack) {
+module.exports.getUserRL = function getUserInformation(steamIdUser,callBack) {
+    let returnedArray = {};
     let options = {
-        url: rlApi + '?unique_id=' + steamIdUser + '&key=' + keyApi + '&platform_id=1'
+        url: rlApi + '?unique_id=' + steamIdUser + '&apikey=' + keyApi + '&platform_id=1'
+    };
+    rlApiRequest(options,function (error,response,body) {
+
+        if (!error && response.statusCode == 200) {
+            let respObjectUser = JSON.parse(body);
+
+            callBack(null,response,respObjectUser);
+        }
+        else {
+            callBack(error,response,null);
+        }
+
+    });
+};
+
+module.exports.getUserRLL = function (callBack) {
+    let options = {
+        url: rlApi + '?unique_id=' + steamIdUser + '&apikey=' + keyApi + '&platform_id=1'
     };
     rlApiRequest(options,function (error,response,body) {
 
         if (!error && response.statusCode == 200) {
             let respObject = JSON.parse(body);
-            callBack(error,response,body);
+            logger.info('jai passer');
+            logger.info(response["body"]);
+            logger.info(respObject);
+            callBack(null,response,respObject);
         }
         else {
             callBack(error,response,null);

@@ -137,7 +137,7 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
 
                             getRLPropeties(foundPlayerAccount.login, function (err, rlProperties) {
                                 playerAccProps.push(rlProperties);
-                                return next(null, playerAccProps);
+                                return next(null, _.flatten(playerAccProps));
                             });
                             break;
 
