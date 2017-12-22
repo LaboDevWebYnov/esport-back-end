@@ -18,7 +18,7 @@ var User = new Schema({
     phoneNumber: {type: String, required: false},
     admin: {type: Boolean, required: true, default: false},
     active: {type: Boolean, required: true, default: true},
-    //friends: {type: [{type: Schema.ObjectId, ref: 'User'}], required: false},
+    friends: {type: [{type: Schema.ObjectId, ref: 'User'}], required: false},
     //interests: {type: [{type: Schema.ObjectId, ref: 'Game'}], required: false},
     created_at: {type: Date, required: true, default: new Date()},
     updated_at: {type: Date, required: true, default: new Date()},

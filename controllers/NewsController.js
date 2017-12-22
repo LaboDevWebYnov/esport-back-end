@@ -13,18 +13,7 @@ module.exports.getNews = function getPlayerAccountList(req, res, next) {
     logger.info('Getting All News from News API...');
     let news = {};
     async.parallel([
-        function (cb) {
-            newsService.getNewsPolygon(function (err, newPolygon) {
-                if (err) {
-                    cb(err, 'retrieve polygon news');
-                }
-                else {
-                    logger.debug(newPolygon);
-                    news['polygon'] = newPolygon;
-                    cb(null, 'retrieve polygon news');
-                }
-            });
-        },
+
         function (cb) {
             newsService.getNewsIgn(function (err, newIgn) {
                 if (err) {
