@@ -3449,7 +3449,7 @@
         }
       }
     },"/tournaments/addTournament":{
-      "post": {
+      "get": {
         "x-swagger-router-controller": "ToornamentController",
         "operationId": "addTournament",
         "tags": [
@@ -3477,7 +3477,7 @@
             "in": "query",
             "description": "Size of a tournament. Represents the expected number of participants it'll be able to manage.",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "participant_type",
@@ -4109,6 +4109,12 @@
             "description": "The id of the requested match.",
             "required": true,
             "type": "string"
+          },{
+            "name": "with_stats",
+            "in": "query",
+            "description": "When set to '1', it will include a summary of stats of the game. Allowed values: 1, 0. Default: 1",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "responses": {
@@ -4162,7 +4168,7 @@
             "name": "with_stats",
             "in": "query",
             "description": "When set to '1', it will include a summary of stats of the game. Allowed values: 1, 0. Default: 1",
-            "required": true,
+            "required": false,
             "type": "boolean"
           }
         ],
@@ -4213,12 +4219,6 @@
             "description": "The id of the requested game.",
             "required": true,
             "type": "integer"
-          },{
-            "name": "with_stats",
-            "in": "query",
-            "description": "When set to '1', it will include a summary of stats of the game. Allowed values: 1, 0. Default: 1",
-            "required": true,
-            "type": "boolean"
           }
         ],
         "responses": {
