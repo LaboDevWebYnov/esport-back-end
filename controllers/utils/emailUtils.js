@@ -39,6 +39,7 @@ EM.dispatchAccountValidationLink = function (mailOpts, user, token, callback) {
 
     sg.API(request, function(err, response) {
         logger.debug(response.statusCode);
+        logger.debug(response.statusCode);
         logger.debug(response.body);
         logger.debug(response.headers);
         //If there is an error, render the error page

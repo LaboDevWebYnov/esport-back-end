@@ -31,6 +31,8 @@ let DOTA2Content = [];
 function steamApiRequest(options,callBack) {
     request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
+
+                response = response;
                 callBack(null,response,body);
             }
             else {
@@ -107,14 +109,17 @@ module.exports.getUserInformation = function getUserInformation(steamIdUser,call
     };
     steamApiRequest(options,function (error,response,body) {
 
-        if (!error && response.statusCode == 200) {
+
+        if (!error && response.statusCode === 200) {
             let respObjectUser = JSON.parse(body);
+            logger.info(JSON.parse(response.body));
             _.forEach(respObjectUser.response.players, function (player) {
                 returnedArray["country"] = player.loccountrycode;
                 returnedArray["name"] = player.realname;
                 returnedArray["pseudo"] = player.personaname;
                 returnedArray["avatar"] =player.avatar;
             });
+
             callBack(null,response,returnedArray);
         }
         else {

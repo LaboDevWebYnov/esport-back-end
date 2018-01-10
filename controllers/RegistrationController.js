@@ -345,6 +345,7 @@ module.exports.completeRegistration = function completeRegistration(req, res, ne
             if (err)
                 return next(err);
 
+            logger.debug(updatedUser);
             if (_.isNull(updatedUser) || _.isEmpty(updatedUser)) {
                 res.set('Content-Type', 'application/json');
                 res.status(404).json({
