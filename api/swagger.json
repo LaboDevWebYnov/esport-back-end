@@ -3487,7 +3487,7 @@
         }
       }
     },"/tournaments/addTournament":{
-      "post": {
+      "get": {
         "x-swagger-router-controller": "ToornamentController",
         "operationId": "addTournament",
         "tags": [
@@ -3515,7 +3515,7 @@
             "in": "query",
             "description": "Size of a tournament. Represents the expected number of participants it'll be able to manage.",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "participant_type",
@@ -3703,6 +3703,43 @@
             "schema": {
               "title": "ArrayOfMyTournament",
               "type": "array",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/deleteTournaments/{id}": {
+      "delete": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "deleteOneTournamentById",
+        "tags": [
+          "Toornament"
+        ],
+        "summary": "Delete one tournament",
+        "description": "Delete one toornament by id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "An unique identifier of the tournament to retrieve.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
               "items": {
                 "$ref": "#/definitions/Game"
               }
@@ -4125,6 +4162,71 @@
           }
         }
       }
+    },"/tournaments/{tournament_id}/addParticipant": {
+      "post": {
+        "x-swagger-router-controller": "ToornamentController",
+        "operationId": "addParticipant",
+        "tags": [
+          "Participants"
+        ],
+        "summary": "add participant in tournament",
+        "description": "add participant in tournament",
+        "parameters": [
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "description": "tournament unique identifier.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "participant name.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "description": "participant email.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "participant country.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "line_up",
+            "in": "query",
+            "description": "If it is a team tournament, register all participant in this array with same properties.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of toornament",
+            "schema": {
+              "title": "ObjectTournament",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },"/tournaments/{tournament_id}/matches/{match_id}/games": {
       "get": {
         "x-swagger-router-controller": "ToornamentController",
@@ -4147,6 +4249,12 @@
             "description": "The id of the requested match.",
             "required": true,
             "type": "string"
+          },{
+            "name": "with_stats",
+            "in": "query",
+            "description": "When set to '1', it will include a summary of stats of the game. Allowed values: 1, 0. Default: 1",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "responses": {
@@ -4200,7 +4308,7 @@
             "name": "with_stats",
             "in": "query",
             "description": "When set to '1', it will include a summary of stats of the game. Allowed values: 1, 0. Default: 1",
-            "required": true,
+            "required": false,
             "type": "boolean"
           }
         ],
@@ -4251,12 +4359,6 @@
             "description": "The id of the requested game.",
             "required": true,
             "type": "integer"
-          },{
-            "name": "with_stats",
-            "in": "query",
-            "description": "When set to '1', it will include a summary of stats of the game. Allowed values: 1, 0. Default: 1",
-            "required": true,
-            "type": "boolean"
           }
         ],
         "responses": {
