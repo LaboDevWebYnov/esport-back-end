@@ -18,9 +18,9 @@ var Promise = require("bluebird"),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
     GameDB = require('../models/GameDB'),
-    steamService = require('../services/SteamService'),
-    riotService = require('../services/RiotService'),
-    owService = require('../services/BlizzardService'),
+    steamService = require('./games/SteamService'),
+    riotService = require('./games/RiotService'),
+    owService = require('./games/BlizzardService'),
     rlService = require('../services/games/RocketLeagueService'),
     Game = mongoose.model('Game');
 
@@ -166,36 +166,6 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
     })
 };
 
-function getLOLProperties(summonersName, callback) {
-    let playerAccountPropertiesContent = {};
-    async.parallel([
-            function (cb) {
-                riotService.getUserStatsForLol(summonersName, function (error, resp, body) {
-                    if (!error && !_.isNull(body)) {
-                        playerAccountPropertiesContent['kda'] = (body);
-                    }
-                    cb(error, 'recuperation des stats de lol');
-                });
-            },
-            function (cb) {
-                riotService.getUserStatsForSeason(summonersName, function (error, resp, body) {
-                    if (!error && !_.isNull(body)) {
-                        playerAccountPropertiesContent['infos'] = (body);
-                    }
-                    cb(error, 'recuperation des infos du user lol');
-                });
-            }
-        ],
-        function (err, results) {
-            if (err) {
-                callback(err, null);
-            }
-            else {
-                callback(null, playerAccountPropertiesContent);
-            }
-        });
-}
-
 function getOWProperties(UserName, callback) {
     let playerAccountPropertiesContent = [];
     async.parallel([
@@ -257,15 +227,70 @@ function getCSGOProperties(steamId, callback) {
             }
         });
 }
+
 function getRLPropeties(steamId, callback) {
     let playerAccountPropertiesContent = {};
+    let accountId;
     async.parallel([
             function (cb) {
                 rlService.getUserRL(steamId, function (error, resp, body) {
+                    accountId = body;
                     if (!error && !_.isNull(body)) {
                         playerAccountPropertiesContent['stats'] = (body);
                     }
                     cb(error, 'recuperation des stats de csgo');
+                });
+            }
+        ],
+        function (err, results) {
+            if (err) {
+                callback(err, null);
+            }
+            else {
+                callback(null, playerAccountPropertiesContent);
+            }
+        });
+    logger.info(accountId);
+}
+
+function getLOLProperties(summonerId, callback) {
+    let playerAccountPropertiesContent = {};
+    let accountId = '';
+    async.parallel([
+            function (cb) {
+                riotService.getUserLol(summonerId, function (error, resp, body) {
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['summonerInfo'] = (body);
+
+                        //Récup des 3 derniers matches
+                        riotService.getLastMatchLol(body.accountId, function (error, resp, bodyMatch) {
+                            if (!error && !_.isNull(bodyMatch)) {
+                                let lastMatches = {};
+                                for (i = 0; i <= 2; i++) {
+
+                                    //Récupération des infos du matche
+                                    riotService.getMatcheInfo(bodyMatch.matches[i].gameId, function (error, resp, bodyMatchInfo) {
+                                        _.each(bodyMatchInfo.participantIdentities, function (participentIdentitie) {
+                                            if (participentIdentitie.player.accountId == body.accountId){
+                                                _.each(bodyMatchInfo.participants, function (participant) {
+                                                    if (participant.participantId == participentIdentitie.participantId)
+                                                    {
+                                                        bodyMatch.matches[i].match_info = participant;
+                                                        console.log(bodyMatch.matches[i])
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    });
+                                    lastMatches[i] = bodyMatch.matches[i];
+                                    console.log('Fin Requete Lol');
+                                    console.log(lastMatches[i]);
+                                }
+                                playerAccountPropertiesContent['last_matchs'] = lastMatches;
+                            }
+                            cb(error, 'recuperation des stats de lol');
+                        });
+                    }
                 });
             }
         ],

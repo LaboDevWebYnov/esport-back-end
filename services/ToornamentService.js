@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     AddTournamentModel = require('../models/AddTournamentModel');
+    AddParticipantModel = require('../models/AddParticipantModel');
     _ = require('lodash'),
     toornamentApiUrl = "https://api.toornament.com/",
     keyApi = "ATEr83fFz4LIc6rIvyArx-rZ32kRaG_15SQSwFbtdRg",
@@ -229,6 +230,32 @@ module.exports.getMyTournaments = function getMyTournaments(params, callBack){
     });
 };
 
+// https://api.toornament.com/v1/tournaments/{id}
+module.exports.deleteOneTournamentById = function deleteOneTournamentById(id, params, callBack){
+
+    let options = {
+        url: toornamentApiUrl + 'v1/tournaments/' + id,
+        method: 'DELETE',
+        headers: {
+            'X-Api-Key': keyApi,
+            Authorization: params['acces_token']
+        }
+    };
+    logger.info(options.url);
+
+    toornamentApiRequest(options,function (error,response,body) {
+
+        let respObject = JSON.parse(body);
+        if (!error && response.statusCode != 404) {
+
+            //callBack(null,JSON.parse(response["body"]),respObject);
+        }
+        else {
+            callBack(error,response,null);
+        }
+    });
+};
+
 // MATCHES
 
 // https://api.toornament.com/v1/tournaments/{tournament_id}/matches
@@ -379,6 +406,27 @@ module.exports.getGamesByIdAndMatchAndTournament = function getGamesByIdAndMatch
     });
 };
 
+// https://api.toornament.com/v1/tournaments/{tournament_id}/matches/{matche_id}/games/{game_id}/result
+module.exports.getGamesResultByIdAndMatchAndTournament = function getGamesResultByIdAndMatchAndTournament(idTournament, idMatch, idGame, params, callBack){
+
+    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatch +'/games/' + idGame + '/result', params);
+
+    logger.info(options);
+
+    toornamentApiRequest(options,function (error,response,body) {
+
+        let respObject = JSON.parse(body);
+        if (!error && response.statusCode != 404) {
+
+            callBack(null,JSON.parse(response["body"]),respObject);
+        }
+        else {
+            callBack(error,response,null);
+        }
+    });
+};
+
+// PARTICIPANTS
 
 // https://api.toornament.com/v1/tournaments/{tournament_id}/participants
 module.exports.getParticipantsByTournamentId = function getParticipantsByTournamentId(idTournament, params, callBack) {
@@ -421,18 +469,28 @@ module.exports.getParticipantsByTournamentIdAndParticipantId = function getParti
     });
 };
 
-// https://api.toornament.com/v1/tournaments/{tournament_id}/matches/{matche_id}/games/{game_id}/result
-module.exports.getGamesResultByIdAndMatchAndTournament = function getGamesResultByIdAndMatchAndTournament(idTournament, idMatch, idGame, params, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatch +'/games/' + idGame + '/result', params);
 
-    logger.info(options);
+// https://api.toornament.com/v1/tournaments/{tournaments_id}/participants
+module.exports.addParticipant = function addParticipant(id, params,callBack){
 
+    var addParticipantModel = new AddParticipantModel(params['name'], params['email'], params['country'], params['line_up']);
+
+    let options = {
+        url: toornamentApiUrl + 'v1/tournaments/' + id + '/participants',
+        method: 'POST',
+        body: JSON.stringify(addParticipantModel),
+        headers: {
+            'X-Api-Key': keyApi,
+            Authorization: params['acces_token']
+        }
+    };
+
+    logger.info('options', options);
     toornamentApiRequest(options,function (error,response,body) {
 
         let respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
-
             callBack(null,JSON.parse(response["body"]),respObject);
         }
         else {
