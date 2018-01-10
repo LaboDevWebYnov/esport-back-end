@@ -255,51 +255,40 @@ function getRLPropeties(steamId, callback) {
 
 function getLOLProperties(summonerId, callback) {
     let playerAccountPropertiesContent = {};
-    let accountId = '';
-    async.parallel([
-            function (cb) {
+   // let accountId = '209956745';
+
                 riotService.getUserLol(summonerId, function (error, resp, body) {
                     if (!error && !_.isNull(body)) {
-                        playerAccountPropertiesContent['summonerInfo'] = (body);
+                        playerAccountPropertiesContent['userInfo'] = (body);
+                        logger.debug("console log 1");
+                        riotService.getLastMatchLol(body.accountId, function (error, resp, body) {
+                            if (!error && !_.isNull(body)) {
+                                playerAccountPropertiesContent['lastMatch'] = (body);
+                                logger.debug(body);
+                                logger.debug("console log 2");
 
-                        //Récup des 3 derniers matches
-                        riotService.getLastMatchLol(body.accountId, function (error, resp, bodyMatch) {
-                            if (!error && !_.isNull(bodyMatch)) {
-                                let lastMatches = {};
-                                for (i = 0; i <= 2; i++) {
+                                let lastMatchInfos = {};
+                                let compteur = 0;
+                                for(i=0;i<2;i++){
+                                    let match = body.matches[i];
+                                    console.log(match.gameId);
+                                    riotService.getMatcheInfo(match.gameId, function (error,resp, body) {
+                                        if (!error && !_.isNull(body)) {
+                                            let bodie = JSON.parse(body);
+                                            console.log(bodie.participantIdentities);
+                                            lastMatchInfos[compteur] = body;
+                                            compteur ++;
 
-                                    //Récupération des infos du matche
-                                    riotService.getMatcheInfo(bodyMatch.matches[i].gameId, function (error, resp, bodyMatchInfo) {
-                                        _.each(bodyMatchInfo.participantIdentities, function (participentIdentitie) {
-                                            if (participentIdentitie.player.accountId == body.accountId){
-                                                _.each(bodyMatchInfo.participants, function (participant) {
-                                                    if (participant.participantId == participentIdentitie.participantId)
-                                                    {
-                                                        bodyMatch.matches[i].match_info = participant;
-                                                        console.log(bodyMatch.matches[i])
-                                                    }
-                                                })
-                                            }
-                                        })
+
+                                        }
+
                                     });
-                                    lastMatches[i] = bodyMatch.matches[i];
-                                    console.log('Fin Requete Lol');
-                                    console.log(lastMatches[i]);
                                 }
-                                playerAccountPropertiesContent['last_matchs'] = lastMatches;
-                            }
-                            cb(error, 'recuperation des stats de lol');
-                        });
+
+                                console.log(lastMatchInfos);
+                                playerAccountPropertiesContent['infosMatch'] = lastMatchInfos;
+                                callback(null, playerAccountPropertiesContent);
+                        }});
                     }
                 });
-            }
-        ],
-        function (err, results) {
-            if (err) {
-                callback(err, null);
-            }
-            else {
-                callback(null, playerAccountPropertiesContent);
-            }
-        });
 }

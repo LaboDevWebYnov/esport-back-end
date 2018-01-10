@@ -48,7 +48,7 @@ module.exports.getUserLol = function getUserInformation(lolName,callBack) {
 };
 
 module.exports.getLastMatchLol = function getUserMatches(accountId ,callBack) {
-    console.log('Game with GameId = ' + accountId);
+    console.log('Game with accoundId = ' + accountId);
     let returnedArray = {};
     let options = {
         url: riotApiUrl + '/match/v3/matchlists/by-account/' + accountId + '?api_key=' + keyApi
@@ -57,6 +57,8 @@ module.exports.getLastMatchLol = function getUserMatches(accountId ,callBack) {
 
         if (!error && response.statusCode == 200) {
             let respObjectUser = JSON.parse(body);
+
+
 
             callBack(null,response,respObjectUser);
         }
@@ -75,7 +77,7 @@ module.exports.getMatcheInfo = function getUserMatches(matchId ,callBack) {
     lolApiRequest(options,function (error,response,body) {
 
         if (!error && response.statusCode == 200) {
-            let respObjectUser = JSON.parse(body);
+            let respObjectUser = body;
 
             callBack(null,response,respObjectUser);
         }
