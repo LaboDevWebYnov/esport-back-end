@@ -262,20 +262,31 @@ function getLOLProperties(summonerId, callback) {
                     if (!error && !_.isNull(body)) {
                         playerAccountPropertiesContent['summonerInfo'] = (body);
 
+                        //Récup des 3 derniers matches
                         riotService.getLastMatchLol(body.accountId, function (error, resp, bodyMatch) {
                             if (!error && !_.isNull(bodyMatch)) {
                                 let lastMatches = {};
                                 for (i = 0; i <= 2; i++) {
+
+                                    //Récupération des infos du matche
+                                    riotService.getMatcheInfo(bodyMatch.matches[i].gameId, function (error, resp, bodyMatchInfo) {
+                                        _.each(bodyMatchInfo.participantIdentities, function (participentIdentitie) {
+                                            if (participentIdentitie.player.accountId == body.accountId){
+                                                _.each(bodyMatchInfo.participants, function (participant) {
+                                                    if (participant.participantId == participentIdentitie.participantId)
+                                                    {
+                                                        bodyMatch.matches[i].match_info = participant;
+                                                        console.log(bodyMatch.matches[i])
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    });
                                     lastMatches[i] = bodyMatch.matches[i];
+                                    console.log('Fin Requete Lol');
+                                    console.log(lastMatches[i]);
                                 }
                                 playerAccountPropertiesContent['last_matchs'] = lastMatches;
-                                riotService.getMatcheInfo(lastMatches[0].lastMatches, function (error, resp, bodyMatchInfo) {
-                                    if (!error && !_.isNull(bodyMatchInfo)) {
-                                        console.log('bonjour');
-                                        console.log(bodyMatchInfo)
-                                    }
-                                    else { console.log('non') }
-                                })
                             }
                             cb(error, 'recuperation des stats de lol');
                         });
