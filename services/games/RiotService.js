@@ -69,7 +69,7 @@ module.exports.getLastMatchLol = function getUserMatches(accountId ,callBack) {
     });
 };
 
-module.exports.getMatcheInfo = function getUserMatches(matchId ,callBack) {
+module.exports.getMatcheInfo = function getUserMatchesInfos(matchId ,callBack) {
     let returnedArray = {};
     let options = {
         url: riotApiUrl + '/match/v3/matches/' + matchId + '?api_key=' + keyApi

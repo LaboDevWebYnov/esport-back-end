@@ -260,33 +260,43 @@ function getLOLProperties(summonerId, callback) {
                 riotService.getUserLol(summonerId, function (error, resp, body) {
                     if (!error && !_.isNull(body)) {
                         playerAccountPropertiesContent['userInfo'] = (body);
-                        logger.debug("console log 1");
-                        riotService.getLastMatchLol(body.accountId, function (error, resp, body) {
+                        playerAccountPropertiesContent['infosMatch'] = [];
+                        let lastMatchInfos = [];
+                        let accountId = body.accountId;
+                        riotService.getLastMatchLol(accountId, function (error, resp, body) {
                             if (!error && !_.isNull(body)) {
-                                playerAccountPropertiesContent['lastMatch'] = (body);
-                                logger.debug(body);
-                                logger.debug("console log 2");
 
-                                let lastMatchInfos = {};
+                                let lastMatchs = []
                                 let compteur = 0;
+
                                 for(i=0;i<2;i++){
                                     let match = body.matches[i];
+                                    lastMatchs[i] = match;
+                                    var test;
                                     console.log(match.gameId);
                                     riotService.getMatcheInfo(match.gameId, function (error,resp, body) {
                                         if (!error && !_.isNull(body)) {
                                             let bodie = JSON.parse(body);
-                                            console.log(bodie.participantIdentities);
-                                            lastMatchInfos[compteur] = body;
-                                            compteur ++;
 
-
+                                            _.each(bodie.participantIdentities, function (participentIdentitie) {
+                                                if (participentIdentitie.player.accountId == accountId) {
+                                                    console.log(participentIdentitie.player.accountId)
+                                                    _.each(bodie.participants, function (participant) {
+                                                        if (participant.participantId == participentIdentitie.participantId) {
+                                                            //Ici lastMatchInfos est défini !!!!!!!!!!!!!
+                                                            console.log(participant);
+                                                            lastMatchInfos[compteur] = participant;
+                                                        }
+                                                    })
+                                                }
+                                            })
                                         }
-
-                                    });
+                                    })
+                                    //Dès qu'on sort du riotService, lastMatchsInfos n'est plus défini !!!!!!!!!!!!!!
                                 }
-
-                                console.log(lastMatchInfos);
-                                playerAccountPropertiesContent['infosMatch'] = lastMatchInfos;
+                                //Donc impossible de l'ajouter a au playerAccountPropertiesContent !!!!!!!!!!!!!!!!
+                                playerAccountPropertiesContent['lastMatch'] = lastMatchs;
+                                //playerAccountPropertiesContent['infosMatch'] = lastMatchInfos;
                                 callback(null, playerAccountPropertiesContent);
                         }});
                     }
