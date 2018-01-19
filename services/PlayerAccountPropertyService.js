@@ -276,7 +276,7 @@ function getLOLProperties(summonerId, callback) {
                     }
                     playerAccountPropertiesContent['lastMatch'] = lastMatchs;
                     console.log('PlayerAccountPropetiyService', tableMatchId);
-                    riotService.getMatcheInfo(tableMatchId, function (error, resp, body) {
+                    riotService.getMatcheInfo(tableMatchId, accountId, function (error, resp, body) {
                         if (!error && !_.isNull(resp)) {
                             playerAccountPropertiesContent['lastMacthsInfos'] = resp;
                         }

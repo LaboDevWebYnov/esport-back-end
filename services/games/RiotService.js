@@ -69,7 +69,7 @@ module.exports.getLastMatchLol = function getUserMatches(accountId ,callBack) {
     });
 };
 
-module.exports.getMatcheInfo = function getUserMatchesInfos(tableMatchId ,callBack) {
+module.exports.getMatcheInfo = function getUserMatchesInfos(tableMatchId, accountId, callBack) {
     let tableMatchsInfos =  [];
     let count  = 0;
     _.each(tableMatchId, function (matchId) {edArray = {};
@@ -78,11 +78,21 @@ module.exports.getMatcheInfo = function getUserMatchesInfos(tableMatchId ,callBa
         };
         request(options,function (error,response,body) {
             if (!error && response.statusCode == 200) {
-                tableMatchsInfos[count] = JSON.parse(body);
+                body = JSON.parse(body);
+                //Trie des datas
+                _.each(body.participantIdentities, function (participentIdentitie) {
+                    if (participentIdentitie.player.accountId == accountId) {
+                        console.log(participentIdentitie.player.accountId)
+                        _.each(body.participants, function (participant) {
+                            if (participant.participantId == participentIdentitie.participantId) {
+                                tableMatchsInfos[count] = participant;
+                            }
+                        })
+                    }
+                })
+                //Fin trie des datas
                 count += 1;
                 if (count === 3){
-                    console.log('Là !');
-                    console.log(tableMatchsInfos);
                     callBack(null,tableMatchsInfos);
                 }
             }
