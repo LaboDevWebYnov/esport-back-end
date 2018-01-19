@@ -263,13 +263,14 @@ function getLOLProperties(summonerId, callback) {
             let lastMatchInfos = [];
             let tableMatchId = [];
             let accountId = body.accountId;
+            let nbMatchInResult = 3;
             riotService.getLastMatchLol(accountId, function (error, resp, body) {
                 if (!error && !_.isNull(body)) {
 
                     let lastMatchs = []
                     let compteur = 0;
 
-                    for(i=0;i<3;i++){
+                    for(i=0;i<nbMatchInResult;i++){
                         let match = body.matches[i];
                         lastMatchs[i] = match;
                         tableMatchId[i] = match.gameId;

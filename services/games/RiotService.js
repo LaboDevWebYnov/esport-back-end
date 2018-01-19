@@ -99,7 +99,7 @@ module.exports.getMatcheInfo = function getUserMatchesInfos(tableMatchId, accoun
                     }
                 })
                 count += 1;
-                if (count === 3){
+                if (count === tableMatchId.length){
                     callBack(null,tableMatchsInfos);
                 }
             }
