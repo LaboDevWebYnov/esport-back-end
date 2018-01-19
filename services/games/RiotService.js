@@ -69,21 +69,23 @@ module.exports.getLastMatchLol = function getUserMatches(accountId ,callBack) {
     });
 };
 
-module.exports.getMatcheInfo = function getUserMatchesInfos(matchId ,callBack) {
-    let returnedArray = {};
-    let options = {
-        url: riotApiUrl + '/match/v3/matches/' + matchId + '?api_key=' + keyApi
-    };
-    lolApiRequest(options,function (error,response,body) {
-
-        if (!error && response.statusCode == 200) {
-            let respObjectUser = body;
-
-            callBack(null,response,respObjectUser);
-        }
-        else {
-            callBack(error,response,null);
-        }
-
+module.exports.getMatcheInfo = function getUserMatchesInfos(tableMatchId ,callBack) {
+    let tableMatchsInfos =  [];
+    let count  = 0;
+    _.each(tableMatchId, function (matchId) {edArray = {};
+        let options = {
+            url: riotApiUrl + '/match/v3/matches/' + matchId + '?api_key=' + keyApi
+        };
+        request(options,function (error,response,body) {
+            if (!error && response.statusCode == 200) {
+                tableMatchsInfos[count] = JSON.parse(body);
+                count += 1;
+                if (count === 3){
+                    console.log('Là !');
+                    console.log(tableMatchsInfos);
+                    callBack(null,tableMatchsInfos);
+                }
+            }
+        })
     });
 };
