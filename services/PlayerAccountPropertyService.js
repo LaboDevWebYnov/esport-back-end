@@ -277,7 +277,7 @@ function getLOLProperties(summonerId, callback) {
                                     riotService.getMatcheInfo(match.gameId, function (error,resp, body) {
                                         if (!error && !_.isNull(body)) {
                                             let bodie = JSON.parse(body);
-
+                                            console.log(bodie)
                                             _.each(bodie.participantIdentities, function (participentIdentitie) {
                                                 if (participentIdentitie.player.accountId == accountId) {
                                                     console.log(participentIdentitie.player.accountId)
