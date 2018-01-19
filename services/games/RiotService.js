@@ -79,18 +79,25 @@ module.exports.getMatcheInfo = function getUserMatchesInfos(tableMatchId, accoun
         request(options,function (error,response,body) {
             if (!error && response.statusCode == 200) {
                 body = JSON.parse(body);
-                //Trie des datas
                 _.each(body.participantIdentities, function (participentIdentitie) {
                     if (participentIdentitie.player.accountId == accountId) {
-                        console.log(participentIdentitie.player.accountId)
                         _.each(body.participants, function (participant) {
                             if (participant.participantId == participentIdentitie.participantId) {
-                                tableMatchsInfos[count] = participant;
+                                tableMatchsInfos[count] = {};
+                                tableMatchsInfos[count].player_stats = participant;
+
+                                _.each(body.teams, function (team) {
+                                    console.log('affichage de la team');
+                                    console.log(team);
+                                    if (team.teamId === participant.teamId){
+                                        console.log('J\'y suis !!');
+                                        tableMatchsInfos[count].team_stats = team;
+                                    }
+                                })
                             }
                         })
                     }
                 })
-                //Fin trie des datas
                 count += 1;
                 if (count === 3){
                     callBack(null,tableMatchsInfos);

@@ -275,14 +275,14 @@ function getLOLProperties(summonerId, callback) {
                         tableMatchId[i] = match.gameId;
                     }
                     playerAccountPropertiesContent['lastMatch'] = lastMatchs;
-                    console.log('PlayerAccountPropetiyService', tableMatchId);
                     riotService.getMatcheInfo(tableMatchId, accountId, function (error, resp, body) {
                         if (!error && !_.isNull(resp)) {
                             playerAccountPropertiesContent['lastMacthsInfos'] = resp;
                         }
                         callback(null, playerAccountPropertiesContent);
                     })
-                }});
+                }
+            });
         }
     });
 }
