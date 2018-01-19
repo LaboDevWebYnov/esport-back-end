@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
     _ = require('lodash'),
     riotApiUrl = "https://euw1.api.riotgames.com/lol",
     season = "SEASON2017",
-    keyApi = "RGAPI-e002bdc8-2798-40dd-a1e7-3ce4bc70a240",
+    keyApi = "RGAPI-634f1f3a-dad7-424d-b076-56346cb85ee5",
     request = require('request');
 
 //LoL: todo add corresponding props
@@ -77,8 +77,9 @@ module.exports.getMatcheInfo = function getUserMatchesInfos(matchId ,callBack) {
     lolApiRequest(options,function (error,response,body) {
 
         if (!error && response.statusCode == 200) {
-            let respObjectUser = body;
-
+            let respObjectUser = JSON.parse(body);
+            console.log(respObjectUser);
+            console.log('end');
             callBack(null,response,respObjectUser);
         }
         else {
