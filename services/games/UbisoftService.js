@@ -1,5 +1,10 @@
 
-var _ = require('lodash'),
+var _ = mongoose = require('mongoose'),
+    logger = require('log4js').getLogger('service.riot'),
+    sanitizer = require('sanitizer'),
+    _ = require('lodash'),
+    ubiApiUrl = "https://api.r6stats.com/api/",
+
     request = require('request');
 
 function r6ApiRequest(options,callBack) {
@@ -19,9 +24,10 @@ function r6ApiRequest(options,callBack) {
 module.exports.getR6Stats = function getUserStatsForR6(username, callback) {
     console.log('Pourquoi je suis pas là merde ?');
     let options = {
-        url: 'https://api.r6stats.com/api/v1/players/' + username + '/?platform=ps4'
+        url: ubiApiUrl+'v1/players/' + username + '/?platform=ps4'
     };
     request(options, function (error, response, body) {
+        console.log(body);
         if (!error && response.statusCode == 200){
             callback(null, response, body);
         }

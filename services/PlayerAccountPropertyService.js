@@ -124,15 +124,16 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
                     let gameName = _.toLower(foundGame._doc.name.replace(/\s/g, ""));
                     logger.debug("trying to link corresponding props for the game with name: " + gameName);
                     switch (gameName) {
-                        case 'rainbowsix:siege':
+                        case 'rainbowsixsiege':
                             getR6Properties(foundPlayerAccount.login, function (err, r6Properties) {
                                 if(!err){
                                     console.log('On est bien dans le R6Properties');
                                     playerAccProps.push(r6Properties)
                                     return next(null, _.flatten(playerAccProps));
                                 }
-                            })
-                        case 'counter-strike:globaloffensive':
+                            });
+                            break;
+                        case 'counterstrikeglobaloffensive':
                             getCSGOProperties(foundPlayerAccount.login, function (err, csgoProperties) {
                                 if (!err) {
                                     playerAccProps.push(csgoProperties);
