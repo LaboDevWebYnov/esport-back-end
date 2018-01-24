@@ -3487,7 +3487,7 @@
         }
       }
     },"/tournaments/addTournament":{
-      "get": {
+      "post": {
         "x-swagger-router-controller": "ToornamentController",
         "operationId": "addTournament",
         "tags": [
