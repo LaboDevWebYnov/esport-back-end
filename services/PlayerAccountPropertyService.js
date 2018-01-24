@@ -22,6 +22,7 @@ var Promise = require("bluebird"),
     riotService = require('./games/RiotService'),
     owService = require('./games/BlizzardService'),
     rlService = require('../services/games/RocketLeagueService'),
+    ubisoftService = require('../services/games/UbisoftService'),
     Game = mongoose.model('Game');
 
 mongoose.Promise = Promise;
@@ -50,6 +51,9 @@ const DOTA2props = [];
 
 //OverWatch todo add corresponding props
 const OWprops = [];
+
+//Rainbow 6 siege todo add corresponding props
+const R6props = [];
 
 /**
  * @description Given a gameId, we retrieve the corresponding keys for the playerAccountProperty
@@ -87,6 +91,9 @@ module.exports.findByGameId = function findByGameId(gameId, next) {
                     case 'overwatch':
                         return next(null, OWprops);
                         break;
+                    case 'rainbow6':
+                        return next(null, R6props);
+                        break;
                     default:
                         //logger.error("Could not find corresponding props for the game name: " + gameName);
                         return next({
@@ -117,6 +124,14 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
                     let gameName = _.toLower(foundGame._doc.name.replace(/\s/g, ""));
                     logger.debug("trying to link corresponding props for the game with name: " + gameName);
                     switch (gameName) {
+                        case 'rainbowsix:siege':
+                            getR6Properties(foundPlayerAccount.login, function (err, r6Properties) {
+                                if(!err){
+                                    console.log('On est bien dans le R6Properties');
+                                    playerAccProps.push(r6Properties)
+                                    return next(null, _.flatten(playerAccProps));
+                                }
+                            })
                         case 'counter-strike:globaloffensive':
                             getCSGOProperties(foundPlayerAccount.login, function (err, csgoProperties) {
                                 if (!err) {
@@ -140,7 +155,6 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
                                 return next(null, _.flatten(playerAccProps));
                             });
                             break;
-
                         case 'dota2':
                             return next(null, playerAccProps);
                             break;
@@ -260,15 +274,13 @@ function getLOLProperties(summonerId, callback) {
     riotService.getUserLol(summonerId, function (error, resp, body) {
         if (!error && !_.isNull(body)) {
             playerAccountPropertiesContent['userInfo'] = (body);
-            let lastMatchInfos = [];
             let tableMatchId = [];
             let accountId = body.accountId;
             let nbMatchInResult = 3;
             riotService.getLastMatchLol(accountId, function (error, resp, body) {
                 if (!error && !_.isNull(body)) {
 
-                    let lastMatchs = []
-                    let compteur = 0;
+                    let lastMatchs = [];
 
                     for(i=0;i<nbMatchInResult;i++){
                         let match = body.matches[i];
@@ -278,7 +290,7 @@ function getLOLProperties(summonerId, callback) {
                     playerAccountPropertiesContent['lastMatch'] = lastMatchs;
                     riotService.getMatcheInfo(tableMatchId, accountId, function (error, resp, body) {
                         if (!error && !_.isNull(resp)) {
-                            playerAccountPropertiesContent['lastMacthsInfos'] = resp;
+                            playerAccountPropertiesContent['lastMatchsInfos'] = resp;
                         }
                         callback(null, playerAccountPropertiesContent);
                     })
@@ -286,4 +298,28 @@ function getLOLProperties(summonerId, callback) {
             });
         }
     });
+}
+
+function getR6Properties(username, callback) {
+    let playerAccountPropertiesContent = {};
+    let accountId;
+    async.parallel([
+            function (cb) {
+                ubisoftService.getR6Stats(username, function (error, resp, body) {
+                    accountId = body;
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['stats'] = (body);
+                    }
+                    cb(error, 'recuperation des stats de rainbow six siege');
+                });
+            }
+        ],
+        function (err, results) {
+            if (err) {
+                callback(err, null);
+            }
+            else {
+                callback(null, playerAccountPropertiesContent);
+            }
+        });
 }

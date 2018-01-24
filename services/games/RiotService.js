@@ -87,10 +87,7 @@ module.exports.getMatcheInfo = function getUserMatchesInfos(tableMatchId, accoun
                                 tableMatchsInfos[count].player_stats = participant;
 
                                 _.each(body.teams, function (team) {
-                                    console.log('affichage de la team');
-                                    console.log(team);
                                     if (team.teamId === participant.teamId){
-                                        console.log('J\'y suis !!');
                                         tableMatchsInfos[count].team_stats = team;
                                     }
                                 })
