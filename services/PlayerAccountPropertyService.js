@@ -18,10 +18,11 @@ var Promise = require("bluebird"),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
     GameDB = require('../models/GameDB'),
-    steamService = require('../services/SteamService'),
-    riotService = require('../services/RiotService'),
-    owService = require('../services/BlizzardService'),
+    steamService = require('./games/SteamService'),
+    riotService = require('./games/RiotService'),
+    owService = require('./games/BlizzardService'),
     rlService = require('../services/games/RocketLeagueService'),
+    ubisoftService = require('../services/games/UbisoftService'),
     Game = mongoose.model('Game');
 
 mongoose.Promise = Promise;
@@ -50,6 +51,9 @@ const DOTA2props = [];
 
 //OverWatch todo add corresponding props
 const OWprops = [];
+
+//Rainbow 6 siege todo add corresponding props
+const R6props = [];
 
 /**
  * @description Given a gameId, we retrieve the corresponding keys for the playerAccountProperty
@@ -87,6 +91,9 @@ module.exports.findByGameId = function findByGameId(gameId, next) {
                     case 'overwatch':
                         return next(null, OWprops);
                         break;
+                    case 'rainbow6':
+                        return next(null, R6props);
+                        break;
                     default:
                         //logger.error("Could not find corresponding props for the game name: " + gameName);
                         return next({
@@ -117,7 +124,16 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
                     let gameName = _.toLower(foundGame._doc.name.replace(/\s/g, ""));
                     logger.debug("trying to link corresponding props for the game with name: " + gameName);
                     switch (gameName) {
-                        case 'counter-strike:globaloffensive':
+                        case 'rainbowsixsiege':
+                            getR6Properties(foundPlayerAccount.login, function (err, r6Properties) {
+                                if(!err){
+                                    console.log('On est bien dans le R6Properties');
+                                    playerAccProps.push(r6Properties)
+                                    return next(null, _.flatten(playerAccProps));
+                                }
+                            });
+                            break;
+                        case 'counterstrikeglobaloffensive':
                             getCSGOProperties(foundPlayerAccount.login, function (err, csgoProperties) {
                                 if (!err) {
                                     playerAccProps.push(csgoProperties);
@@ -140,7 +156,6 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
                                 return next(null, _.flatten(playerAccProps));
                             });
                             break;
-
                         case 'dota2':
                             return next(null, playerAccProps);
                             break;
@@ -165,36 +180,6 @@ module.exports.getPlayerAccountProperties = function getPlayerAccountProperties(
             });
     })
 };
-
-function getLOLProperties(summonersName, callback) {
-    let playerAccountPropertiesContent = {};
-    async.parallel([
-            function (cb) {
-                riotService.getUserStatsForLol(summonersName, function (error, resp, body) {
-                    if (!error && !_.isNull(body)) {
-                        playerAccountPropertiesContent['kda'] = (body);
-                    }
-                    cb(error, 'recuperation des stats de lol');
-                });
-            },
-            function (cb) {
-                riotService.getUserStatsForSeason(summonersName, function (error, resp, body) {
-                    if (!error && !_.isNull(body)) {
-                        playerAccountPropertiesContent['infos'] = (body);
-                    }
-                    cb(error, 'recuperation des infos du user lol');
-                });
-            }
-        ],
-        function (err, results) {
-            if (err) {
-                callback(err, null);
-            }
-            else {
-                callback(null, playerAccountPropertiesContent);
-            }
-        });
-}
 
 function getOWProperties(UserName, callback) {
     let playerAccountPropertiesContent = [];
@@ -257,15 +242,76 @@ function getCSGOProperties(steamId, callback) {
             }
         });
 }
+
 function getRLPropeties(steamId, callback) {
     let playerAccountPropertiesContent = {};
+    let accountId;
     async.parallel([
             function (cb) {
                 rlService.getUserRL(steamId, function (error, resp, body) {
+                    accountId = body;
                     if (!error && !_.isNull(body)) {
                         playerAccountPropertiesContent['stats'] = (body);
                     }
                     cb(error, 'recuperation des stats de csgo');
+                });
+            }
+        ],
+        function (err, results) {
+            if (err) {
+                callback(err, null);
+            }
+            else {
+                callback(null, playerAccountPropertiesContent);
+            }
+        });
+    logger.info(accountId);
+}
+
+function getLOLProperties(summonerId, callback) {
+    let playerAccountPropertiesContent = {};
+    // let accountId = '209956745';
+
+    riotService.getUserLol(summonerId, function (error, resp, body) {
+        if (!error && !_.isNull(body)) {
+            playerAccountPropertiesContent['userInfo'] = (body);
+            let tableMatchId = [];
+            let accountId = body.accountId;
+            let nbMatchInResult = 3;
+            riotService.getLastMatchLol(accountId, function (error, resp, body) {
+                if (!error && !_.isNull(body)) {
+
+                    let lastMatchs = [];
+
+                    for(i=0;i<nbMatchInResult;i++){
+                        let match = body.matches[i];
+                        lastMatchs[i] = match;
+                        tableMatchId[i] = match.gameId;
+                    }
+                    playerAccountPropertiesContent['lastMatch'] = lastMatchs;
+                    riotService.getMatcheInfo(tableMatchId, accountId, function (error, resp, body) {
+                        if (!error && !_.isNull(resp)) {
+                            playerAccountPropertiesContent['lastMatchsInfos'] = resp;
+                        }
+                        callback(null, playerAccountPropertiesContent);
+                    })
+                }
+            });
+        }
+    });
+}
+
+function getR6Properties(username, callback) {
+    let playerAccountPropertiesContent = {};
+    let accountId;
+    async.parallel([
+            function (cb) {
+                ubisoftService.getR6Stats(username, function (error, resp, body) {
+                    accountId = body;
+                    if (!error && !_.isNull(body)) {
+                        playerAccountPropertiesContent['stats'] = (body);
+                    }
+                    cb(error, 'recuperation des stats de rainbow six siege');
                 });
             }
         ],

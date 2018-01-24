@@ -211,6 +211,31 @@ module.exports.getMyTournaments = function getMyTournaments(req, res, next) {
     });
 };
 
+module.exports.deleteOneTournamentById = function deleteOneTournamentById(req, res, next) {
+    logger.info('Deleting a Tournament by id from Toornament API...');
+
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
+    var params = [];
+    params['acces_token'] = req.headers.authorization;
+
+
+    toornamentService.deleteOneTournamentById(idTournament, params, function(err, tournament){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(tournament) || _.isEmpty(tournament)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(tournament || {}, null, 2);
+        }
+        else {
+            logger.debug(tournament);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(tournament || {}, null, 2);
+        }
+    });
+};
+
+
 // MATCHES
 
 module.exports.getMatchesByTournament = function getMatchesByTournament(req, res, next) {
@@ -286,6 +311,8 @@ module.exports.getMatcheByIdAndTournament = function getMatcheByIdAndTournament(
 };
 
 
+
+
 module.exports.getMatcheResultByIdAndTournament = function getMatcheResultByIdAndTournament(req, res, next) {
     logger.info('Getting a Tournament by id from Toornament API...');
 
@@ -306,6 +333,8 @@ module.exports.getMatcheResultByIdAndTournament = function getMatcheResultByIdAn
         }
     });
 };
+
+// GAMES
 
 module.exports.getGamesByMatchAndTournament = function getGamesByMatchAndTournament(req, res, next) {
     logger.info('Getting a Tournament by id from Toornament API...');
@@ -328,6 +357,58 @@ module.exports.getGamesByMatchAndTournament = function getGamesByMatchAndTournam
     });
 };
 
+module.exports.getGamesResultByIdAndMatchAndTournament = function getGamesResultByIdAndMatchAndTournament(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
+
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
+    var idMatch = decodeURIComponent(Util.getPathParams(req)[4]);
+    var idGame = decodeURIComponent(Util.getPathParams(req)[6]);
+
+    var params = generateParamTab(req);
+
+    toornamentService.getGamesResultByIdAndMatchAndTournament(idTournament, idMatch, idGame, params ,function(err, games){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(games) || _.isEmpty(games)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(games || {}, null, 2);
+        }
+        else {
+            logger.debug(games);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(games || {}, null, 2);
+        }
+    });
+};
+
+module.exports.getGamesByIdAndMatchAndTournament = function getGamesByIdAndMatchAndTournament(req, res, next) {
+    logger.info('Getting a Tournament by id from Toornament API...');
+
+    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
+    var idMatch = decodeURIComponent(Util.getPathParams(req)[4]);
+    var idGame = decodeURIComponent(Util.getPathParams(req)[6]);
+
+    var params = generateParamTab(req);
+
+    toornamentService.getGamesByIdAndMatchAndTournament(idTournament, idMatch, idGame, params ,function(err, games){
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(games) || _.isEmpty(games)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(games || {}, null, 2);
+        }
+        else {
+            logger.debug(games);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(games || {}, null, 2);
+        }
+    });
+};
+
+// DISCIPLINE
+
 module.exports.getDisciplines = function getDisciplines(req, res, next) {
     logger.info('Getting all disciplines...');
 
@@ -347,6 +428,7 @@ module.exports.getDisciplines = function getDisciplines(req, res, next) {
     });
 };
 
+// PARTICIPANTS
 
 module.exports.getParticipantsByTournamentId = function getParticipantsByTournamentId(req, res, next) {
 
@@ -387,30 +469,7 @@ module.exports.getParticipantsByTournamentId = function getParticipantsByTournam
     });
 };
 
-module.exports.getGamesByIdAndMatchAndTournament = function getGamesByIdAndMatchAndTournament(req, res, next) {
-    logger.info('Getting a Tournament by id from Toornament API...');
 
-    var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
-    var idMatch = decodeURIComponent(Util.getPathParams(req)[4]);
-    var idGame = decodeURIComponent(Util.getPathParams(req)[6]);
-
-    var params = generateParamTab(req);
-
-    toornamentService.getGamesByIdAndMatchAndTournament(idTournament, idMatch, idGame, params ,function(err, games){
-        if (err) {
-            return next(err);
-        }
-        else if (_.isNull(games) || _.isEmpty(games)) {
-            res.set('Content-Type', 'application/json');
-            res.status(404).json(games || {}, null, 2);
-        }
-        else {
-            logger.debug(games);
-            res.set('Content-Type', 'application/json');
-            res.status(200).json(games || {}, null, 2);
-        }
-    });
-};
 
 module.exports.getParticipantsByTournamentIdAndParticipantId = function getParticipantsByTournamentIdAndParticipantId(req, res, next) {
 
@@ -434,27 +493,36 @@ module.exports.getParticipantsByTournamentIdAndParticipantId = function getParti
     });
 };
 
-module.exports.getGamesResultByIdAndMatchAndTournament = function getGamesResultByIdAndMatchAndTournament(req, res, next) {
-    logger.info('Getting a Tournament by id from Toornament API...');
 
+
+module.exports.addParticipant = function addParticipant(req, res, next) {
+    logger.info("Adding participant in tournament");
+
+    // var params = generateParamTab(req);
+
+    var params = [];
+
+    params['name'] = req.query.name;
+    params['email'] = req.query.email;
+    params['country'] = req.query.country;
+    params['line_up'] = req.query.lineUp;
+    params['acces_token'] = req.headers.authorization;
+
+    logger.info("params", params);
     var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
-    var idMatch = decodeURIComponent(Util.getPathParams(req)[4]);
-    var idGame = decodeURIComponent(Util.getPathParams(req)[6]);
 
-    var params = generateParamTab(req);
-
-    toornamentService.getGamesResultByIdAndMatchAndTournament(idTournament, idMatch, idGame, params ,function(err, games){
+    toornamentService.addParticipant(idTournament, params, function(err, token){
         if (err) {
             return next(err);
         }
-        else if (_.isNull(games) || _.isEmpty(games)) {
+        else if (_.isNull(token) || _.isEmpty(token)) {
             res.set('Content-Type', 'application/json');
-            res.status(404).json(games || {}, null, 2);
+            res.status(404).json(token || {}, null, 2);
         }
         else {
-            logger.debug(games);
+            logger.debug(token);
             res.set('Content-Type', 'application/json');
-            res.status(200).json(games || {}, null, 2);
+            res.status(200).json(token || {}, null, 2);
         }
     });
 };
