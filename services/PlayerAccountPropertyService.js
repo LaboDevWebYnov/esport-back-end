@@ -309,7 +309,7 @@ function getR6Properties(username, callback) {
                 ubisoftService.getR6Stats(username, function (error, resp, body) {
                     accountId = body;
                     if (!error && !_.isNull(body)) {
-                        playerAccountPropertiesContent['stats'] = (body);
+                        playerAccountPropertiesContent.stats = (body);
                     }
                     cb(error, 'recuperation des stats de rainbow six siege');
                 });
