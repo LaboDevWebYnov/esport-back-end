@@ -32,7 +32,7 @@ function steamApiRequest(options,callBack) {
     request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
 
-                response = response;
+
                 callBack(null,response,body);
             }
             else {
@@ -102,29 +102,33 @@ module.exports.getUserStatsForCSGO = function getUserStatsForCSGO(steamIdUser,ca
 };
 
 //http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=39A6689D4080067134EF2BA0F6B780FF&steamids=76561198035307337
-module.exports.getUserInformation = function getUserInformation(steamIdUser,callBack) {
-    let returnedArray = {};
+
+module.exports.getUserInformation = function getUserInformation(steamIdUser, callback) {
+    returnedArray = {};
+    console.log('Pourquoi je suis pas là merde ?');
     let options = {
-        url: steamApiUrl + 'ISteamUser/GetPlayerSummaries/v0002/?key=' + keyApi + '&steamids=' + steamIdUser + '&format=json'
+        url: steamApiUrl + 'ISteamUser/GetPlayerSummaries/v0002/?key=' + keyApi + '&steamids=76561198035307337&format=json'
     };
-    steamApiRequest(options,function (error,response,body) {
-
-
-        if (!error && response.statusCode === 200) {
-            let respObjectUser = JSON.parse(body);
-            logger.info(JSON.parse(response.body));
+    steamApiRequest(options, function (error, response, body) {
+        console.log(body);
+        if (!error && response.statusCode == 200){
+            let respObjectUser = JSON.parse(response.body);
+            //logger.info(respObjectUser);
             _.forEach(respObjectUser.response.players, function (player) {
                 returnedArray["country"] = player.loccountrycode;
-                returnedArray["name"] = player.realname;
+                returnedArray["name"] = player.personaname;
                 returnedArray["pseudo"] = player.personaname;
                 returnedArray["avatar"] =player.avatar;
+                logger.info(returnedArray);
+
             });
 
-            callBack(null,response,returnedArray);
+            callback(null, response, returnedArray);
+
+
         }
         else {
-            callBack(error,response,null);
+            callback(error, response, null);
         }
-
     });
 };

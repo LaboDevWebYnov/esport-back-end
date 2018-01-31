@@ -225,7 +225,7 @@ function getCSGOProperties(steamId, callback) {
                 });
             },
             function (cb) {
-                steamService.getUserInformation(function (error, resp, body) {
+                steamService.getUserInformation(steamId, function (error, resp, body) {
                     if (!error && !_.isNull(body)) {
                         playerAccountPropertiesContent['userInfo'] = (body);
                     }
