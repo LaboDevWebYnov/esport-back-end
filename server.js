@@ -214,3 +214,74 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     });
 });
 //******************************************************************************//
+
+
+var httpSocket = require('http').Server(app);
+var port = '3000';
+httpSocket.listen(port);
+var io = require('socket.io').listen(httpSocket);
+
+app.get('/', function(req, res){
+    res.sendfile('index.html');
+});
+
+var clients = [];
+var myUser = [];
+
+io.sockets.on('connection', function(socket){
+
+    socket.on('user-login', function(loggedUser){
+        socket.user = loggedUser;
+        clients.push(socket);
+        console.log('loged');
+    });
+
+    socket.on('join-room', function(friend , me){
+        var roomId = friend + "," + me;
+
+        var mySocket = getSocketByUsername(clients,me);
+        /*mySocket.join(friend +' , ' + me);
+
+        console.log(mySocket.user.username + 'join in ' + roomId);
+        socket.join(friend +' , ' + me);
+
+        var friendSocket = getSocketByUsername(clients,friend);
+        friendSocket.join(friend +' , ' + me);
+        console.log(friendSocket.user.username + " join in " + roomId);
+
+        socket.room = roomId;*/
+
+        console.log(mySocket.user.username + 'join in ' + 'room1');
+        socket.join("room1");
+        socket.room = "room1"
+    });
+    socket.on('chat-message', function(msg, me){
+
+
+        var mySocket = getSocketByUsername(clients,me);
+
+        var message = {
+            room: socket.room,
+            username: mySocket.user.username,
+            content: msg
+        };
+
+        io.sockets.in(socket.room).emit('return-chat-message', message);
+        console.log('Message de : ' + message.username + ' dans ' + socket.room);
+    });
+    socket.on('disconnect', function(){
+        console.log('user disconnected');
+        socket.leave(socket.room);
+        socket.removeAllListeners('chat-message');
+    });
+});
+
+function getSocketByUsername(clients, username){
+
+    for(var i=0;i<clients.length;i++){
+        if(clients[i].user.username == username){
+
+            return clients[i];
+        }
+    }
+}
