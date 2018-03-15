@@ -144,11 +144,11 @@ module.exports.addTournament = function getAuthToken(req, res, next) {
 
     var params = [];
 
-    params['discipline'] = req.query.discipline;
-    params['name'] = req.query.name;
-    params['size'] = req.query.size;
-    params['participant_type'] = req.query.participant_type;
-    params['acces_token'] = req.headers.authorization;
+    params['discipline'] = req.query.params['discipline'];
+    params['name'] = req.query.params['name'];
+    params['size'] = req.query.params['size'];
+    params['participant_type'] = req.query.params['participant_type'];
+    params['acces_token'] = req.headers.params['authorization'];
 
     logger.info('post body', req.body);
 
