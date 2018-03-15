@@ -1,4 +1,5 @@
 var mongoose = require('mongoose'),
+    ObjectID = mongoose.Types.ObjectId,
     sanitizer = require('sanitizer'),
     AddTournamentModel = require('../models/AddTournamentModel');
     AddParticipantModel = require('../models/AddParticipantModel');
@@ -187,6 +188,20 @@ module.exports.addTournament = function postTournament(params,callBack){
         else {
             callBack(error,response,null);
         }
+    });
+};
+
+module.exports.insertTournament = function insertTournament(userId, tournamentId) {
+    var Tournament = mongoose.model('tournaments',{userId: 'string', tournamentId: 'string'});
+    var data = new Tournament({
+        _id: new ObjectID(),
+        userId: userId,
+        tournamentId: tournamentId
+    });
+
+    data.save(function (err, data) {
+        if (err) console.log(err);
+        else console.log('Saved ', data );
     });
 };
 
@@ -472,7 +487,7 @@ module.exports.getParticipantsByTournamentIdAndParticipantId = function getParti
 
 
 // https://api.toornament.com/v1/tournaments/{tournaments_id}/participants
-module.exports.addParticipant = function addParticipant(id, params,callBack){
+module.exports.addParticipant =     function addParticipant(id, params,callBack){
 
     var addParticipantModel = new AddParticipantModel(params['name'], params['email'], params['country'], params['line_up']);
 

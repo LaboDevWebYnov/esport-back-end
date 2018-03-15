@@ -140,6 +140,7 @@ module.exports.getTournaments = function getTournaments(req, res, next) {
 module.exports.addTournament = function getAuthToken(req, res, next) {
     logger.info("Getting a token for authenticated toornament's request");
 
+    var userId = decodeURIComponent(Util.getPathParams(req)[3]);
 
     var params = [];
 
@@ -161,6 +162,10 @@ module.exports.addTournament = function getAuthToken(req, res, next) {
         }
         else {
             logger.debug(token);
+
+            toornamentService.insertTournament(userId, token['id']);
+
+
             res.set('Content-Type', 'application/json');
             res.status(200).json(token || {}, null, 2);
         }
