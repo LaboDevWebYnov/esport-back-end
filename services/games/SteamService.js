@@ -70,6 +70,7 @@ module.exports.getUserStatsForCSGO = function getUserStatsForCSGO(steamIdUser,ca
                     "last_match_wins",
                     "last_match_max_players",
                     "last_match_deaths",
+                    "last_match_kills02",
                     "last_match_mvps",
                     "last_match_favweapon_id",
                     "last_match_favweapon_shots",

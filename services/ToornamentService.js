@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
     toornamentApiUrl = "https://api.toornament.com/",
     keyApi = "ATEr83fFz4LIc6rIvyArx-rZ32kRaG_15SQSwFbtdRg",
     request = require('request');
-    clientSecret = '1hu0ts6jyv8googo0kks0wog44w00gok84soc48g4cgc0848o8';
+    clientSecret = process.env.TOORNAMENT_CLIENT_SECRET;
     clientId = '9ce161687677adaf69d21a192nktf5mifmskkg0804cskwggko8skwwc8goso8o4ggg4s4gc4c';
 
 
@@ -222,7 +222,7 @@ module.exports.getMyTournaments = function getMyTournaments(params, callBack){
         let respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
-            callBack(null,JSON.parse(response["body"]),respObject);
+            callBack(null,response["body"],respObject);
         }
         else {
             callBack(error,response,null);
@@ -491,7 +491,7 @@ module.exports.addParticipant = function addParticipant(id, params,callBack){
 
         let respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
-            callBack(null,JSON.parse(response["body"]),respObject);
+            callBack(null,response["body"],respObject);
         }
         else {
             callBack(error,response,null);
