@@ -235,12 +235,35 @@ io.sockets.on('connection', function(socket){
         clients.push(socket);
         console.log('loged');
     });
+    socket.on("set.room", function(data) {
+        if (data.room === null || data.room === undefined) {
+            return;
+        }
 
-    socket.on('join-room', function(friend , me){
+        if (socket.room !== undefined) {
+            socket.leave(socket.room);
+            socket.room = undefined;
+        }
+
+        if (data.username !== null || data.username !== undefined) {
+            socket.username = data.username;
+        }
+
+        socket.join(data.room);
+        socket.room = data.room;
+
+        if (socket.username !== undefined) {
+            emit("user.joined", {
+                username: socket.username,
+                room: socket.room
+            });
+        }
+    });
+    /*socket.on('join-room', function(friend , me){
         var roomId = friend + "," + me;
 
         var mySocket = getSocketByUsername(clients,me);
-        /*mySocket.join(friend +' , ' + me);
+        mySocket.join(friend +' , ' + me);
 
         console.log(mySocket.user.username + 'join in ' + roomId);
         socket.join(friend +' , ' + me);
@@ -249,20 +272,17 @@ io.sockets.on('connection', function(socket){
         friendSocket.join(friend +' , ' + me);
         console.log(friendSocket.user.username + " join in " + roomId);
 
-        socket.room = roomId;*/
+        socket.room = roomId;
 
         console.log(mySocket.user.username + 'join in ' + 'room1');
         socket.join("room1");
         socket.room = "room1"
-    });
+    });*/
     socket.on('chat-message', function(msg, me){
-
-
-        var mySocket = getSocketByUsername(clients,me);
 
         var message = {
             room: socket.room,
-            username: mySocket.user.username,
+            username: me.user,
             content: msg
         };
 
@@ -273,6 +293,23 @@ io.sockets.on('connection', function(socket){
         console.log('user disconnected');
         socket.leave(socket.room);
         socket.removeAllListeners('chat-message');
+    });
+
+    socket.on("typing", function() {
+        if (socket.username !== undefined) {
+            emit("typing", {
+                username: socket.username,
+                room: socket.room
+            });
+        }
+    });
+
+    socket.on("stop.typing", function() {
+        if (socket.username !== undefined) {
+            emit("stop.typing", {
+                username: socket.username
+            });
+        }
     });
 });
 
