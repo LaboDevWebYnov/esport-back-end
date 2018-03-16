@@ -140,15 +140,15 @@ module.exports.getTournaments = function getTournaments(req, res, next) {
 module.exports.addTournament = function getAuthToken(req, res, next) {
     logger.info("Getting a token for authenticated toornament's request");
 
-    // var params = generateParamTab(req);
+    var userId = decodeURIComponent(Util.getPathParams(req)[3]);
 
-    /*var params = [];
+    var params = [];
 
     params['discipline'] = req.query.discipline;
-    params['name'] = req.query.name;
+    params['name'] = req.query.name
     params['size'] = req.query.size;
     params['participant_type'] = req.query.participant_type;
-    params['acces_token'] = req.headers.authorization;*/
+    params['acces_token'] = req.query.authorization;
 
     logger.info('post body', req.body);
 
@@ -162,6 +162,10 @@ module.exports.addTournament = function getAuthToken(req, res, next) {
         }
         else {
             logger.debug(token);
+
+            toornamentService.insertTournament(userId, token['id']);
+
+
             res.set('Content-Type', 'application/json');
             res.status(200).json(token || {}, null, 2);
         }

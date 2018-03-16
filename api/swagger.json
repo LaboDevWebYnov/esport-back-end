@@ -3486,7 +3486,7 @@
           }
         }
       }
-    },"/tournaments/addTournament":{
+    },"/tournaments/addTournament/{userId}":{
       "post": {
         "x-swagger-router-controller": "ToornamentController",
         "operationId": "addTournament",
@@ -3497,6 +3497,12 @@
         "description": "Post `toornament` objects.",
         "parameters": [
           {
+            "name": "userId",
+            "in": "path",
+            "description": "organisatorId",
+            "required": true,
+            "type": "string"
+          },{
             "name": "discipline",
             "in": "query",
             "description": "name of the game",
