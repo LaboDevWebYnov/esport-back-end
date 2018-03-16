@@ -8,7 +8,8 @@ var mongoose = require('mongoose'),
     keyApi = "ATEr83fFz4LIc6rIvyArx-rZ32kRaG_15SQSwFbtdRg",
     request = require('request');
     clientSecret = '1hu0ts6jyv8googo0kks0wog44w00gok84soc48g4cgc0848o8';
-    clientId = '9ce161687677adaf69d21a192nktf5mifmskkg0804cskwggko8skwwc8goso8o4ggg4s4gc4c';
+    clientId = '9ce161687677adaf69d21a192nktf5mifmskkg0804cskwggko8skwwc8goso8o4ggg4s4gc4c'
+    token_tournament = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6Ijg4ODdiNmFhN2RlZjU5Y2VhNjgzODllZmVhNTc4MjU0ZTIzNGQ3OTliYWQ1MzZiYjRkMjgxYTRkODFmZWQ1MTU4ZGZiZTljN2Y4NzVlYzI4In0.eyJhdWQiOiI5Y2UxNjE2ODc2NzdhZGFmNjlkMjFhMTkybmt0ZjVtaWZtc2trZzA4MDRjc2t3Z2drbzhza3d3Yzhnb3NvOG80Z2dnNHM0Z2M0YyIsImp0aSI6Ijg4ODdiNmFhN2RlZjU5Y2VhNjgzODllZmVhNTc4MjU0ZTIzNGQ3OTliYWQ1MzZiYjRkMjgxYTRkODFmZWQ1MTU4ZGZiZTljN2Y4NzVlYzI4IiwiaWF0IjoxNTIxMTkwNjczLCJuYmYiOjE1MjExOTA2NzMsImV4cCI6MTUyMTI4MDY3Mywic3ViIjoiIiwic2NvcGVzIjpbXX0.tzzpDzTLEBXsQhKKiDGespXVKhz26IsE0ngWlMF7kFSIZxCIXrhNpwf85d_uWjTPkuPJq3XMt2HcdTME3X_qNoIt5IC51a6Nc7mJG39bYXsqFKgARMDLaU6vBA3tafK974hN_724U9EmYUnO8qSkXQ8lrYs9CiuxV7V6xf6YqGET5H-63TsdmTQp5l3hZO-4Xj_GLh9bXMXmZx1QC4ACFyQ9q0xHEWVQXOgwjTelXrZBsJtxap5m8qMltpjm8u4g0iIkQDd7OyzVw48lqkiz4YDMkFOxSWYL9KZhJIPv41dcKb6eKoKgqg-eg3_5ibmAVdVNOsY3rfykD6Y3qz98lw';
 
 
 function toornamentApiRequest(options,callBack) {
@@ -32,7 +33,7 @@ function generateGetUrlFromParams(route, params) {
             method: 'GET',
             headers: {
                 'X-Api-Key': keyApi,
-                Authorization: params['access_token']
+                Authorization: token_tournament
             }
         };
     } else {
@@ -107,7 +108,7 @@ function generateGetUrlFromParams(route, params) {
             option.url += 'with_stats=' + params['with_stats'] + '&';
         }
         if (params['tournament_ids']) {
-            options.url += '&tournament_ids=' + params['tournament_ids'];
+            options.url += '&tournament_ids=' + params['tournament_ids'] + '&';
         }
         options.url = options.url.substring(0, options.url.length - 1);
     }
@@ -174,7 +175,7 @@ module.exports.addTournament = function postTournament(params,callBack){
         body: JSON.stringify(addTournamentModel),
         headers: {
             'X-Api-Key': keyApi,
-            Authorization: params['acces_token']
+            Authorization: token_tournament
         }
     };
 
@@ -253,7 +254,7 @@ module.exports.deleteOneTournamentById = function deleteOneTournamentById(id, pa
         method: 'DELETE',
         headers: {
             'X-Api-Key': keyApi,
-            Authorization: params['acces_token']
+            Authorization: token_tournament
         }
     };
     logger.info(options.url);
@@ -497,7 +498,7 @@ module.exports.addParticipant =     function addParticipant(id, params,callBack)
         body: JSON.stringify(addParticipantModel),
         headers: {
             'X-Api-Key': keyApi,
-            Authorization: params['acces_token']
+            Authorization: token_tournament
         }
     };
 

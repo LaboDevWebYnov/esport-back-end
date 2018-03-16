@@ -57,9 +57,9 @@ function generateParamTab(req){
         if(req.query.page){
             params['page'] = req.query.page;
         }
-        if(req.headers.authorization){
+        /*if(req.headers.authorization){
             params['access_token'] = req.headers.authorization;
-        }
+        }*/
         if(req.query.has_result){
             params['has_result'] = req.query.has_result;
         }
@@ -148,7 +148,6 @@ module.exports.addTournament = function getAuthToken(req, res, next) {
     params['name'] = req.query.name
     params['size'] = req.query.size;
     params['participant_type'] = req.query.participant_type;
-    params['acces_token'] = req.query.authorization;
 
     logger.info('post body', req.body);
 
@@ -220,7 +219,6 @@ module.exports.deleteOneTournamentById = function deleteOneTournamentById(req, r
 
     var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
     var params = [];
-    params['acces_token'] = req.headers.authorization;
 
 
     toornamentService.deleteOneTournamentById(idTournament, params, function(err, tournament){
@@ -510,7 +508,6 @@ module.exports.addParticipant = function addParticipant(req, res, next) {
     params['email'] = req.query.email;
     params['country'] = req.query.country;
     params['line_up'] = req.query.lineUp;
-    params['acces_token'] = req.headers.authorization;
 
     logger.info("params", params);
     var idTournament = decodeURIComponent(Util.getPathParams(req)[2]);
