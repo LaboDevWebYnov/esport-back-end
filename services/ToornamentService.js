@@ -182,7 +182,7 @@ module.exports.addTournament = function postTournament(params,callBack){
 
         let respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
-            callBack(   null,JSON.parse(response["body"]),respObject);
+            callBack(   null,response["body"],respObject);
         }
         else {
             callBack(error,response,null);
