@@ -457,7 +457,8 @@ module.exports.getParticipantsByTournamentId = function getParticipantsByTournam
         if (err) {
             return next(err);
         }
-        else if (_.isNull(participants) || _.isEmpty(participants)) {
+        else if (_.isNull(participants)) {
+            console.log("ERREURS PARTICIPNTS : ")
             res.set('Content-Type', 'application/json');
             res.status(404).json(participants || {}, null, 2);
         }
