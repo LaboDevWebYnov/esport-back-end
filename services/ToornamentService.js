@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
     request = require('request');
     clientSecret = '1hu0ts6jyv8googo0kks0wog44w00gok84soc48g4cgc0848o8';
     clientId = '9ce161687677adaf69d21a192nktf5mifmskkg0804cskwggko8skwwc8goso8o4ggg4s4gc4c'
-    token_tournament = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6Ijg4ODdiNmFhN2RlZjU5Y2VhNjgzODllZmVhNTc4MjU0ZTIzNGQ3OTliYWQ1MzZiYjRkMjgxYTRkODFmZWQ1MTU4ZGZiZTljN2Y4NzVlYzI4In0.eyJhdWQiOiI5Y2UxNjE2ODc2NzdhZGFmNjlkMjFhMTkybmt0ZjVtaWZtc2trZzA4MDRjc2t3Z2drbzhza3d3Yzhnb3NvOG80Z2dnNHM0Z2M0YyIsImp0aSI6Ijg4ODdiNmFhN2RlZjU5Y2VhNjgzODllZmVhNTc4MjU0ZTIzNGQ3OTliYWQ1MzZiYjRkMjgxYTRkODFmZWQ1MTU4ZGZiZTljN2Y4NzVlYzI4IiwiaWF0IjoxNTIxMTkwNjczLCJuYmYiOjE1MjExOTA2NzMsImV4cCI6MTUyMTI4MDY3Mywic3ViIjoiIiwic2NvcGVzIjpbXX0.tzzpDzTLEBXsQhKKiDGespXVKhz26IsE0ngWlMF7kFSIZxCIXrhNpwf85d_uWjTPkuPJq3XMt2HcdTME3X_qNoIt5IC51a6Nc7mJG39bYXsqFKgARMDLaU6vBA3tafK974hN_724U9EmYUnO8qSkXQ8lrYs9CiuxV7V6xf6YqGET5H-63TsdmTQp5l3hZO-4Xj_GLh9bXMXmZx1QC4ACFyQ9q0xHEWVQXOgwjTelXrZBsJtxap5m8qMltpjm8u4g0iIkQDd7OyzVw48lqkiz4YDMkFOxSWYL9KZhJIPv41dcKb6eKoKgqg-eg3_5ibmAVdVNOsY3rfykD6Y3qz98lw';
+    token_tournament = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjVmZWNmYWQ5YzgyZjRhY2E2MGY0MjQ2OTQ2Nzk0NjBlOWNmYWNkODc3MzQ3NzNhYWVmMjU1NWY3ZjQzZjY3ZjI5M2U3NzAxN2UxNTkzNGJkIn0.eyJhdWQiOiI5Y2UxNjE2ODc2NzdhZGFmNjlkMjFhMTkybmt0ZjVtaWZtc2trZzA4MDRjc2t3Z2drbzhza3d3Yzhnb3NvOG80Z2dnNHM0Z2M0YyIsImp0aSI6IjVmZWNmYWQ5YzgyZjRhY2E2MGY0MjQ2OTQ2Nzk0NjBlOWNmYWNkODc3MzQ3NzNhYWVmMjU1NWY3ZjQzZjY3ZjI5M2U3NzAxN2UxNTkzNGJkIiwiaWF0IjoxNTIyMjM3MTA1LCJuYmYiOjE1MjIyMzcxMDUsImV4cCI6MTUyMjMyNzEwNSwic3ViIjoiIiwic2NvcGVzIjpbXX0.ScO-yeeq6j70nCnmFTF7MI1dm6KCgdcSWY4mC451fkgO3f_5gytMh3AfOB5heqh1uJeXHB6oS8o9VyipnTTMauOSPu5uz8K7Z5dOcozK39RZWaNdjbI0qgPjIu5n3ManzaS2sObv5B524Rvg5OIOD0afLZ9rm5fKcHyNgHIomQbfc-nVIWkKuUKipUtjBgO-J8JnNq4_ieDmoMCJl8jTZahaJ_2FxnoSbEuVeW5pNCkYXFQCYV6Lc9abEwhep5lHFpDJLqU8RY1YTzlfvtv3YLd_6Vzg9uTBFn-wFNUYjM5T_ZiV1KKaggifN2_UIybHyhDBamMDTILgyx8Tt37cug';
 
 
 function toornamentApiRequest(options,callBack) {
@@ -184,7 +184,7 @@ module.exports.addTournament = function postTournament(params,callBack){
 
         var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
-            callBack(   null,JSON.parse(response["body"]),respObject);
+            callBack(   null,response["body"],respObject);
         }
         else {
             callBack(error,response,null);

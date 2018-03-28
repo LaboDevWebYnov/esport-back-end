@@ -144,10 +144,10 @@ module.exports.addTournament = function getAuthToken(req, res, next) {
 
     var params = [];
 
-    params['discipline'] = req.query.discipline;
-    params['name'] = req.query.name
-    params['size'] = req.query.size;
-    params['participant_type'] = req.query.participant_type;
+    params['discipline'] = req.body.discipline;
+    params['name'] = req.body.name;
+    params['size'] = req.body.size;
+    params['participant_type'] = req.body.participant_type;
 
     logger.info('post body', req.body);
 
@@ -459,7 +459,8 @@ module.exports.getParticipantsByTournamentId = function getParticipantsByTournam
         if (err) {
             return next(err);
         }
-        else if (_.isNull(participants) || _.isEmpty(participants)) {
+        else if (_.isNull(participants)) {
+            console.log("ERREURS PARTICIPNTS : ")
             res.set('Content-Type', 'application/json');
             res.status(404).json(participants || {}, null, 2);
         }
