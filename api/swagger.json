@@ -69,6 +69,9 @@
     },{
       "name": "Participants",
       "description": "participants management"
+    },{
+      "name": "Chat",
+      "description": "chat management"
     }
 
   ],
@@ -4400,6 +4403,212 @@
             "description": "An object of toornament",
             "schema": {
               "title": "ObjectTournament",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/chat/add": {
+      "post": {
+        "x-swagger-router-controller": "ChatController",
+        "operationId": "addChat",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "insert Chat",
+        "description": "insert chat.",
+        "parameters": [
+          {
+            "name": "user1",
+            "in": "query",
+            "description": "first user name.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "user2",
+            "in": "query",
+            "description": "second user name.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of chat",
+            "schema": {
+              "title": "ObjectChat",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/message/add": {
+      "post": {
+        "x-swagger-router-controller": "ChatController",
+        "operationId": "addMessage",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "insert message",
+        "description": "insert message.",
+        "parameters": [
+          {
+            "name": "autor",
+            "in": "query",
+            "description": "autor name.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "content",
+            "in": "query",
+            "description": "second user name.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "chat_id",
+            "in": "query",
+            "description": "the chat witch contain this message.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of chat",
+            "schema": {
+              "title": "ObjectChat",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/chat/user1/{username}": {
+      "get": {
+        "x-swagger-router-controller": "ChatController",
+        "operationId": "getChatByUser1",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "get chat by user1",
+        "description": "get chat by user1",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "autor name.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of chat",
+            "schema": {
+              "title": "ObjectChat",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/chat/user2/{username}": {
+      "get": {
+        "x-swagger-router-controller": "ChatController",
+        "operationId": "getChatByUser2",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "get chat by user2",
+        "description": "get chat by user2",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "autor name.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of chat",
+            "schema": {
+              "title": "ObjectChat",
+              "type": "object",
+              "items": {
+                "$ref": "#/definitions/Game"
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },"/message/chat/{chatId}": {
+      "get": {
+        "x-swagger-router-controller": "Chat",
+        "operationId": "getMessageByChat",
+        "tags": [
+          "Chat"
+        ],
+        "summary": "get message by chat_id",
+        "description": "get message by chat_id",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "description": "chat id .",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An object of chat",
+            "schema": {
+              "title": "ObjectChat",
               "type": "object",
               "items": {
                 "$ref": "#/definitions/Game"
