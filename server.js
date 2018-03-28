@@ -25,7 +25,7 @@ var responseTime = require('response-time');
 var path = require('path');
 var bodyParser = require('body-parser');
 var token = require('./security/token');
-
+var socket = require('./SocketIO');
 //******************************************************************************//
 //********************** DEFINING SERVER CONSTANTS ******************************//
 //******************************************************************************//
@@ -62,7 +62,7 @@ function allowCORS(req, res, next) {
     res.set("Access-Control-Allow-Origin", "*");
     res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
     res.set("Access-Control-Expose-Headers", "Content-Type, token");
-    res.set("Access-Control-Allow-Methods", "GET, POST, PUT, HEAD, DELETE, OPTIONS");
+    res.set("Access-Control-Allow-Methods", "GET, POST, PUT, HEAD, DEvarE, OPTIONS");
     next();
 }
 
@@ -208,34 +208,44 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     var port = config.server.instance.port;
     var host = config.server.instance.host;
 
-    http.createServer(app).listen(port, function (err) {
-        if (err) logger.error(err);
-        logger.info('The API sample is now running at http://' + host + ':' + port);
-    });
+    socket.initServer(app,port,host);
+
 });
 //******************************************************************************//
 
-
-var httpSocket = require('http').Server(app);
-var port = '3000';
-httpSocket.listen(port);
-var io = require('socket.io').listen(httpSocket);
+var io = require('socket.io').listen(socket.server);
+var users = []; //List users
 
 app.get('/', function(req, res){
     res.sendfile('index.html');
 });
 
-var clients = [];
-var myUser = [];
+io.on('connection', function(socket){
 
-io.sockets.on('connection', function(socket){
+    var emit = function(emitCmd, data, socketId){
+
+        if (socketId !== undefined) {
+            if (socket.room !== undefined) {
+                socket.in(socket.room).broadcast.to(socketId).emit(emitCmd, data);
+            } else {
+                io.to(socketId).emit(emitCmd, data);
+            }
+        } else {
+            if (socket.room !== undefined) {
+                socket.in(socket.room).broadcast.emit(emitCmd, data);
+            } else {
+                socket.broadcast.emit(emitCmd, data);
+            }
+        }
+    };
 
     socket.on('user-login', function(loggedUser){
         socket.user = loggedUser;
-        clients.push(socket);
+
         console.log('loged');
     });
-    socket.on("set.room", function(data) {
+
+    socket.on("join-room", function(data) {
         if (data.room === null || data.room === undefined) {
             return;
         }
@@ -257,6 +267,7 @@ io.sockets.on('connection', function(socket){
                 username: socket.username,
                 room: socket.room
             });
+            users.push({username: data.username, room: data.room, origin: 'WEB'});
         }
     });
     /*socket.on('join-room', function(friend , me){
@@ -278,7 +289,38 @@ io.sockets.on('connection', function(socket){
         socket.join("room1");
         socket.room = "room1"
     });*/
-    socket.on('chat-message', function(msg, me){
+
+    socket.on("chat-message", function(data){
+
+        var trUid = socket.room.replace('room_', '');
+        var msg = data.message;
+
+        //Je met à undefined le socket pour renvoyer le message à l'utilisateur qui l'a envoyé
+        var socketId = socket.id;
+        socket.id = undefined;
+
+        emit("return-chat-message", {
+            room: socket.room,
+            username: data.username,
+            content: msg
+        });
+
+        var roomId = socket.room;
+        socket.room = undefined;
+
+        console.log('set read notification for others users');
+
+        emit("check.notification", {
+            transportUid: trUid,
+            username: data.username
+        });
+
+        //Je reset le socket pour ne pas créer d'incohérence pour le reste
+        socket.id = socketId;
+        socket.room = roomId;
+    });
+
+    /*socket.on('chat-message', function(msg, me){
 
         var message = {
             room: socket.room,
@@ -288,7 +330,7 @@ io.sockets.on('connection', function(socket){
 
         io.sockets.in(socket.room).emit('return-chat-message', message);
         console.log('Message de : ' + message.username + ' dans ' + socket.room);
-    });
+    });*/
     socket.on('disconnect', function(){
         console.log('user disconnected');
         socket.leave(socket.room);
