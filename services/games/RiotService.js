@@ -46,6 +46,27 @@ module.exports.getUserLol = function getUserInformation(lolName,callBack) {
 
     });
 };
+module.exports.getWinLooseLol = function getWinLooseLol(summonerId,callBack) {
+    console.log('Summoner id Lol : ' + summonerId);
+    let returnedArray = {};
+    let options = {
+        url: riotApiUrl + '/league/v3/positions/by-summoner/' + summonerId + '?api_key=' + keyApi
+    };
+    lolApiRequest(options,function (error,response,body) {
+
+        console.log("je suis la");
+        if (!error && response.statusCode == 200) {
+            let respObjectUser = JSON.parse(body);
+                    console.log(respObjectUser);
+            callBack(null,response,respObjectUser);
+        }
+        else {
+            callBack(error,response,null);
+            console.log(error);
+        }
+
+    });
+};
 
 module.exports.getLastMatchLol = function getUserMatches(accountId ,callBack) {
     console.log('Game with accoundId = ' + accountId);

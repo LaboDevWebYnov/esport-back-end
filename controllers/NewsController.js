@@ -52,6 +52,49 @@ module.exports.getNewsIgn = function getPlayerAccountList(req, res, next) {
         }
         else {
             logger.debug(news);
+
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(newsSearched || {}, null, 2);
+        }
+    });
+};
+module.exports.getNewsSearch = function getNewsSearch(req, res, next) {
+    var query = decodeURIComponent(Util.getPathParams(req)[2]);
+    let newsSearched = {};
+    newsService.getNewsSearch(query,function (err, news) {
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(news) || _.isEmpty(news)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(news || {}, null, 2);
+        }
+        else {
+            logger.debug(news);
+            newsSearched['ign'] = news;
+            logger.debug(newsSearched);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(newsSearched || {}, null, 2);
+        }
+    });
+    //res.status(200).end(JSON.stringify(decodeURIComponent(Util.getPathParams(req)[2]) || {}, null, 2));
+
+};
+
+
+module.exports.getNewsIgn = function getPlayerAccountList(req, res, next) {
+    logger.info('Getting Ign News from News API...');
+
+    newsService.getNewsIgn(function (err, news) {
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(news) || _.isEmpty(news)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(news || {}, null, 2);
+        }
+        else {
+            logger.debug(news);
             res.set('Content-Type', 'application/json');
             res.status(200).json(news || {}, null, 2);
         }

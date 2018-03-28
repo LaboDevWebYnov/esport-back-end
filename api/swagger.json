@@ -3219,6 +3219,34 @@
         }
       }
     },
+    "/news/{search}/newsSearch": {
+      "get": {
+        "x-swagger-router-controller": "NewsController",
+        "operationId": "getNewsSearch",
+        "tags": [
+          "News"
+        ],
+        "summary": "Get the News with query",
+        "description": "Get the News with query",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "path",
+            "description": "search",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of all news",
+            "schema": {
+              "$ref": "#/definitions/News"
+            }
+          }
+        }
+      }
+    },
     "/newsPolygon": {
       "get": {
         "x-swagger-router-controller": "NewsController",

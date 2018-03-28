@@ -277,7 +277,15 @@ function getLOLProperties(summonerId, callback) {
             playerAccountPropertiesContent['userInfo'] = (body);
             let tableMatchId = [];
             let accountId = body.accountId;
+            let id = body.id;
             let nbMatchInResult = 3;
+            riotService.getWinLooseLol(id, function (error, resp, body) {
+                if (!error && !_.isNull(body)) {
+
+                    let league = [];
+                    playerAccountPropertiesContent['league'] = body;
+                }
+            });
             riotService.getLastMatchLol(accountId, function (error, resp, body) {
                 if (!error && !_.isNull(body)) {
 
