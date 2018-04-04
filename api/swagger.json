@@ -4672,7 +4672,7 @@
       }
     },"/message/chat/{chatId}": {
       "get": {
-        "x-swagger-router-controller": "Chat",
+        "x-swagger-router-controller": "ChatController",
         "operationId": "getMessageByChat",
         "tags": [
           "Chat"

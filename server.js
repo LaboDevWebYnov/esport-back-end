@@ -59,10 +59,11 @@ function noCache(req, res, next) {
 }
 
 function allowCORS(req, res, next) {
-    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Origin", "http://localhost:4200");
     res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
     res.set("Access-Control-Expose-Headers", "Content-Type, token");
     res.set("Access-Control-Allow-Methods", "GET, POST, PUT, HEAD, DEvarE, OPTIONS");
+    res.set("Access-Control-Allow-Credentials", true);
     next();
 }
 
@@ -213,12 +214,10 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 });
 //******************************************************************************//
 
-var io = require('socket.io').listen(socket.server);
+const io = require('socket.io')(socket.server, {secure: true, rejectUnauthorized: false, origins: 'http://localhost:4200'});
 var users = []; //List users
 
-app.get('/', function(req, res){
-    res.sendfile('index.html');
-});
+
 
 io.on('connection', function(socket){
 
@@ -241,11 +240,11 @@ io.on('connection', function(socket){
 
     socket.on('user-login', function(loggedUser){
         socket.user = loggedUser;
-
-        console.log('loged');
+        logger.info('loged');
     });
 
     socket.on("join-room", function(data) {
+        logger.info(data.username + " try to join room " + data.room)
         if (data.room === null || data.room === undefined) {
             return;
         }
@@ -292,6 +291,7 @@ io.on('connection', function(socket){
 
     socket.on("chat-message", function(data){
 
+        logger.info(data.username + " send " + data.message);
         var trUid = socket.room.replace('room_', '');
         var msg = data.message;
 
@@ -308,7 +308,7 @@ io.on('connection', function(socket){
         var roomId = socket.room;
         socket.room = undefined;
 
-        console.log('set read notification for others users');
+        logger.info('set read notification for others users');
 
         emit("check.notification", {
             transportUid: trUid,
@@ -332,7 +332,7 @@ io.on('connection', function(socket){
         console.log('Message de : ' + message.username + ' dans ' + socket.room);
     });*/
     socket.on('disconnect', function(){
-        console.log('user disconnected');
+        logger.info('user disconnected');
         socket.leave(socket.room);
         socket.removeAllListeners('chat-message');
     });
@@ -354,13 +354,3 @@ io.on('connection', function(socket){
         }
     });
 });
-
-function getSocketByUsername(clients, username){
-
-    for(var i=0;i<clients.length;i++){
-        if(clients[i].user.username == username){
-
-            return clients[i];
-        }
-    }
-}
