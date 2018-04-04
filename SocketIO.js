@@ -106,17 +106,6 @@ module.exports.initServer = function(app, port, host){
             chatController.addMessage(data.username, data.message, socket.room);
         });
 
-        /*socket.on('chat-message', function(msg, me){
-
-            var message = {
-                room: socket.room,
-                username: me.user,
-                content: msg
-            };
-
-            io.sockets.in(socket.room).emit('return-chat-message', message);
-            console.log('Message de : ' + message.username + ' dans ' + socket.room);
-        });*/
         socket.on('disconnect', function(){
             logger.info('user disconnected');
             socket.leave(socket.room);
@@ -132,9 +121,9 @@ module.exports.initServer = function(app, port, host){
             }
         });
 
-        socket.on("stop.typing", function() {
+        socket.on("stop-typing", function() {
             if (socket.username !== undefined) {
-                emit("stop.typing", {
+                emit("stop-typing", {
                     username: socket.username
                 });
             }
