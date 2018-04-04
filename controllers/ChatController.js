@@ -27,12 +27,9 @@ module.exports.addChat = function addChat(req, res, next) {
     });
 };
 
-module.exports.addMessage = function addMessage(req, res, next) {
+module.exports.addMessage = function addMessage(autor, msg, chatId) {
     logger.info('Adding a new message...');
 
-    var autor = req.body.autor;
-    var msg = req.body.content;
-    var chatId = req.body.chat_id;
 
     var data = new Messages({
         _id: new ObjectID(),
@@ -66,7 +63,7 @@ module.exports.getChatByUser2 = function getChatByUser2(req, res, next) {
 
     var user = decodeURIComponent(Util.getPathParams(req)[3]);
     console.log("user :", user);
-    Chats.find({"user1": user}).select({"_id": 1, "user1": 1, "user2": 1})
+    Chats.find({"user2": user}).select({"_id": 1, "user1": 1, "user2": 1})
         .exec((function (err, chat) {
         if (err) return next(err);
         else res.send(chat);
