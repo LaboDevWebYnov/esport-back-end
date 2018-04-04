@@ -293,6 +293,49 @@
         }
       }
     },
+    "/users/{userId}/updateFriends": {
+      "put": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "updateFriends",
+        "tags": [
+          "User"
+        ],
+        "summary": "Updates the corresponding user basic properties",
+        "description": "Update `User` object specified by its ID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of User object to update.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userObject",
+            "in": "body",
+            "description": "User object that will update the old one.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A 'User' object.",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/users/{userId}/updatePassword": {
       "put": {
         "x-swagger-router-controller": "UserController",
@@ -403,6 +446,44 @@
             "schema": {
               "$ref": "#/definitions/User"
             }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/user/{userId}/addFriends/{friendsId}": {
+      "put": {
+        "x-swagger-router-controller": "UserController",
+        "operationId": "addFriends",
+        "tags": [
+          "User"
+        ],
+        "summary": "Adds a friends to a user",
+        "description": "Adds new `friends` object to the given user Id.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "userId of team object to update",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "friendsId",
+            "in": "path",
+            "description": "friendsId of user object to add to the userId.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PlayerAccount has been successfully added to the team"
           },
           "default": {
             "description": "Unexpected error",
@@ -953,6 +1034,9 @@
         }
       }
     },
+
+
+
     "/games": {
       "get": {
         "x-swagger-router-controller": "GameController",

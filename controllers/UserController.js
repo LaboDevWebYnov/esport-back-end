@@ -9,6 +9,7 @@ var Promise = require("bluebird"),
     mongoose = require('mongoose'),
     sanitizer = require('sanitizer'),
     moment = require('moment'),
+    async = require('async'),
     _ = require('lodash'),
     Util = require('./utils/util.js'),
     emailUtils = require('./utils/emailUtils.js'),
@@ -21,6 +22,7 @@ var Promise = require("bluebird"),
     AddressDB = require('../models/AddressDB'),
     Address = mongoose.model('Address'),
     UserService = require('../services/UserService');
+
 
 mongoose.Promise = Promise;
 
@@ -192,6 +194,28 @@ module.exports.updateUser = function updateUser(req, res, next) {
             }
         });
 };
+module.exports.updateFriends = function updateFriends(req, res, next) {
+    User.findOneAndUpdate(
+        {_id: Util.getPathParams(req)[2]},
+        {
+            $set: {
+                //TODO add phone number check
+                friends: req.body.friends || null,
+
+                updated_at: Date.now()
+            }
+        },
+        {new: true}, //means we want the DB to return the updated document instead of the old one
+        function (err, updatedFriends) {
+            if (err)
+                return next(err);
+            else {
+                logger.debug("Updated friends object: \n" + updatedFriends);
+                res.set('Content-Type', 'application/json');
+                res.status(200).end(JSON.stringify(updatedFriends || {}, null, 2));
+            }
+        });
+};
 
 // Path : PUT /users/{userId}/updatePassword
 module.exports.updatePassword = function updatePassword(req, res, next) {
@@ -268,7 +292,109 @@ module.exports.updateEmail = function updateEmail(req, res, next) {
         });
 };
 
+module.exports.addFriends = function addFriends(req, res, next) {
+    logger.debug('BaseUrl:' + req.originalUrl);
+    logger.debug('Path:' + req.path);
 
+    logger.info('Adding friends with id ' + Util.getPathParams(req)[4] + ' to user with userId' + Util.getPathParams(req)[2]);
+
+    //search friend
+    User.findOne({_id: Util.getPathParams(req)[4]}, function (err, friendFound) {
+        if (err)
+            return next(err);
+        if (_.isNil(friendFound) || _.isEmpty(friendFound)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(friendFound || {}, null, 2);
+        }
+        else {
+            //recherche de la team
+            User.findOne({_id: Util.getPathParams(req)[2]})
+
+                .exec(function (err, user) {
+                    if (err)
+                        return next(err);
+                    if (_.isNil(user) || _.isEmpty(user)) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(404).json(user || {}, null, 2);
+                    }
+                    else {
+                        //in case players doesn't exist or is empty, create an empty array
+                        if (_.isNil(user.friends) || _.isEmpty(user.friends))
+                            user.friends = [];
+
+                        //check playerId isn't in the list yet
+                        //in case player already present in team, abord
+                        if (_.some(user._doc.friends, function (o) {
+                                return _.isEqual(o._id, friendFound._id)
+                            })) {
+                            logger.info("PlayerAccount with id: " + friendFound._id + "is already present in the team");
+                            res.set('Content-Type', 'application/json');
+                            res.status(400).json({error: {code: 'E_PLAYER_ALREADY_IN_TEAM', message: 'Player is already present in the team'}} || {}, null, 2);
+                        }
+                        else {
+                            //adding new player to team's players list
+                            user.friends = user.friends.push(friendFound._id);
+
+                            let teamToReturn = {};
+
+                            //todo handle roles
+                            async.series([
+                                function (cb) {
+                                    //todo add role
+                                    cb();
+                                },
+                                function (cb) {
+                                    //updating team with updated players list
+                                    User.findOneAndUpdate(
+                                        {_id: Util.getPathParams(req)[2]},
+                                        {
+                                            $set: {
+                                                friends: user.friends
+                                            }
+                                        },
+                                        {new: true}) //means we want the DB to return the updated document instead of the old one
+                                        .populate("user")
+
+                                        .populate(
+                                            {
+                                                path: 'User',
+                                                populate: {path: 'User'}
+                                            })
+                                        .exec(function (err, updatedTeam) {
+                                            if (err)
+                                                cb(err, 'Mise à jour friends list');
+                                            if (_.isNil(updatedTeam) || _.isEmpty(updatedTeam)) {
+                                                cb({
+                                                    error: {
+                                                        code: 'E_TEAM_NOT_FOUND',
+                                                        message: 'Could not find team to update'
+                                                    }
+                                                }, 'Mise à jour players list');
+                                            }
+                                            else {
+                                                teamToReturn = updatedTeam;
+                                                cb(null, 'Mise à jour players list');
+                                            }
+                                        });
+                                }
+                            ], function (err, results) {
+                                logger.debug('results: ' + results);
+                                if (err) {
+                                    res.set('Content-Type', 'application/json');
+                                    res.status(404).json(teamToReturn || {}, null, 2);
+                                }
+                                else {
+                                    //todo handle roles/properties
+                                    res.set('Content-Type', 'application/json');
+                                    res.status(200).end(JSON.stringify(teamToReturn || {}, null, 2));
+                                }
+                            });
+                        }
+                    }
+                });
+        }
+    });
+};
 // Path : PUT api/users/{userId}/deleteUser
 module.exports.deleteUser = function deleteUser(req, res, next) {
     logger.info('Deactivating for user with id:\n ' + Util.getPathParams(req)[2]);
