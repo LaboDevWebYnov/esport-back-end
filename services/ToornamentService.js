@@ -284,10 +284,10 @@ module.exports.getMatchesByTournament = function getMatchesByTournament(id, para
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        let respObject = body;
         if (!error && response.statusCode != 404) {
 
-            callBack(null,JSON.parse(response["body"]),respObject);
+            callBack(null, response["body"],respObject);
         }
         else {
             callBack(error,response,null);
