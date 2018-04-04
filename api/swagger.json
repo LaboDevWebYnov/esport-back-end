@@ -4545,57 +4545,6 @@
           }
         }
       }
-    },"/message/add": {
-      "post": {
-        "x-swagger-router-controller": "ChatController",
-        "operationId": "addMessage",
-        "tags": [
-          "Chat"
-        ],
-        "summary": "insert message",
-        "description": "insert message.",
-        "parameters": [
-          {
-            "name": "autor",
-            "in": "query",
-            "description": "autor name.",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "content",
-            "in": "query",
-            "description": "second user name.",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "chat_id",
-            "in": "query",
-            "description": "the chat witch contain this message.",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "An object of chat",
-            "schema": {
-              "title": "ObjectChat",
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/Game"
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
     },"/chat/user1/{username}": {
       "get": {
         "x-swagger-router-controller": "ChatController",
