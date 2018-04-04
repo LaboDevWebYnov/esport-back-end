@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
     request = require('request');
     clientSecret = '1hu0ts6jyv8googo0kks0wog44w00gok84soc48g4cgc0848o8';
     clientId = '9ce161687677adaf69d21a192nktf5mifmskkg0804cskwggko8skwwc8goso8o4ggg4s4gc4c'
-    token_tournament = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6Ijg4ODdiNmFhN2RlZjU5Y2VhNjgzODllZmVhNTc4MjU0ZTIzNGQ3OTliYWQ1MzZiYjRkMjgxYTRkODFmZWQ1MTU4ZGZiZTljN2Y4NzVlYzI4In0.eyJhdWQiOiI5Y2UxNjE2ODc2NzdhZGFmNjlkMjFhMTkybmt0ZjVtaWZtc2trZzA4MDRjc2t3Z2drbzhza3d3Yzhnb3NvOG80Z2dnNHM0Z2M0YyIsImp0aSI6Ijg4ODdiNmFhN2RlZjU5Y2VhNjgzODllZmVhNTc4MjU0ZTIzNGQ3OTliYWQ1MzZiYjRkMjgxYTRkODFmZWQ1MTU4ZGZiZTljN2Y4NzVlYzI4IiwiaWF0IjoxNTIxMTkwNjczLCJuYmYiOjE1MjExOTA2NzMsImV4cCI6MTUyMTI4MDY3Mywic3ViIjoiIiwic2NvcGVzIjpbXX0.tzzpDzTLEBXsQhKKiDGespXVKhz26IsE0ngWlMF7kFSIZxCIXrhNpwf85d_uWjTPkuPJq3XMt2HcdTME3X_qNoIt5IC51a6Nc7mJG39bYXsqFKgARMDLaU6vBA3tafK974hN_724U9EmYUnO8qSkXQ8lrYs9CiuxV7V6xf6YqGET5H-63TsdmTQp5l3hZO-4Xj_GLh9bXMXmZx1QC4ACFyQ9q0xHEWVQXOgwjTelXrZBsJtxap5m8qMltpjm8u4g0iIkQDd7OyzVw48lqkiz4YDMkFOxSWYL9KZhJIPv41dcKb6eKoKgqg-eg3_5ibmAVdVNOsY3rfykD6Y3qz98lw';
+    token_tournament = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjVmZWNmYWQ5YzgyZjRhY2E2MGY0MjQ2OTQ2Nzk0NjBlOWNmYWNkODc3MzQ3NzNhYWVmMjU1NWY3ZjQzZjY3ZjI5M2U3NzAxN2UxNTkzNGJkIn0.eyJhdWQiOiI5Y2UxNjE2ODc2NzdhZGFmNjlkMjFhMTkybmt0ZjVtaWZtc2trZzA4MDRjc2t3Z2drbzhza3d3Yzhnb3NvOG80Z2dnNHM0Z2M0YyIsImp0aSI6IjVmZWNmYWQ5YzgyZjRhY2E2MGY0MjQ2OTQ2Nzk0NjBlOWNmYWNkODc3MzQ3NzNhYWVmMjU1NWY3ZjQzZjY3ZjI5M2U3NzAxN2UxNTkzNGJkIiwiaWF0IjoxNTIyMjM3MTA1LCJuYmYiOjE1MjIyMzcxMDUsImV4cCI6MTUyMjMyNzEwNSwic3ViIjoiIiwic2NvcGVzIjpbXX0.ScO-yeeq6j70nCnmFTF7MI1dm6KCgdcSWY4mC451fkgO3f_5gytMh3AfOB5heqh1uJeXHB6oS8o9VyipnTTMauOSPu5uz8K7Z5dOcozK39RZWaNdjbI0qgPjIu5n3ManzaS2sObv5B524Rvg5OIOD0afLZ9rm5fKcHyNgHIomQbfc-nVIWkKuUKipUtjBgO-J8JnNq4_ieDmoMCJl8jTZahaJ_2FxnoSbEuVeW5pNCkYXFQCYV6Lc9abEwhep5lHFpDJLqU8RY1YTzlfvtv3YLd_6Vzg9uTBFn-wFNUYjM5T_ZiV1KKaggifN2_UIybHyhDBamMDTILgyx8Tt37cug';
 
 
 function toornamentApiRequest(options,callBack) {
@@ -26,7 +26,7 @@ function toornamentApiRequest(options,callBack) {
 }
 
 function generateGetUrlFromParams(route, params) {
-    let options;
+    var options;
     if (params['access_token']) {
         options = {
             url: toornamentApiUrl + route,
@@ -121,7 +121,7 @@ function generateGetUrlFromParams(route, params) {
 // https://api.toornament.com/oauth/v2/token
 module.exports.oauth2 = function Oauth2(callBack){
 
-    let options = {
+    var options = {
         url: toornamentApiUrl + 'oauth/v2/token',
         method: 'POST',
         form: {
@@ -133,7 +133,7 @@ module.exports.oauth2 = function Oauth2(callBack){
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -149,11 +149,11 @@ module.exports.oauth2 = function Oauth2(callBack){
 // https://api.toornament.com/v1/tournaments
 module.exports.getTournaments = function getTournaments(params, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments', params);
+    var options = generateGetUrlFromParams('v1/tournaments', params);
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -169,7 +169,7 @@ module.exports.addTournament = function postTournament(params,callBack){
 
     var addTournamentModel = new AddTournamentModel(params['discipline'], params['name'], params['size'], params['participant_type']);
 
-    let options = {
+    var options = {
         url: toornamentApiUrl + 'v1/tournaments',
         method: 'POST',
         body: JSON.stringify(addTournamentModel),
@@ -182,7 +182,7 @@ module.exports.addTournament = function postTournament(params,callBack){
     logger.info('options', options);
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
             callBack(   null,response["body"],respObject);
         }
@@ -209,13 +209,13 @@ module.exports.insertTournament = function insertTournament(userId, tournamentId
 // https://api.toornament.com/v1/tournaments/{id}
 module.exports.getOneTournamentById = function getOneTournamentById(id, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments/' + id, []);
+    var options = generateGetUrlFromParams('v1/tournaments/' + id, []);
 
     logger.info(options.url);
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -229,13 +229,13 @@ module.exports.getOneTournamentById = function getOneTournamentById(id, callBack
 // https://api.toornament.com/v1/me/tournaments
 module.exports.getMyTournaments = function getMyTournaments(params, callBack){
 
-    let options = generateGetUrlFromParams('v1/me/tournaments', params);
+    var options = generateGetUrlFromParams('v1/me/tournaments', params);
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -247,11 +247,11 @@ module.exports.getMyTournaments = function getMyTournaments(params, callBack){
 };
 
 // https://api.toornament.com/v1/tournaments/{id}
-module.exports.deleteOneTournamentById = function deleteOneTournamentById(id, params, callBack){
+module.exports.devareOneTournamentById = function devareOneTournamentById(id, params, callBack){
 
-    let options = {
+    var options = {
         url: toornamentApiUrl + 'v1/tournaments/' + id,
-        method: 'DELETE',
+        method: 'DEvarE',
         headers: {
             'X-Api-Key': keyApi,
             Authorization: token_tournament
@@ -261,7 +261,7 @@ module.exports.deleteOneTournamentById = function deleteOneTournamentById(id, pa
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             //callBack(null,JSON.parse(response["body"]),respObject);
@@ -277,14 +277,14 @@ module.exports.deleteOneTournamentById = function deleteOneTournamentById(id, pa
 // https://api.toornament.com/v1/tournaments/{tournament_id}/matches
 module.exports.getMatchesByTournament = function getMatchesByTournament(id, params, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments/' + id +'/matches', params);
+    var options = generateGetUrlFromParams('v1/tournaments/' + id +'/matches', params);
 
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = body;
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null, response["body"],respObject);
@@ -298,13 +298,13 @@ module.exports.getMatchesByTournament = function getMatchesByTournament(id, para
 // https://api.toornament.com/v1/disciplines/{discipline_id}/matches
 module.exports.getMatchesByDiscipline = function getMatchesByDiscipline(id, params, callBack){
 
-    let options = generateGetUrlFromParams( "v1/disciplines/" + id + "/matches", params);
+    var options = generateGetUrlFromParams( "v1/disciplines/" + id + "/matches", params);
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -318,14 +318,14 @@ module.exports.getMatchesByDiscipline = function getMatchesByDiscipline(id, para
 // https://api.toornament.com/v1/tournaments/{tournament_id}/matches/{id}/result
 module.exports.getMatcheByIdAndTournament = function getMatcheByIdAndTournament(idTournament, idMatche, params, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatche + '/result', params);
+    var options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatche + '/result', params);
 
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -339,14 +339,14 @@ module.exports.getMatcheByIdAndTournament = function getMatcheByIdAndTournament(
 // https://api.toornament.com/v1/tournaments/{tournament_id}/matches
 module.exports.getMatcheResultByIdAndTournament = function getMatcheResultByIdAndTournament(idTournament, idMatche, params, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatche, params);
+    var options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatche, params);
 
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -360,14 +360,14 @@ module.exports.getMatcheResultByIdAndTournament = function getMatcheResultByIdAn
 // https://api.toornament.com/v1/disciplines
 module.exports.getDisciplines = function getDisciplines(params, callBack) {
 
-    let options = generateGetUrlFromParams('v1/disciplines', params);
+    var options = generateGetUrlFromParams('v1/disciplines', params);
 
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -383,14 +383,14 @@ module.exports.getDisciplines = function getDisciplines(params, callBack) {
 // https://api.toornament.com/v1/tournaments/{tournament_id}/matches/{matche_id}/games
 module.exports.getGamesByMatchAndTournament = function getGamesByMatchAndTournament(idTournament, idMatch, params, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatch +'/games', params);
+    var options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatch +'/games', params);
 
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -404,14 +404,14 @@ module.exports.getGamesByMatchAndTournament = function getGamesByMatchAndTournam
 // https://api.toornament.com/v1/tournaments/{tournament_id}/matches/{matche_id}/games/{game_id}
 module.exports.getGamesByIdAndMatchAndTournament = function getGamesByIdAndMatchAndTournament(idTournament, idMatch, idGame, params, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatch +'/games/' + idGame, params);
+    var options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatch +'/games/' + idGame, params);
 
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -425,13 +425,13 @@ module.exports.getGamesByIdAndMatchAndTournament = function getGamesByIdAndMatch
 // https://api.toornament.com/v1/tournaments/{tournament_id}/matches/{matche_id}/games/{game_id}/result
 module.exports.getGamesResultByIdAndMatchAndTournament = function getGamesResultByIdAndMatchAndTournament(idTournament, idMatch, idGame, params, callBack){
 
-    let options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatch +'/games/' + idGame + '/result', params);
+    var options = generateGetUrlFromParams('v1/tournaments/' + idTournament +'/matches/' + idMatch +'/games/' + idGame + '/result', params);
 
     logger.info(options);
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -447,14 +447,14 @@ module.exports.getGamesResultByIdAndMatchAndTournament = function getGamesResult
 // https://api.toornament.com/v1/tournaments/{tournament_id}/participants
 module.exports.getParticipantsByTournamentId = function getParticipantsByTournamentId(idTournament, params, callBack) {
 
-    let options = generateGetUrlFromParams("v1/tournaments/" + idTournament + "/participants", params);
+    var options = generateGetUrlFromParams("v1/tournaments/" + idTournament + "/participants", params);
 
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -468,13 +468,13 @@ module.exports.getParticipantsByTournamentId = function getParticipantsByTournam
 // https://api.toornament.com/v1/tournaments/{tournament_id}/participants/{id}
 module.exports.getParticipantsByTournamentIdAndParticipantId = function getParticipantsByTournamentIdAndParticipantId(idTournament, idParticipant,params, callBack) {
 
-    let options = generateGetUrlFromParams("v1/tournaments/" + idTournament + "/participants/" + idParticipant, params);
+    var options = generateGetUrlFromParams("v1/tournaments/" + idTournament + "/participants/" + idParticipant, params);
     logger.info(options);
 
 
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
 
             callBack(null,JSON.parse(response["body"]),respObject);
@@ -492,7 +492,7 @@ module.exports.addParticipant =     function addParticipant(id, params,callBack)
 
     var addParticipantModel = new AddParticipantModel(params['name'], params['email'], params['country'], params['line_up']);
 
-    let options = {
+    var options = {
         url: toornamentApiUrl + 'v1/tournaments/' + id + '/participants',
         method: 'POST',
         body: JSON.stringify(addParticipantModel),
@@ -505,7 +505,7 @@ module.exports.addParticipant =     function addParticipant(id, params,callBack)
     logger.info('options', options);
     toornamentApiRequest(options,function (error,response,body) {
 
-        let respObject = JSON.parse(body);
+        var respObject = JSON.parse(body);
         if (!error && response.statusCode != 404) {
             callBack(null,JSON.parse(response["body"]),respObject);
         }
