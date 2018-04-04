@@ -10,8 +10,8 @@ var logger = require('log4js').getLogger('controller.toornament'),
 module.exports.addChat = function addChat(req, res, next) {
     logger.info('Adding a new chat...');
 
-    var user1 = req.query.user1;
-    var user2 = req.query.user2;
+    var user1 = req.body.user1;
+    var user2 = req.body.user2;
 
     console.log("user1 :", user1);
     console.log("user2 :", user2);
@@ -77,8 +77,8 @@ module.exports.getMessageByChat = function getMessageByChat(req, res, next) {
     logger.info('Getting messages from chat...');
 
     var chat_id = decodeURIComponent(Util.getPathParams(req)[3]);
-    console.log("user :", user);
-    Messages.find({"chat": chat_id}).select({"_id": 1, "autor": 1, "content": 1, "chat": 1})
+    console.log("chat :", chat_id);
+    Messages.find({"chat": ObjectID(chat_id)}).select({"_id": 1, "autor": 1, "content": 1, "chat": 1})
         .exec((function (err, chat) {
         if (err) return next(err);
         else res.send(chat);
