@@ -22,8 +22,18 @@ module.exports.addChat = function addChat(req, res, next) {
     });
 
     data.save(function (err, data) {
-        if (err) console.log(err);
-        else console.log('Saved ', data );
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(data) || _.isEmpty(data)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(data || {}, null, 2);
+        }
+        else {
+            logger.debug(data);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(data || {}, null, 2);
+        }
     });
 };
 
@@ -40,8 +50,18 @@ module.exports.addMessage = function addMessage(autor, msg, chatId) {
     });
 
     data.save(function (err, data) {
-        if (err) console.log(err);
-        else console.log('Saved ', data );
+        if (err) {
+            return next(err);
+        }
+        else if (_.isNull(data) || _.isEmpty(data)) {
+            res.set('Content-Type', 'application/json');
+            res.status(404).json(data || {}, null, 2);
+        }
+        else {
+            logger.debug(data);
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(data || {}, null, 2);
+        }
     });
 };
 
@@ -75,7 +95,7 @@ module.exports.getMessageByChat = function getMessageByChat(req, res, next) {
 
     var chat_id = decodeURIComponent(Util.getPathParams(req)[3]);
     console.log("chat :", chat_id);
-    Messages.find({"chat": ObjectID(chat_id)}).select({"_id": 1, "autor": 1, "content": 1, "chat": 1})
+    Messages.find({"chat": ObjectID(chat_id)}).select({"_id": 1, "autor": 1, "content": 1, "chat": 1, "created_at": 1})
         .exec((function (err, chat) {
         if (err) return next(err);
         else res.send(chat);
