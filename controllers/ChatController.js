@@ -50,18 +50,8 @@ module.exports.addMessage = function addMessage(autor, msg, chatId) {
     });
 
     data.save(function (err, data) {
-        if (err) {
-            return next(err);
-        }
-        else if (_.isNull(data) || _.isEmpty(data)) {
-            res.set('Content-Type', 'application/json');
-            res.status(404).json(data || {}, null, 2);
-        }
-        else {
-            logger.debug(data);
-            res.set('Content-Type', 'application/json');
-            res.status(200).json(data || {}, null, 2);
-        }
+        if (err) console.log(err);
+        else console.log('Saved ', data );
     });
 };
 
