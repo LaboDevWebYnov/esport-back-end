@@ -85,7 +85,8 @@ module.exports.initServer = function(app, port, host){
 
             emit("return-chat-message", {
                 room: socket.room,
-                username: data.username,
+                autor: data.username,
+                created_at: new Date(),
                 content: msg
             });
 
