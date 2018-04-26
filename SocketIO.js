@@ -114,7 +114,7 @@ module.exports.initServer = function(app, port, host){
 
         socket.on("typing", function() {
             if (socket.username !== undefined) {
-                emit("typing", {
+                emit("return-typing", {
                     username: socket.username,
                     room: socket.room
                 });
@@ -123,7 +123,7 @@ module.exports.initServer = function(app, port, host){
 
         socket.on("stop-typing", function() {
             if (socket.username !== undefined) {
-                emit("stop-typing", {
+                emit("return-stop-typing", {
                     username: socket.username
                 });
             }
